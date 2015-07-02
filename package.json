@@ -1,0 +1,32 @@
+{
+  "name": "angular-state-router",
+  "version": "1.0.0",
+  "description": "An AngularJS state-based router",
+  "main": "dist/state-router.js",
+  "scripts": {
+    "test": "karma start karma.conf.js"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/henrytseng/angular-state-router.git"
+  },
+  "author": "Henry Tseng <contact@henrytseng.com> (http://www.henrytseng.com/)",
+  "license": "MIT",
+  "bugs": {
+    "url": "https://github.com/henrytseng/angular-state-router/issues"
+  },
+  "homepage": "https://github.com/henrytseng/angular-state-router#readme",
+  "devDependencies": {
+    "browserify": "^10.2.4",
+    "browserify-ngannotate": "^1.0.1",
+    "gulp": "^3.9.0",
+    "gulp-if": "^1.2.5",
+    "gulp-notify": "^2.2.0",
+    "gulp-sourcemaps": "^1.5.2",
+    "gulp-streamify": "0.0.5",
+    "gulp-uglify": "^1.2.0",
+    "gulp-watch": "^4.2.4",
+    "vinyl-buffer": "^1.0.0",
+    "vinyl-source-stream": "^1.1.0"
+  }
+}
