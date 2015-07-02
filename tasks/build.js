@@ -13,10 +13,7 @@ var browserify = require('browserify');
 var uglify = require('gulp-uglify');
 var ngAnnotate = require('browserify-ngannotate');
 
-var _isProduction = process.env.NODE_ENV === 'production';
-
-function _build(file, entries) {
-
+function _build(file, entries, isMin) {
   var bundler = browserify({
     entries: entries,
     debug: true,
@@ -34,18 +31,23 @@ function _build(file, entries) {
       this.emit('end');
     })
       .pipe(source(file))
-      .pipe(gulpif(_isProduction, buffer()))
-      .pipe(gulpif(_isProduction, sourcemaps.init()))
-      .pipe(gulpif(_isProduction, streamify(uglify({
+      .pipe(gulpif(isMin, buffer()))
+      .pipe(gulpif(isMin, sourcemaps.init()))
+      .pipe(gulpif(isMin, streamify(uglify({
         compress: { drop_console: true }
       }))))
-      .pipe(gulpif(_isProduction, sourcemaps.write('./')))
+      .pipe(gulpif(isMin, sourcemaps.write('./')))
       .pipe(gulp.dest('dist'));
   }
 
   return _rebundle();
 }
 
-gulp.task('build', function() {
-  return _build(_isProduction ? 'state-router.min.js' : 'state-router.js', './src/index.js');
+gulp.task('build', ['build:normal', 'build:min']);
+
+gulp.task('build:min', function() {
+  return _build('state-router.min.js', './src/index.js', true);
+});
+gulp.task('build:normal', function() {
+  return _build('state-router.js', './src/index.js');
 });

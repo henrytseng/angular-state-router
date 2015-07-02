@@ -4,6 +4,7 @@
   "description": "An AngularJS state-based router",
   "main": "dist/state-router.js",
   "scripts": {
+    "watch": "gulp watch",
     "test": "karma start karma.conf.js"
   },
   "repository": {
