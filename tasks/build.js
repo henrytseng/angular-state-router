@@ -46,8 +46,8 @@ function _build(file, entries, isMin) {
 gulp.task('build', ['build:normal', 'build:min']);
 
 gulp.task('build:min', function() {
-  return _build('state-router.min.js', './src/index.js', true);
+  return _build('state-router.min.js', './src/state-router.js', true);
 });
 gulp.task('build:normal', function() {
-  return _build('state-router.js', './src/index.js');
+  return _build('state-router.js', './src/state-router.js');
 });

@@ -6,6 +6,7 @@
 var fs = require('fs');
 var gulp = require('gulp');
 var notify = require('gulp-notify');
+var runSequence = require('run-sequence');
 var path = require('path');
 
 var tasks = fs.readdirSync('tasks/')
@@ -15,6 +16,6 @@ var tasks = fs.readdirSync('tasks/')
   });
 
 // Default task
-gulp.task('default', function() {
-  gulp.start('build');
+gulp.task('default', function(callback) {
+  runSequence('test', 'build', callback);
 });

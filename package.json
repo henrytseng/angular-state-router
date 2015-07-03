@@ -5,7 +5,7 @@
   "main": "dist/state-router.js",
   "scripts": {
     "watch": "gulp watch",
-    "test": "karma start karma.conf.js"
+    "test": "./node_modules/karma/bin/karma start tests/karma.conf.js --single-run --browsers PhantomJS"
   },
   "repository": {
     "type": "git",
@@ -18,6 +18,8 @@
   },
   "homepage": "https://github.com/henrytseng/angular-state-router#readme",
   "devDependencies": {
+    "angular": "^1.4.1",
+    "angular-mocks": "^1.4.1",
     "browserify": "^10.2.4",
     "browserify-ngannotate": "^1.0.1",
     "gulp": "^3.9.0",
@@ -27,7 +29,14 @@
     "gulp-streamify": "0.0.5",
     "gulp-uglify": "^1.2.0",
     "gulp-watch": "^4.2.4",
+    "jasmine-core": "^2.3.4",
+    "karma": "^0.12.37",
+    "karma-jasmine": "^0.3.6",
+    "karma-phantomjs-launcher": "^0.2.0",
+    "phantomjs": "^1.9.17",
+    "run-sequence": "^1.1.1",
     "vinyl-buffer": "^1.0.0",
     "vinyl-source-stream": "^1.1.0"
-  }
+  },
+  "dependencies": {}
 }
