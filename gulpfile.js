@@ -17,5 +17,5 @@ var tasks = fs.readdirSync('tasks/')
 
 // Default task
 gulp.task('default', function(callback) {
-  runSequence('test', 'build', callback);
+  runSequence('lint', 'build', 'test', callback);
 });

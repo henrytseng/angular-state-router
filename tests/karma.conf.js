@@ -1,7 +1,8 @@
 'use strict';
 
+/* global module:false */
+
 // Karma configuration
-// Generated on Thu Jul 02 2015 19:52:18 GMT-0400 (EDT)
 
 module.exports = function(config) {
   config.set({
@@ -19,6 +20,7 @@ module.exports = function(config) {
     files: [
       'node_modules/angular/angular.js',
       'node_modules/angular-mocks/angular-mocks.js',
+      'dist/state-router.js',
       'tests/**/*.spec.js'
     ],
 
@@ -37,7 +39,7 @@ module.exports = function(config) {
     // test results reporter to use
     // possible values: 'dots', 'progress'
     // available reporters: https://npmjs.org/browse/keyword/karma-reporter
-    reporters: ['progress'],
+    reporters: ['dots'],
 
 
     // web server port
@@ -64,6 +66,6 @@ module.exports = function(config) {
 
     // Continuous Integration mode
     // if true, Karma captures browsers, runs the tests and exits
-    singleRun: false
-  })
-}
+    singleRun: true
+  });
+};

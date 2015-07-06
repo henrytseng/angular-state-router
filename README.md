@@ -3,7 +3,14 @@ StateRouter
 
 StateRouter is an AngularJS state-based router.  
 
+While not required StateRouter is designed to support lazy loading and integration with Browserify.  
 
+
+
+
+
+Examples
+--------
 
 
 

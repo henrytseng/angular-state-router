@@ -15,7 +15,7 @@ gulp.task('watch', function() {
     'src/**/*.js',
     'tests/spec/**/*.spec.js'
   ], function() {
-    runSequence('test', 'build');
+    runSequence('lint', 'build', 'test');
   });
 
 });
