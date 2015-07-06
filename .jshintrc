@@ -14,6 +14,7 @@
     "it": false,
     "xit": false,
     "expect": false,
+    "spyOn": false,
     "beforeEach": false,
     "afterEach": false
   }

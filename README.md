@@ -3,15 +3,71 @@ StateRouter
 
 StateRouter is an AngularJS state-based router designed for flexibility and ease of use.  
 
-While not required StateRouter is designed to support lazy loading and integration with Browserify.  
+StateRouter is designed to be used in a modular integration with:
+
+* StateView
+	* A nested view rendering engine
+* StateLoadable
+	* A lazy loading scheme
+
+While not required, StateRouter was originally developed with Browserify.  
+
+
+Install
+-------
+
+To instal from NPM 
 
 
 
+Quick Start
+-----------
 
+To use `StateRouter` with your application `myApp`
 
-Examples
---------
+HTML view:
 
+	<html>
+	  <head>
+	    <script src="node_modules/angular-state-router/dist/state-router.min.js"></script>
+	  </head>
+	  <body>
+	  	
+	  </body>
+	</html>
+
+	app.module('myApp', ['angular-state-router'])
+
+_stateRouter
+
+        // A state
+        .state('dashboard', {
+          url: '/dashboard'
+        })
+
+        // With parameters
+        .state('profile', {
+          url: '/profile?p&j&sd',
+          params: {
+            p: 0,
+            j: 'lorem'
+          }
+        })
+
+        // Detail view with required id
+        .state('product', {
+          url: '/product/:id'
+        })
+
+        // Index listing and detail view (optional "id")
+        .state('catalog', {
+          url: '/catelog/[:id]'
+        })
+
+        // Sub-state without parent state
+        .state('terms.legal.', {
+          url: '/legal'
+        });
 
 
 
