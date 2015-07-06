@@ -1,5 +1,6 @@
 {
   "globalstrict": true,
+  "newcap": false,
   "globals": {
     "console": false,
     "inject": false,
