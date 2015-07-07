@@ -231,31 +231,31 @@ module.exports = [function() {
   /**
    * Check active 
    *
-   * @param  {Mixed}   state  A string using state notation or a RegExp
+   * @param  {Mixed}   query  A string using state notation or a RegExp
    * @return {Boolean}        A true if state is parent to current state
    */
-  _self.active = function(state) {
-    state = state || '';
+  _self.active = function(query) {
+    query = query || '';
     
     // No state
     if(_current === null) {
       return false;
 
     // Use RegExp matching
-    } else if(state instanceof RegExp) {
-      return !!_current.name.match(state);
+    } else if(query instanceof RegExp) {
+      return !!_current.name.match(query);
 
     // String; state dot-notation
-    } else if(typeof state === 'string') {
+    } else if(typeof query === 'string') {
 
       // Cast string to RegExp
-      if(state.match(/^\/.*\/$/)) {
-        var casted = state.substr(1, state.length-2);
+      if(query.match(/^\/.*\/$/)) {
+        var casted = query.substr(1, query.length-2);
         return !!_current.name.match(new RegExp(casted));
 
       // Transform to state notation
       } else {
-        var transformed = state
+        var transformed = query
           .split('.')
           .map(function(item) {
             return item === '*' ? '[a-zA-Z0-9]*' : item;

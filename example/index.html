@@ -57,18 +57,38 @@
     </section>
 
     <section class="screen" ng-class="{'active': $stateRouter.active('products') }">
-      <div class="row">
-        <div class="container">
-          <h1>Products</h1>
+      <div class="container">
+        <h1>Products</h1>
+
+        <div class="row" ng-show="$stateRouter.active('products.listing')">
+          <div class="col-xs-6 col-md-3">
+            <a href="#" sr-ref="products" class="thumbnail">
+              <p>Item 1</p>
+            </a>
+          </div>
+          <div class="col-xs-6 col-md-3">
+            <a href="#" sr-ref="products" class="thumbnail">
+              <p>Item 2</p>
+            </a>
+          </div>
+          <div class="col-xs-6 col-md-3">
+            <a href="#" sr-ref="products" class="thumbnail">
+              <p>Item 3</p>
+            </a>
+          </div>
+          <div class="col-xs-6 col-md-3">
+            <a href="#" sr-ref="products" class="thumbnail">
+              <p>Item 4</p>
+            </a>
+          </div>
         </div>
+
       </div>
     </section>
 
     <section class="screen" ng-class="{'active': $stateRouter.active('account') }">
-      <div class="row">
-        <div class="container">
-          <h1>Account</h1>
-        </div>
+      <div class="container">
+        <h1>Account</h1>
       </div>
     </section>
 
