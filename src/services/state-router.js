@@ -258,7 +258,13 @@ module.exports = [function() {
         var transformed = query
           .split('.')
           .map(function(item) {
-            return item === '*' ? '[a-zA-Z0-9]*' : item;
+            if(item === '*') {
+              return '[a-zA-Z0-9]*';
+            } else if(item === '**') {
+              return '[a-zA-Z0-9\\.]*';
+            } else {
+              return item;
+            }
           })
           .join('\\.');
 

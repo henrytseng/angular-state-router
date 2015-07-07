@@ -44,7 +44,7 @@ describe('$stateRouter', function() {
     });
 
     it('Should use defined state heirarchy', function() {
-      
+      //throw new Error('left off here');
     });
   });
 
@@ -228,6 +228,13 @@ describe('$stateRouter', function() {
           expect(_stateRouter.active('*.lobby.*.doesnotexist')).toBeFalsy();
           expect(_stateRouter.active('*.lobby.doesnotexist.*')).toBeFalsy();
           expect(_stateRouter.active('doesnotexist.*.lobby.*')).toBeFalsy();
+
+          // Double wildcards
+          expect(_stateRouter.active('company.**')).toBeTruthy();
+          expect(_stateRouter.active('company.lobby.**')).toBeTruthy();
+          expect(_stateRouter.active('company.**.personel')).toBeTruthy();
+          expect(_stateRouter.active('company.**.doesnotexist')).toBeFalsy();
+          expect(_stateRouter.active('doesnotexist.**.lobby.*')).toBeFalsy();
 
           // Invalid
           expect(_stateRouter.active('doesnotexist')).toBeFalsy();

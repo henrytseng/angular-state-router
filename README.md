@@ -83,13 +83,22 @@ States use dot-notation where state names are `[a-zA-Z0-9]*` strings separated b
 
 The following are examples of valid state definitions:
 
-	catalog.index.list
 	ochestra1.trombone.position.6
+
+### Queries
 
 The following are examples of state notation queries that would match
 
-	catalog.*.list
 	ochestra1.trombone
+
+### Wildcards
+
+Queries can also use wildcards `*` to match any one state or `**` to match any pattern of states following or preceding.  
+
+Both of the following will match the state `catalog.index.list`
+
+	catalog.*.list
+	catalog.**
 
 
 
