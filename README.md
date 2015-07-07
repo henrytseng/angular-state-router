@@ -6,11 +6,12 @@ StateRouter is an AngularJS state-based router designed for flexibility and ease
 StateRouter is designed to be used in a modular integration with:
 
 * StateView
-	* A nested view rendering engine
+	* A view rendering engine
 * StateLoadable
 	* A lazy loading scheme
 
 While not required, StateRouter was originally developed with Browserify.  
+
 
 
 Install
@@ -19,6 +20,7 @@ Install
 To install in your project, simply install from NPM 
 
 	npm install angular-state-router --save
+
 
 
 Quick Start
@@ -72,7 +74,6 @@ Then **define** your states and **initialize** StateRouter
 
 
 
-
 Building
 --------
 
@@ -82,6 +83,7 @@ To build the project
 	gulp
 
 
+
 Running Tests
 -------------
 
@@ -89,6 +91,7 @@ To run tests
 
 	npm install
 	gulp test
+
 
 
 Contribute
@@ -108,6 +111,7 @@ To host the example
 	npm run-script example
 
 Then using your browser visit [http://localhost:3000/index.html](http://localhost:3000/index.html)
+
 
 
 License
