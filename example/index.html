@@ -1,8 +1,72 @@
-<html>
+<html ng-app="myApp">
   <head>
-    <script src="/node_modules/angular-state-router/dist/state-router.min.js"></script>
+    <link rel="stylesheet" href="/example/node_modules/bootstrap/dist/css/bootstrap.min.css"/>
+    <link rel="stylesheet" href="/example/main.css"/>
+    <script>document.write('<script src="http://' + (location.host || 'localhost').split(':')[0] + ':35729/livereload.js?snipver=1"></' + 'script>')</script>
+    <script src="/example/node_modules/jquery/dist/jquery.min.js"></script>
+    <script src="/example/node_modules/bootstrap/dist/js/bootstrap.min.js"></script>
+    <script src="/example/node_modules/angular/angular.min.js"></script>
+    <script src="/dist/state-router.min.js"></script>
+    <script src="/example/app.js"></script>
   </head>
-  <body>
-    <h1>myApp</h1>
+  <body ng-controller="FrameCtrl">
+
+    <nav class="navbar navbar-default">
+      <div class="container-fluid">
+        <!-- Brand and toggle get grouped for better mobile display -->
+        <div class="navbar-header">
+          <button type="button" class="navbar-toggle collapsed" data-toggle="collapse" data-target="#bs-example-navbar-collapse-1" aria-expanded="false">
+            <span class="sr-only">Toggle navigation</span>
+            <span class="icon-bar"></span>
+            <span class="icon-bar"></span>
+            <span class="icon-bar"></span>
+          </button>
+          <a class="navbar-brand" href="#">Storefront</a>
+        </div>
+
+        <!-- Collect the nav links, forms, and other content for toggling -->
+        <div class="collapse navbar-collapse" id="bs-example-navbar-collapse-1">
+          <ul class="nav navbar-nav">
+            <li><a sr-ref="landing">Home</a></li>
+            <li><a sr-ref="products.listing">Products</a></li>
+            <li><a sr-ref="account">Account</a></li>
+          </ul>
+        </div>
+      </div>
+    </nav>
+
+    <section class="screen" ng-class="{'active': $stateRouter.active('landing') }">
+      <div class="jumbotron">
+        <div class="container">
+          <h1>Storefront</h1>
+          <p>Full example using:</p>
+          <ul>
+            <li>StateRouter</li>
+            <li>StateView</li>
+            <li>StateLoadable</li>
+          </ul>
+
+          <p>An example of a direct link.</p>
+          <p>
+            <a class="btn btn-primary btn-lg" href="#" role="button" ng-click="callout()">See All Products</a>
+          </p>
+        </div>
+      </div>
+    </section>
+
+    <!-- Messages -->
+    <div class="container">
+      <h3>State changes from StateRouter</h3>
+      <div class="media" ng-repeat="item in messages">
+        <div class="media-body">
+          <h4 class="media-heading">{{item.title}}</h4>
+          {{item.body}}
+        </div>
+      </div>
+
+      <br>
+      <a class="btn btn-default" ng-click="clearMessages()">Clear</a>
+    </div>
+
   </body>
 </html>

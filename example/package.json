@@ -7,6 +7,7 @@
   "license": "MIT",
   "dependencies": {
     "angular": "^1.3.17",
-    "angular-state-router": "^1.0.0"
+    "bootstrap": "^3.3.5",
+    "jquery": "^2.1.4"
   }
 }

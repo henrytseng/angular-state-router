@@ -1,0 +1,16 @@
+body {
+  font-family: "Helvetica Neue", Helvetica, Arial, sans-serif;
+}
+
+.jumbotron ul li {
+  font-size: 21px;
+  font-weight: 200;
+}
+
+.screen {
+  display: none;
+}
+
+.screen.active {
+  display: block;
+}
