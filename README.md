@@ -1,6 +1,8 @@
 StateRouter
 ===========
 
+[![Build Status](https://travis-ci.org/henrytseng/angular-state-router.svg?branch=master)](https://travis-ci.org/henrytseng/angular-state-router)
+
 StateRouter is an AngularJS state-based router designed for flexibility and ease of use.  
 
 StateRouter is designed to be used in a modular integration with:
