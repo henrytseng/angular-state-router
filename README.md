@@ -16,59 +16,79 @@ While not required, StateRouter was originally developed with Browserify.
 Install
 -------
 
-To instal from NPM 
+To install in your project, simply install from NPM 
 
+	npm install angular-state-router --save
 
 
 Quick Start
 -----------
 
-To use `StateRouter` with your application `myApp`
+Include the `state-router.min.js` script tag in your `.html`:
 
-HTML view:
-
-	<html>
+	<html ng-app="myApp">
 	  <head>
-	    <script src="node_modules/angular-state-router/dist/state-router.min.js"></script>
+	    <script src="/node_modules/angular/angular.min.js"></script>
+	    <script src="/node_modules/dist/state-router.min.js"></script>
+	    <script src="/js/app.js"></script>
 	  </head>
 	  <body>
-	  	
+	    ...
 	  </body>
 	</html>
 
-	app.module('myApp', ['angular-state-router'])
+Add StateRouter as a dependency when your application module is instantiated
 
-_stateRouter
+	angular.module('myApp', ['angular-state-router']);
 
-        // A state
-        .state('dashboard', {
-          url: '/dashboard'
-        })
+Then **define** your states and **initialize** StateRouter
 
-        // With parameters
-        .state('profile', {
-          url: '/profile?p&j&sd',
-          params: {
-            p: 0,
-            j: 'lorem'
-          }
-        })
+	angular.module('myApp')
+	  .run(function($stateRouter) {
 
-        // Detail view with required id
-        .state('product', {
-          url: '/product/:id'
-        })
+	    $stateRouter
 
-        // Index listing and detail view (optional "id")
-        .state('catalog', {
-          url: '/catelog/[:id]'
-        })
+	      // Define states
+	      .state('landing', {
+	        url: '/'
+	      })
 
-        // Sub-state without parent state
-        .state('terms.legal.', {
-          url: '/legal'
-        });
+	      .state('products.listing', {
+	        url: '/products'
+	      })
 
+	      .state('products', {
+	        url: '/products/:id'
+	      })
+
+	      .state('account', {
+	        url: '/account'
+	      })
+
+	      // Initialization
+	      .init('landing');
+
+	  });
+
+
+
+
+Building
+--------
+
+To build the project
+
+	npm install
+	gulp
+
+
+Running Tests
+-------------
+
+To run tests 
+
+	npm install
+	gulp test
 
 
 Contribute
@@ -77,6 +97,12 @@ Contribute
 If you've got ideas on how to make hostr better create an issue and mark an enhancement in Github.  
 
 If there are any unreported errors please let us know.  We'd like StateRouter to give as much feedback as possible to eliminate common problems that may occur during development.  
+
+To get started programming
+
+	npm install
+	gulp test
+
 
 
 License
