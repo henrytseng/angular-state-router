@@ -1,5 +1,4 @@
 #!/bin/bash
 
 npm install
-cd ..
-./example/node_modules/.bin/hostr
+./node_modules/.bin/hostr
