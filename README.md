@@ -33,7 +33,7 @@ Include the `state-router.min.js` script tag in your `.html`:
 	<html ng-app="myApp">
 	  <head>
 	    <script src="/node_modules/angular/angular.min.js"></script>
-	    <script src="/node_modules/dist/state-router.min.js"></script>
+	    <script src="/node_modules/angular-state-router/dist/state-router.min.js"></script>
 	    <script src="/js/app.js"></script>
 	  </head>
 	  <body>
