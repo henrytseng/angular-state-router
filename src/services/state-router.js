@@ -238,7 +238,7 @@ module.exports = [function() {
     query = query || '';
     
     // No state
-    if(_current === null) {
+    if(!_current) {
       return false;
 
     // Use RegExp matching

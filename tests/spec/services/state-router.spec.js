@@ -44,7 +44,7 @@ describe('$stateRouter', function() {
     });
 
     it('Should use defined state heirarchy', function() {
-
+      
     });
   });
 
@@ -187,7 +187,7 @@ describe('$stateRouter', function() {
   });
 
   describe('#active', function() {
-    it('Should check for active parent state', function(done) {
+    it('Should check for active state using query with state notation', function(done) {
       _stateRouter
 
         // Define
@@ -199,7 +199,14 @@ describe('$stateRouter', function() {
         })
 
         // Initialize
-        .init('company.lobby.personel')
+        .init()
+
+        .change('company.lobby.personel')
+
+        // Empty should not throw error
+        .on('init', function() {
+          expect(_stateRouter.active('company.lobby.personel')).toBeFalsy();
+        })
 
         // Completion event is always fired even on error
         .on('change:complete', function() {
