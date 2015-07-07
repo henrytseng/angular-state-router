@@ -229,6 +229,15 @@ module.exports = [function() {
   };
 
   /**
+   * Check active 
+   * 
+   * @return {Boolean} A true if state is parent to current state
+   */
+  _self.active = function(state) {
+    return true;
+  };
+
+  /**
    * Retrieve definition of states
    * 
    * @return {Object} A hash of states
