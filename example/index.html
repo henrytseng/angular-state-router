@@ -7,6 +7,8 @@
     <script src="/node_modules/bootstrap/dist/js/bootstrap.min.js"></script>
     <script src="/node_modules/angular/angular.min.js"></script>
     <script src="/node_modules/angular-state-router/dist/state-router.min.js"></script>
+    <script src="/node_modules/angular-state-view/dist/state-view.min.js"></script>
+    <script src="/node_modules/angular-state-loadable/dist/state-loadable.min.js"></script>
     <script src="/app.js"></script>
   </head>
   <body ng-controller="FrameCtrl">
@@ -54,9 +56,25 @@
       </div>
     </section>
 
+    <section class="screen" ng-class="{'active': $stateRouter.active('products') }">
+      <div class="row">
+        <div class="container">
+          <h1>Products</h1>
+        </div>
+      </div>
+    </section>
+
+    <section class="screen" ng-class="{'active': $stateRouter.active('account') }">
+      <div class="row">
+        <div class="container">
+          <h1>Account</h1>
+        </div>
+      </div>
+    </section>
+
     <!-- Messages -->
     <div class="container">
-      <h3>State changes from StateRouter</h3>
+      <h3>State changes from StateRouter ({{ $stateRouter.current().name }}) </h3>
       <div class="media" ng-repeat="item in messages">
         <div class="media-body">
           <h4 class="media-heading">{{item.title}}</h4>

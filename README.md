@@ -74,13 +74,10 @@ Then **define** your states and **initialize** StateRouter
 
 
 
-Building
---------
+State Notation
+--------------
 
-To build the project
-
-	npm install
-	gulp
+States use dot-notation where state names are `[a-zA-Z0-9]` strings separated by dots `.`
 
 
 
@@ -101,9 +98,13 @@ If you've got ideas on how to make hostr better create an issue and mark an enha
 
 If there are any unreported errors please let us know.  We'd like StateRouter to give as much feedback as possible to eliminate common problems that may occur during development.  
 
-To get started programming
+To get start programming, build
 
 	npm install
+	gulp
+
+To get started watch files for programming
+
 	gulp watch
 
 To host the example

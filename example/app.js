@@ -1,7 +1,11 @@
 'use strict';
 
 angular
-  .module('myApp', ['angular-state-router'])
+  .module('myApp', [
+    'angular-state-router',
+    'angular-state-view',
+    'angular-state-loadable'
+  ])
 
   .run(function($rootScope, $stateRouter) {
     $rootScope.$stateRouter = $stateRouter;

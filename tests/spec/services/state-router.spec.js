@@ -42,6 +42,10 @@ describe('$stateRouter', function() {
           url: '/legal'
         });
     });
+
+    it('Should use defined state heirarchy', function() {
+
+    });
   });
 
   describe('#init', function() {
@@ -179,6 +183,53 @@ describe('$stateRouter', function() {
     });
 
     it('Should retrieve state according to parent data', function() {
+    });
+  });
+
+  describe('#active', function() {
+    it('Should check for active parent state', function(done) {
+      _stateRouter
+
+        // Define
+        .state('company.lobby', {
+          url: '/main/atrium'
+        })
+        .state('company.lobby.personel', {
+          url: '/persons'
+        })
+
+        // Initialize
+        .init('company.lobby.personel')
+
+        // Completion event is always fired even on error
+        .on('change:complete', function() {
+
+          // Parent
+          expect(_stateRouter.active('company.lobby.personel')).toBeTruthy();
+          expect(_stateRouter.active('company.lobby')).toBeTruthy();
+          expect(_stateRouter.active('company')).toBeTruthy();
+
+          // RegExp
+          expect(_stateRouter.active(/.*/)).toBeTruthy();
+          expect(_stateRouter.active('/.*/')).toBeTruthy();
+
+          // Wildcards
+          expect(_stateRouter.active('company.*.personel')).toBeTruthy();
+          expect(_stateRouter.active('company.*.*')).toBeTruthy();
+          expect(_stateRouter.active('*.lobby')).toBeTruthy();
+          expect(_stateRouter.active('*.lobby.*')).toBeTruthy();
+          expect(_stateRouter.active('*.lobby.*.doesnotexist')).toBeFalsy();
+          expect(_stateRouter.active('*.lobby.doesnotexist.*')).toBeFalsy();
+          expect(_stateRouter.active('doesnotexist.*.lobby.*')).toBeFalsy();
+
+          // Invalid
+          expect(_stateRouter.active('doesnotexist')).toBeFalsy();
+
+          // Validate
+          expect(_stateRouter.current().name).toBe('company.lobby.personel');
+
+          done();
+        });
     });
   });
 
@@ -329,4 +380,5 @@ describe('$stateRouter', function() {
       ];
     });
   });
+
 });

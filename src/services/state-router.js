@@ -230,11 +230,44 @@ module.exports = [function() {
 
   /**
    * Check active 
-   * 
-   * @return {Boolean} A true if state is parent to current state
+   *
+   * @param  {Mixed}   state  A string using state notation or a RegExp
+   * @return {Boolean}        A true if state is parent to current state
    */
   _self.active = function(state) {
-    return true;
+    state = state || '';
+    
+    // No state
+    if(_current === null) {
+      return false;
+
+    // Use RegExp matching
+    } else if(state instanceof RegExp) {
+      return !!_current.name.match(state);
+
+    // String; state dot-notation
+    } else if(typeof state === 'string') {
+
+      // Cast string to RegExp
+      if(state.match(/^\/.*\/$/)) {
+        var casted = state.substr(1, state.length-2);
+        return !!_current.name.match(new RegExp(casted));
+
+      // Transform to state notation
+      } else {
+        var transformed = state
+          .split('.')
+          .map(function(item) {
+            return item === '*' ? '[a-zA-Z0-9]*' : item;
+          })
+          .join('\\.');
+
+        return !!_current.name.match(new RegExp(transformed));
+      }
+    }
+
+    // Non-matching
+    return false;
   };
 
   /**
