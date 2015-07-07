@@ -14,3 +14,7 @@ body {
 .screen.active {
   display: block;
 }
+
+.messages {
+  color: #666;
+}
