@@ -5,7 +5,7 @@
   "main": "dist/state-router.js",
   "scripts": {
     "watch": "gulp watch",
-    "example": "./example/run",
+    "example": "cd example && ./run",
     "test": "./node_modules/karma/bin/karma start tests/karma.conf.js --single-run --browsers PhantomJS"
   },
   "repository": {
