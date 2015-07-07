@@ -107,7 +107,7 @@ To host the example
 
 	npm run-script example
 
-Then using your browser visit [http://localhost:3000/example/index.html](http://localhost:3000/example/index.html)
+Then using your browser visit [http://localhost:3000/index.html](http://localhost:3000/index.html)
 
 
 License
