@@ -101,8 +101,13 @@ If there are any unreported errors please let us know.  We'd like StateRouter to
 To get started programming
 
 	npm install
-	gulp test
+	gulp watch
 
+To host the example
+
+	npm run-script example
+
+Then using your browser visit [http://localhost:3000/example/index.html](http://localhost:3000/example/index.html)
 
 
 License
