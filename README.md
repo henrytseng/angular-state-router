@@ -76,8 +76,63 @@ Then **define** your states and **initialize** StateRouter
 
 
 
-Notation
---------
+States
+------
+
+States are data objects with an associated dot-notation name.  Child states inherit from parent states.  
+
+### Definition
+
+States must be first defined.  This is usually done in the angular `run` phase.  
+
+	angular.module('myApp')
+	  .run(function($stateRouter) {
+	    $stateRouter
+	      .state('account', {
+	        url: '/accounts',
+	        params: { endpoint: 'test.com' }
+	      })
+	      .state('account.profile', {
+	        url: '/accounts/:id'
+	      })
+	      .state('account.transactions', {
+	        url: '/accounts/:id/transactions',
+	        inherit: false
+	      });
+	  });
+
+
+### Initialization
+
+Initialization should occur before StateRouter API calls are made.  An initialization event is emitted from the StateRouter; where StateRouter inherits from [events.EventEmitter](https://nodejs.org/api/events.html).  
+
+To listen to the init event:
+
+	$stateRouter.on('init', function() {  });
+
+
+### Use
+
+After states are defined they can be retrieved
+
+	var accountState = $stateRouter.state('account.profile');
+
+
+### Inheritance
+
+States inherit from each other through a parent-child relationship by default; where `account` is the parent of `account.profile` state.  
+
+A child state will inherit from it's each of its parents until a `inherit` value of `false` value is encountered.  
+
+For example, in definition above the `params` value 
+
+	{ endpoint: 'test.com' }
+
+Will be inherited by in the `account.profile` state but not the `account.transactions` state.  
+
+
+State Notation
+--------------
 
 States use dot-notation where state names are `[a-zA-Z0-9]*` strings separated by dots `.`
 
