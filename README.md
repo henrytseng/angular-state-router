@@ -117,6 +117,8 @@ After states are defined they can be retrieved
 
 	var accountState = $stateRouter.state('account.profile');
 
+`StateRouter#state` returns a cached data object with values inherited from its parents.  
+
 
 ### Inheritance
 
