@@ -47,7 +47,7 @@ angular
     };
 
     $stateRouter.on('init', function() {
-      $scope.messages.push({
+      $scope.messages.unshift({
         title: 'init',
         body: 'StateRouter has initialized.'
       });
@@ -55,7 +55,7 @@ angular
     });
 
     $stateRouter.on('change:complete', function() {
-      $scope.messages.push({
+      $scope.messages.unshift({
         title: 'change:complete ('+ $stateRouter.current().name +')',
         body: 'State change request has been completed.'
       });

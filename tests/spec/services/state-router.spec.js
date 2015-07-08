@@ -43,8 +43,99 @@ describe('$stateRouter', function() {
         });
     });
 
-    it('Should use defined state heirarchy', function() {
-      //throw new Error('left off here');
+    it('Should use defined state heirarchy parameters inherit from parent chain', function() {
+      _stateRouter
+
+        // Parent state
+        .state('organism', {
+          url: '/organisms',
+          params: {
+            organic: true
+          }
+        })
+
+        // Parent state
+        .state('organism.plant', {
+          url: '/plants',
+          params: {
+            chlorophyll: 'green'
+          }
+        })
+
+        // Parent state
+        .state('organism.plant.tree', {
+          url: '/trees',
+          params: {
+            bark: 1
+          }
+        })
+
+        // Child state
+        .state('organism.plant.tree.apple', {
+          url: '/trees/apples',
+          params: {
+            fruit: ['apple']
+          }
+        })
+
+        // Underling state
+        .state('organism.plant.tree.apple.fuji', {
+          params: {
+            location: 'Japan'
+          }
+        })
+
+        // Alienated state
+        .state('organism.plant.tree.hybrid', {
+          url: '/trees/hybrid',
+          params: {
+            organic: true
+          },
+          inherit: false
+        });
+
+      var organism = _stateRouter.state('organism');
+      expect(organism).toBeTruthy();
+
+      var plant = _stateRouter.state('organism.plant');
+      expect(plant).toBeTruthy();
+
+      var tree = _stateRouter.state('organism.plant.tree');
+      expect(tree).toBeTruthy();
+
+      var apple = _stateRouter.state('organism.plant.tree.apple');
+      expect(apple).toBeTruthy();
+
+      var fuji = _stateRouter.state('organism.plant.tree.apple.fuji');
+      expect(fuji).toBeTruthy();
+
+      var hybrid = _stateRouter.state('organism.plant.tree.hybrid');
+      expect(hybrid).toBeTruthy();
+
+      // Nonexisting with parents
+      var nonexisting = _stateRouter.state('organism.plant.tree.nonexisting');
+      expect(nonexisting).toBeTruthy();
+
+      // Non-existing without parents
+      var invalid = _stateRouter.state('does.not.exist.invalid');
+      expect(invalid).toBe(null);
+
+      // Inherit url by default
+      // expect(organism.url).toBe('/organisms');
+      // expect(plant.url).toBe('/plants');
+      // expect(tree.url).toBe('/trees');
+      // expect(apple.url).toBe('/trees/apples');
+      // expect(fuji.url).toBe('/trees/apples');
+
+      // Inherit properties by default
+
+
+      // Do not inherit
+      expect(hybrid.url).toBe('/trees/alien');
+      expect(hybrid.params).toEqual({
+        organic: true
+      });
+
     });
   });
 
@@ -181,9 +272,6 @@ describe('$stateRouter', function() {
           done();
         });
     });
-
-    it('Should retrieve state according to parent data', function() {
-    });
   });
 
   describe('#active', function() {
@@ -295,6 +383,46 @@ describe('$stateRouter', function() {
         }
       });
 
+    });
+  });
+
+  describe('#validate.name', function() {
+    it('Should test for valid state names', function() {
+      expect(_stateRouter.validate.name('lorem.ipsum.dolor.sed.ut')).toBe(true);
+      expect(_stateRouter.validate.name('lorem.ipsum')).toBe(true);
+      expect(_stateRouter.validate.name('lorem')).toBe(true);
+      expect(_stateRouter.validate.name('lorem.0')).toBe(true);
+      expect(_stateRouter.validate.name('Lorem.0')).toBe(true);
+      expect(_stateRouter.validate.name('DOLOR.dolor')).toBe(true);
+    });
+
+    it('Should test for invalid state names', function() {
+      expect(_stateRouter.validate.name('lorem..sed.ut')).toBe(false);
+      expect(_stateRouter.validate.name('lorem.*.dolor.sed.ut')).toBe(false);
+      expect(_stateRouter.validate.name('lorem.**.dolor.sed.ut')).toBe(false);
+      expect(_stateRouter.validate.name('.lorem.dolor.ut')).toBe(false);
+      expect(_stateRouter.validate.name('lorem.dolor.ut.')).toBe(false);
+      expect(_stateRouter.validate.name('lorem..dolor.sed.ut')).toBe(false);
+    });
+  });
+
+  describe('#validate.query', function() {
+    it('Should test for valid state queries', function() {
+      expect(_stateRouter.validate.query('lorem.ipsum.dolor.sed.ut')).toBe(true);
+      expect(_stateRouter.validate.query('lorem.ipsum')).toBe(true);
+      expect(_stateRouter.validate.query('lorem')).toBe(true);
+      expect(_stateRouter.validate.query('lorem.0')).toBe(true);
+      expect(_stateRouter.validate.query('Lorem.0')).toBe(true);
+      expect(_stateRouter.validate.query('DOLOR.dolor')).toBe(true);
+      expect(_stateRouter.validate.query('lorem.*.dolor.sed.ut')).toBe(true);
+      expect(_stateRouter.validate.query('lorem.**.dolor.sed.ut')).toBe(true);
+    });
+
+    it('Should test for invalid state queries', function() {
+      expect(_stateRouter.validate.query('lorem..sed.ut')).toBe(false);
+      expect(_stateRouter.validate.query('.lorem.dolor.ut')).toBe(false);
+      expect(_stateRouter.validate.query('lorem.dolor.ut.')).toBe(false);
+      expect(_stateRouter.validate.query('lorem..dolor.sed.ut')).toBe(false);
     });
   });
 

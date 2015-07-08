@@ -14,6 +14,7 @@ module.exports = [function() {
   var _history = [];
 
   var _library = {};
+  var _cache = {};
   var _emitter = new events.EventEmitter();
 
   // Extend from EventEmitter
@@ -32,25 +33,111 @@ module.exports = [function() {
   };
 
   /**
-   * Internal method to crawl library heirarchy
+   * Validate state name
    * 
-   * @param {String} name   A unique identifier for the state; using dot-notation
+   * @param  {String} name   A unique identifier for the state; using dot-notation
+   * @return {Boolean}       True if name is valid, false if not
    */
-  var _getState = function(name) {
-    return _library[name];
+  var _validateStateName = function(name) {
+    
+    // TODO optimize with RegExp
+
+    var nameChain = name.split('.');
+    for(var i=0; i<nameChain.length; i++) {
+      if(!nameChain[i].match(/[a-zA-Z0-9]+/)) {
+        return false;
+      }
+    }
+
+    return true;
+  };
+
+  /**
+   * Validate state query
+   * 
+   * @param  {String} query  A query for the state; using dot-notation
+   * @return {Boolean}       True if name is valid, false if not
+   */
+  var _validateStateQuery = function(query) {
+
+    // TODO optimize with RegExp
+
+    var nameChain = query.split('.');
+    for(var i=0; i<nameChain.length; i++) {
+      if(!nameChain[i].match(/(\*(\*)?|[a-zA-Z0-9]+)/)) {
+        return false;
+      }
+    }
+
+    return true;
+  };
+
+  /**
+   * Get a list of parent states
+   * 
+   * @param  {String} name   A unique identifier for the state; using dot-notation
+   * @return {Array}         An Array of parent states
+   */
+  var _getParentChain = function(name) {
+    var nameChain = name.split('.');
+
+    return nameChain
+      .map(function(item, i, list) {
+        return (i===0) ? null : list.slice(0, i).join('.');
+      })
+      .filter(function(item) {
+        return item !== null;
+      });
   };
 
   /**
    * Internal method to crawl library heirarchy
    * 
-   * @param  {String}      name   A unique identifier for the state; using dot-notation
-   * @param  {Object}      [data] A state definition data object, optional
+   * @param  {String} name   A unique identifier for the state; using dot-notation
+   * @return {Object}        A state data Object
+   */
+  var _getState = function(name) {
+    // Only use valid state queries
+    if(!_validateStateName(name)) {
+      return null;
+    
+    // Use cache if exists
+    } else if(_cache[name]) {
+      return _cache[name];
+    }
+
+    var state = {};
+    var parentChain = _getParentChain(name);
+
+    console.log(name, parentChain);
+
+
+
+
+
+
+    // TODO store in cache
+
+    return _library[name];
+  };
+
+  /**
+   * Internal method to store a state definition
+   * 
+   * @param  {String} name   A unique identifier for the state; using dot-notation
+   * @param  {Object} [data] A state definition data Object, optional
+   * @return {Object}        A state data Object
    */
   var _defineState = function(name, data) {
     if(name === null || typeof name === 'undefined') {
-      throw new Error('Name cannot be null');
+      throw new Error('Name cannot be null.');
+    
+    // Only use valid state names
+    } else if(!_validateStateName(name)) {
+      throw new Error('Invalid state name.');
     }
 
+    // Create state
     var state = clone(data);
 
     // Use defaults
@@ -59,9 +146,13 @@ module.exports = [function() {
     // Named state
     state.name = name;
 
+    // Set definition
     _library[name] = state;
 
-    return state;
+    // Clear cache on updates
+    _cache = {};
+
+    return data;
   };
 
   /**
@@ -283,6 +374,16 @@ module.exports = [function() {
    */
   _self.library = function() {
     return _library;
+  };
+
+  // TODO match state name with query function; implement in StateRouter#active
+
+  /**
+   * Validation
+   */
+  _self.validate = {
+    name: _validateStateName,
+    query: _validateStateQuery
   };
 
   /**
