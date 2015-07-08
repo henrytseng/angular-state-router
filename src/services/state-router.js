@@ -39,7 +39,8 @@ module.exports = [function() {
    * @return {Boolean}       True if name is valid, false if not
    */
   var _validateStateName = function(name) {
-    
+    name = name || '';
+
     // TODO optimize with RegExp
 
     var nameChain = name.split('.');
@@ -59,7 +60,8 @@ module.exports = [function() {
    * @return {Boolean}       True if name is valid, false if not
    */
   var _validateStateQuery = function(query) {
-
+    query = query || '';
+    
     // TODO optimize with RegExp
 
     var nameChain = query.split('.');
@@ -97,6 +99,8 @@ module.exports = [function() {
    * @return {Object}        A state data Object
    */
   var _getState = function(name) {
+    name = name || '';
+
     var state = null;
 
     // Only use valid state queries

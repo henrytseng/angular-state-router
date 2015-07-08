@@ -19,4 +19,4 @@ angular.module('angular-state-router', [])
 
   .factory('$urlManager', require('./services/url-manager'))
 
-  .directive('srRef', require('./directives/sr-ref'));
+  .directive('sref', require('./directives/sref'));

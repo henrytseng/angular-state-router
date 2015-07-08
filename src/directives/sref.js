@@ -8,7 +8,7 @@ module.exports = ['$stateRouter', function ($stateRouter) {
     link: function(scope, element, attrs) {
       element.css('cursor', 'pointer');
       element.on('click', function(e) {
-        $stateRouter.change(attrs.srRef);
+        $stateRouter.change(attrs.sref);
         e.preventDefault();
       });
     }
