@@ -78,12 +78,12 @@ module.exports = [function() {
    * @param  {String} name   A unique identifier for the state; using dot-notation
    * @return {Array}         An Array of parent states
    */
-  var _getParentChain = function(name) {
-    var nameChain = name.split('.');
+  var _getNameChain = function(name) {
+    var nameList = name.split('.');
 
-    return nameChain
+    return nameList
       .map(function(item, i, list) {
-        return (i===0) ? null : list.slice(0, i).join('.');
+        return list.slice(0, i+1).join('.');
       })
       .filter(function(item) {
         return item !== null;
@@ -97,6 +97,8 @@ module.exports = [function() {
    * @return {Object}        A state data Object
    */
   var _getState = function(name) {
+    var state = null;
+
     // Only use valid state queries
     if(!_validateStateName(name)) {
       return null;
@@ -106,19 +108,29 @@ module.exports = [function() {
       return _cache[name];
     }
 
-    var state = {};
-    var parentChain = _getParentChain(name);
+    var nameChain = _getNameChain(name);
 
-    console.log(name, parentChain);
+    var stateChain = nameChain
+      .map(function(pname) {
+        return _library[pname];
+      })
+      .filter(function(parent) {
+        return parent !== null;
+      });
 
+    // Walk up checking inheritance
+    for(var i=stateChain.length-1; i>=0; i--) {
+      if(stateChain[i]) {
+        state = Object.assign(clone(stateChain[i]), state || {});
+      }
 
+      if(state && !state.inherit) break;
+    }
 
+    // Store in cache
+    _cache[name] = state;
 
-
-
-    // TODO store in cache
-
-    return _library[name];
+    return state;
   };
 
   /**
@@ -185,7 +197,7 @@ module.exports = [function() {
       params: params
     };
 
-    var nextState = _library[name];
+    var nextState = _getState(name);
     var prevState = _current;
 
     // Does not exist
@@ -243,7 +255,7 @@ module.exports = [function() {
   };
 
   /**
-   * Set configuration options
+   * Set configuration options for StateRouter
    * 
    * @param  {Object}      params A data Object
    * @return {StateRouter}        Itself; chainable
@@ -320,7 +332,7 @@ module.exports = [function() {
   };
 
   /**
-   * Check active 
+   * Check query against current state
    *
    * @param  {Mixed}   query  A string using state notation or a RegExp
    * @return {Boolean}        A true if state is parent to current state
@@ -375,8 +387,6 @@ module.exports = [function() {
   _self.library = function() {
     return _library;
   };
-
-  // TODO match state name with query function; implement in StateRouter#active
 
   /**
    * Validation

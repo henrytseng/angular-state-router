@@ -38,7 +38,7 @@ describe('$stateRouter', function() {
         })
 
         // Sub-state without parent state
-        .state('terms.legal.', {
+        .state('terms.legal', {
           url: '/legal'
         });
     });
@@ -120,22 +120,48 @@ describe('$stateRouter', function() {
       var invalid = _stateRouter.state('does.not.exist.invalid');
       expect(invalid).toBe(null);
 
-      // Inherit url by default
-      // expect(organism.url).toBe('/organisms');
-      // expect(plant.url).toBe('/plants');
-      // expect(tree.url).toBe('/trees');
-      // expect(apple.url).toBe('/trees/apples');
-      // expect(fuji.url).toBe('/trees/apples');
+      // Inherit by default
+      expect(organism.url).toBe('/organisms');
+      expect(plant.url).toBe('/plants');
+      expect(tree.url).toBe('/trees');
+      expect(apple.url).toBe('/trees/apples');
+      expect(fuji.url).toBe('/trees/apples');
 
       // Inherit properties by default
 
 
       // Do not inherit
-      expect(hybrid.url).toBe('/trees/alien');
+      expect(hybrid.url).toBe('/trees/hybrid');
       expect(hybrid.params).toEqual({
         organic: true
       });
 
+    });
+
+    it('Should use cache until next update', function() {
+      _stateRouter
+        .state('organism.plant.tree', {
+          url: '/trees',
+          params: {
+            bark: 1
+          }
+        });
+
+      var tree1 = _stateRouter.state('organism.plant.tree');
+      expect(tree1).toBeTruthy();
+      expect(tree1).toBe(_stateRouter.state('organism.plant.tree'));
+
+      _stateRouter
+        .state('organism.plant.tree', {
+          url: '/trees',
+          params: {
+            bark: 1,
+            replacement: true
+          }
+        });
+
+      var tree2 = _stateRouter.state('organism.plant.tree');
+      expect(tree2).not.toBe(tree1);
     });
   });
 

@@ -76,8 +76,8 @@ Then **define** your states and **initialize** StateRouter
 
 
 
-State Notation
---------------
+Notation
+--------
 
 States use dot-notation where state names are `[a-zA-Z0-9]*` strings separated by dots `.`
 
@@ -85,11 +85,16 @@ The following are examples of valid state definitions:
 
 	ochestra1.trombone.position.6
 
+
 ### Queries
 
-The following are examples of state notation queries that would match
+The following are examples of state notation queries that would match the state `ochestra1.trombone.position.6`
 
+	ochestra1
 	ochestra1.trombone
+	ochestra1.trombone.position
+	ochestra1.trombone.position.6
+
 
 ### Wildcards
 
