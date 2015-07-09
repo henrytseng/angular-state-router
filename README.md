@@ -104,7 +104,7 @@ States must be first defined.  This is usually done in the angular `run` phase.
 
 ### Initialization
 
-Initialization should occur before StateRouter API calls are made.  An initialization event is emitted from the StateRouter; where StateRouter inherits from [events.EventEmitter](https://nodejs.org/api/events.html).  
+Initialization should occur before StateRouter API calls are made.  An initialization `'init'` event is emitted from the StateRouter.  
 
 To listen to the init event:
 
@@ -131,6 +131,129 @@ For example, in definition above the `params` value
 	{ endpoint: 'test.com' }
 
 Will be inherited by in the `account.profile` state but not the `account.transactions` state.  
+
+
+
+Events
+------
+
+Events are emit from $stateRouter; where $stateRouter inherits from [events.EventEmitter](https://nodejs.org/api/events.html).  
+
+To listen to events 
+
+	$stateRouter.on('change:complete', function() {
+		// ...
+	});
+
+
+
+Event: 'init'
+-------------
+
+This event is emitted when $stateRouter is initialized.  If an initial state is specified `'init'` occurs current state is set.  
+
+
+
+Event: 'change:begin'
+---------------------
+
+* `request` *Object* Requested data `{ name: 'nextState', params: {} }`
+
+This event is emitted when a requested change to a valid state exists.  
+
+
+
+Event: 'load:start'
+-------------------
+
+This event is emitted when a loadable object starts loading.  
+
+
+
+Event: 'load:progress'
+----------------------
+
+This event is emitted when a loadable object progresses loading.  This event must occur once before `'end'` is emitted.  
+
+
+
+Event: 'load:end'
+-----------------
+
+This event is emitted when a loadable object completes loading.  
+
+
+
+Event: 'resolve:start'
+----------------------
+
+This event is emitted when a states starts resolve.  
+
+
+
+Event: 'resolve:end'
+--------------------
+
+This event is emitted when a states ends resolve.  
+
+
+
+Event: 'render'
+---------------
+
+This event is emitted when the view is rendered.  
+
+
+
+Event: 'error'
+--------------
+
+* `request` *Object* Requested data `{ name: 'nextState', params: {} }`
+
+This event is emitted whenever an error occurs.  
+
+
+
+Event: 'error:notfound'
+-----------------------
+
+* `request` *Object* Requested data `{ name: 'nextState', params: {} }`
+
+This event is emitted when a state cannot be found and no parent state(s) exist.  
+
+
+
+Event: 'error:resolve'
+----------------------
+
+This event is emitted when an error occurred during resolve.  
+
+
+
+Event: 'error:load'
+-------------------
+
+This event is emitted when an error occurred during loading of a loadable.  
+
+
+
+Event: 'change:end'
+-------------------
+
+* `request` *Object* Requested data `{ name: 'nextState', params: {} }`
+
+This event occurs when a valid state change successfully finishes.  This event does not trigger when an error was encountered.  Use the `'change'` event for all change requests.  
+
+
+
+Event: 'change:complete'
+------------------------
+
+* `error`   *Object* Null if successful, `Error` object if error occurs
+* `request` *Object* Requested data `{ name: 'nextState', params: {} }`
+
+This event occurs when a state change is finished.  This event is always triggered on any change request.  Also occurs *after* `'error'` is emitted.  
+
 
 
 State Notation
