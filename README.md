@@ -259,11 +259,15 @@ This event occurs when a state change is finished.  This event is always trigger
 State Notation
 --------------
 
-States use dot-notation where state names are `[a-zA-Z0-9]*` strings separated by dots `.`
+States use dot-notation where state names are `/[a-zA-Z0-9]*/` strings separated by dots `.` and are case sensitive.  
 
-The following are examples of valid state definitions:
+The following are examples of valid unique state names:
 
 	ochestra1.trombone.position.6
+	ochestra1.clarinet
+	ochestra56.clarinet
+	ochestra1
+
 
 
 ### Queries
