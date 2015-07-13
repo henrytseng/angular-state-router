@@ -54,9 +54,9 @@ angular
       $scope.$apply();
     });
 
-    $stateRouter.on('change:complete', function() {
+    $stateRouter.on('change:end', function() {
       $scope.messages.unshift({
-        title: 'change:complete ('+ $stateRouter.current().name +')',
+        title: 'change:end ('+ $stateRouter.current().name +')',
         body: 'State change request has been completed.'
       });
       $scope.$apply();

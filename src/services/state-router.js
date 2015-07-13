@@ -286,8 +286,8 @@ module.exports = [function() {
     }
 
     // Completion
-    if(callback) callback(error);
     _self.emit('change:complete', error, request);
+    if(callback) callback(error);
   };
 
   /**
