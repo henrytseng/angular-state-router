@@ -14,10 +14,9 @@ module.exports = [function() {
 
   var _library = {};
   var _cache = {};
-  var _emitter = new events.EventEmitter();
 
-  // Extend from EventEmitter
-  var _self = Object.create(_emitter);
+  // Instance of EventEmitter
+  var _self = new events.EventEmitter();
 
   /**
    * Add default values to a state
@@ -253,7 +252,7 @@ module.exports = [function() {
 
       
 
-      // TODO change URL values
+      
 
 
 

@@ -1,12 +1,17 @@
 'use strict';
 
-module.exports = [function() {
+var events = require('events');
 
-  return {
+module.exports = ['$stateRouter', function($stateRouter) {
+  
+  // Instance of EventEmitter
+  var _self = new events.EventEmitter();
 
-    // TODO get url and match to existing state; set state
+  $stateRouter.on('change:render', function() {
+
+  });
 
 
-  };
 
+  return _self;
 }];
