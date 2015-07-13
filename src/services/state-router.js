@@ -3,7 +3,6 @@
 /* global process:false */
 
 var events = require('events');
-var clone = require('../utils/object').clone;
 
 module.exports = [function() {
   // Current state
@@ -82,7 +81,7 @@ module.exports = [function() {
   var _compareStates = function(a, b) {
     var _copy = function(data) {
       // Copy
-      data = clone(data);
+      data = angular.copy(data);
 
       // Track resolve
       if(data && data.resolve) {
@@ -150,7 +149,7 @@ module.exports = [function() {
     // Walk up checking inheritance
     for(var i=stateChain.length-1; i>=0; i--) {
       if(stateChain[i]) {
-        state = Object.assign(clone(stateChain[i]), state || {});
+        state = angular.extend(angular.copy(stateChain[i]), state || {});
       }
 
       if(state && !state.inherit) break;
@@ -179,7 +178,7 @@ module.exports = [function() {
     }
 
     // Create state
-    var state = clone(data);
+    var state = angular.copy(data);
 
     // Use defaults
     _setStateDefaults(state);
@@ -230,7 +229,7 @@ module.exports = [function() {
     var prevState = _current;
 
     // Set parameters
-    nextState = nextState !== null ? Object.assign({}, nextState, params) : null;
+    nextState = nextState !== null ? angular.extend({}, nextState, params) : null;
 
     // Does not exist
     if(!nextState) {
@@ -354,7 +353,7 @@ module.exports = [function() {
    * @param  {Object} [params] A parameters data object
    */
   _self.change = function(name, params) {
-    process.nextTick(_changeState.bind(null, name, params));
+    process.nextTick(angular.bind(null, _changeState, name, params));
     return _self;
   };
 
@@ -364,7 +363,7 @@ module.exports = [function() {
    * @return {Object} A copy of current state
    */
   _self.current = function() {
-    return !_current ? null : clone(_current);
+    return !_current ? null : angular.copy(_current);
   };
 
   /**
