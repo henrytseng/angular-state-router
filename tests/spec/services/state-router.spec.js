@@ -3,9 +3,9 @@
 describe('$stateRouter', function() {
   var _stateRouter;
 
-  beforeEach(module('angular-state-router'));
+  beforeEach(angular.mock.module('angular-state-router'));
 
-  beforeEach(inject(function($stateRouter) {
+  beforeEach(angular.mock.inject(function($stateRouter) {
     _stateRouter = $stateRouter;
   }));
 
