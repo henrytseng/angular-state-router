@@ -232,6 +232,161 @@ describe('$stateRouter', function() {
 
     });
 
+    it('Should change set parameters on state', function(done) {
+      var companyState;
+
+      // Testing scope
+      var _testScope = {
+        onBegin: function() {
+          expect(_stateRouter.current()).toBe(null);
+        },
+        
+        onEnd: function() {
+          expect(_stateRouter.current().name).toEqual('company');
+          expect(_stateRouter.current().url).toEqual(companyState.url);
+        },
+
+        onComplete: function() {
+          expect(_testScope.onBegin).toHaveBeenCalled();
+          expect(_testScope.onEnd).toHaveBeenCalled();
+          expect(_testScope.onComplete).toHaveBeenCalled();
+
+          expect(_stateRouter.current().params.lorem).toBe('ipsum');
+
+          done();
+        }
+      };
+
+      spyOn(_testScope, 'onBegin').and.callThrough();
+      spyOn(_testScope, 'onEnd').and.callThrough();
+      spyOn(_testScope, 'onComplete').and.callThrough();
+
+      _stateRouter
+
+        // Define states
+        .state('company', companyState = {
+          url: '/company/profile'
+        })
+
+        // Initialize
+        .init()
+
+        // Assume asynchronous operation
+        .change('company', {
+          params: {
+            lorem: 'ipsum'
+          }
+        })
+
+        // Begins before state change
+        .on('change:begin', _testScope.onBegin)
+
+        // Ends after change is made
+        .on('change:end', _testScope.onEnd)
+
+        .on('change:complete', _testScope.onComplete);
+
+    });
+
+    it('Should not change state when next state is the same', function(done) {
+      var companyState;
+
+      // Testing scope
+      var _testScope;
+      _testScope = {
+        onBegin: jasmine.createSpy('onBegin'),
+        
+        onEnd: jasmine.createSpy('onEnd'),
+
+        onComplete: [
+          
+          function() {
+            expect(_testScope.onBegin.calls.count()).toEqual(1);
+            expect(_testScope.onEnd.calls.count()).toEqual(1);
+
+            // No change
+            _stateRouter.change('company');
+          },
+
+          function() {
+            expect(_testScope.onBegin.calls.count()).toEqual(1);
+            expect(_testScope.onEnd.calls.count()).toEqual(1);
+
+            // Change with additional params
+            _stateRouter.change('company', {
+              params: {
+                lorem: 'ipsum'
+              }
+            });
+          },
+
+          function() {
+            expect(_testScope.onBegin.calls.count()).toEqual(2);
+            expect(_testScope.onEnd.calls.count()).toEqual(2);
+
+            // Change resolve
+            _stateRouter.change('company', {
+              resolve: {
+                lorem: function() {
+                  return false;
+                }
+              },
+              params: {
+                lorem: 'ipsum'
+              }
+            });
+          },
+
+          function() {
+            expect(_testScope.onBegin.calls.count()).toEqual(3);
+            expect(_testScope.onEnd.calls.count()).toEqual(3);
+
+            // No change in resolve properties
+            _stateRouter.change('company', {
+              resolve: {
+                lorem: function() {
+                  return true;
+                }
+              },
+              params: {
+                lorem: 'ipsum'
+              }
+            });
+          },
+
+          function() {
+            expect(_testScope.onBegin.calls.count()).toEqual(3);
+            expect(_testScope.onEnd.calls.count()).toEqual(3);
+
+            done();
+          }
+
+        ]
+      };
+
+      _stateRouter
+
+        // Define states
+        .state('company', companyState = {
+          url: '/company/profile'
+        })
+
+        // Initialize
+        .init()
+
+        // First. change
+        .change('company')
+
+        .on('change:begin', _testScope.onBegin)
+
+        .on('change:end', _testScope.onEnd)
+
+        .on('change:complete', function() {
+          _testScope.onComplete.shift().call();
+        });
+
+    });
+
     it('Should emit "error:notfound" when requested state does not exist', function(done) {
       var onNotFoundError, onError;
 

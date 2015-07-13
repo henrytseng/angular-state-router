@@ -75,6 +75,31 @@ module.exports = [function() {
   };
 
   /**
+   * Compare two states, compares values.  
+   * 
+   * @return {Boolean} True if states are the same, false if states are different
+   */
+  var _compareStates = function(a, b) {
+    var _copy = function(data) {
+      // Copy
+      data = clone(data);
+
+      // Track resolve
+      if(data && data.resolve) {
+        for(var n in data.resolve) {
+          data.resolve[n] = true;
+        }
+      }
+
+      return data;
+    };
+    var ai = _copy(a);
+    var bi = _copy(b);
+
+    return angular.equals(ai, bi);
+  };
+
+  /**
    * Get a list of parent states
    * 
    * @param  {String} name   A unique identifier for the state; using dot-notation
@@ -188,7 +213,7 @@ module.exports = [function() {
   };
 
   /**
-   * Internal change to state
+   * Internal change to state.  
    * 
    * @param  {String}   name       A unique identifier for the state; using dot-notation
    * @param  {Object}   [params]   A parameters data object
@@ -196,7 +221,7 @@ module.exports = [function() {
    */
   var _changeState = function(name, params, callback) {
     var error = null;
-    var requestData = {
+    var request = {
       name: name,
       params: params
     };
@@ -204,17 +229,24 @@ module.exports = [function() {
     var nextState = _getState(name);
     var prevState = _current;
 
+    // Set parameters
+    nextState = nextState !== null ? Object.assign({}, nextState, params) : null;
+
     // Does not exist
     if(!nextState) {
       error = new Error('Requested state was not defined.');
       error.code = 'notfound';
-      _self.emit('error:notfound', error, requestData);
-      _self.emit('error', error, requestData);
+      _self.emit('error:notfound', error, request);
+      _self.emit('error', error, request);
+
+    // State not changed
+    } else if(_compareStates(prevState, nextState)) {
+      _current = nextState;
 
     // Exists
     } else {
       // Process started
-      _self.emit('change:begin', requestData);
+      _self.emit('change:begin', request);
 
       // Valid state exists
       if(prevState) _queueHistory(prevState);
@@ -242,20 +274,20 @@ module.exports = [function() {
 
 
       // Rendered view
-      _self.emit('render', requestData);
+      _self.emit('render', request);
 
 
 
 
-      //_self.emit('error', new Error('An unknown error occurred.'), requestData);
+      //_self.emit('error', new Error('An unknown error occurred.'), request);
 
       // Process ended
-      _self.emit('change:end', requestData);
+      _self.emit('change:end', request);
     }
 
     // Completion
     if(callback) callback(error);
-    _self.emit('change:complete', requestData);
+    _self.emit('change:complete', error, request);
   };
 
   /**
