@@ -34,7 +34,7 @@ angular
 
   })
 
-  .controller('FrameCtrl', function($scope, $stateRouter) {
+  .controller('FrameCtrl', function($scope, $stateRouter, $urlManager) {
     $scope.messages = [];
 
     // Direct call to StateRouter
@@ -52,13 +52,22 @@ angular
         body: 'StateRouter has initialized.'
       });
       $scope.$apply();
+      console.log('init');
     });
 
-    $stateRouter.on('change:end', function() {
+    $stateRouter.on('change:complete', function() {
       $scope.messages.unshift({
-        title: 'change:end ('+ $stateRouter.current().name +')',
+        title: 'change:complete ('+ $stateRouter.current().name +')',
         body: 'State change request has been completed.'
       });
       $scope.$apply();
+    });
+
+    $urlManager.on('update', function() {
+      console.log('update');
+    });
+
+    $urlManager.on('update:location', function() {
+      console.log('update:location');
     });
   });

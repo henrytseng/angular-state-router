@@ -1,6 +1,9 @@
 'use strict';
 
 /* global module:false */
+/* global process:false */
+
+var path = require('path');
 
 // Karma configuration
 

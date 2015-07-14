@@ -420,6 +420,52 @@ describe('$stateRouter', function() {
     });
   });
 
+  describe('#$use', function() {
+    it('Should add call middleware during render phase', function(done) {
+      var _testScope = {
+        onMiddle: function(request, next) {
+          next();
+        },
+        onComplete: function() {
+          expect(_testScope.onMiddle.calls.count()).toEqual(1);
+
+          done();
+        }
+      };
+
+      spyOn(_testScope, 'onMiddle').and.callThrough();
+
+      _stateRouter
+        .init()
+
+        .state('product.shoes', {
+          params: {
+            sku: '2937-UAE321',
+            colors: [ 'blue', 'green ']
+          }
+        })
+
+        .$use(function(request, next) {
+          _testScope.onMiddle(request, next);
+        })
+
+        .change('product.shoes')
+
+        .on('change:complete', function() {
+          _testScope.onComplete.call();
+        });
+    });
+
+    it('Should require middleware to be function', function() {
+      expect(function() {
+        
+        _stateRouter.$use(null);
+
+      }).toThrow(new Error('Middleware must be a function'));
+    });
+  });
+
+
   describe('#current', function() {
     it('Should retrieve copy of current state', function(done) {
       var companyLobbyState;

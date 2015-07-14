@@ -3,6 +3,7 @@
 /* global process:false */
 
 var events = require('events');
+var UrlDictionary = require('../utils/url-dictionary');
 
 module.exports = [function() {
   // Current state
@@ -12,8 +13,15 @@ module.exports = [function() {
   var _historyLength = 5;
   var _history = [];
 
+  // Library
   var _library = {};
   var _cache = {};
+
+  // URL dictionary
+  var _urlDictionary = new UrlDictionary();
+
+  // Middleware layers
+  var _layerList = [];
 
   // Instance of EventEmitter
   var _self = new events.EventEmitter();
@@ -191,6 +199,11 @@ module.exports = [function() {
     // Clear cache on updates
     _cache = {};
 
+    // URL mapping
+    if(state.url) {
+      _urlDictionary.add(state.url, state);
+    }
+
     return data;
   };
 
@@ -211,31 +224,93 @@ module.exports = [function() {
   };
 
   /**
+   * Execute a series of functions; used in tandem with middleware
+   */
+  var _QueueHandler = function() {
+    var _list = [];
+    var _data = null;
+
+    return {
+      add: function(handler) {
+        if(handler && handler.constructor === Array) {
+          _list = _list.concat(handler);
+        } else {
+          _list.push(handler);
+        }
+        return this;
+      },
+
+      data: function(data) {
+        _data = data;
+        return this;
+      },
+
+      execute: function(callback) {
+        var nextHandler;
+        nextHandler = function() {
+          var handler = _list.shift();
+
+          if(!handler) {
+            return callback(null);
+          }
+
+          handler.call(null, _data, function(err) {
+
+            // Error
+            if(err) {
+              _self.emit('error', err, _data);
+              callback(err);
+
+            // Continue
+            } else {
+              nextHandler();
+            }
+          });
+        };
+
+        nextHandler();
+      }
+    };
+
+    
+  };
+
+  /**
    * Internal change to state.  
    * 
-   * @param  {String}   name       A unique identifier for the state; using dot-notation
-   * @param  {Object}   [params]   A parameters data object
-   * @param  {Function} [callback] A callback, function(err)
+   * @param  {String}   name          A unique identifier for the state; using dot-notation
+   * @param  {Object}   data          A data object
+   * @param  {Boolean}  useMiddleware A flag to trigger middleware
+   * @param  {Function} [callback]    A callback, function(err)
    */
-  var _changeState = function(name, params, callback) {
+  var _changeState = function(name, data, useMiddleware, callback) {
+    useMiddleware = typeof useMiddleware === 'undefined' ? true : useMiddleware;
+
     var error = null;
     var request = {
       name: name,
-      params: params
+      data: data
     };
 
     var nextState = _getState(name);
     var prevState = _current;
 
     // Set parameters
-    nextState = nextState !== null ? angular.extend({}, nextState, params) : null;
+    nextState = nextState !== null ? angular.extend({}, nextState, data) : null;
+
+    // Compile execution phases
+    var queue = _QueueHandler().data(request);
 
     // Does not exist
     if(!nextState) {
       error = new Error('Requested state was not defined.');
       error.code = 'notfound';
-      _self.emit('error:notfound', error, request);
-      _self.emit('error', error, request);
+
+      queue.add(function(data, next) {
+        _self.emit('error:notfound', error, request);
+
+        next(error);
+      });
 
     // State not changed
     } else if(_compareStates(prevState, nextState)) {
@@ -243,49 +318,38 @@ module.exports = [function() {
 
     // Exists
     } else {
+
       // Process started
-      _self.emit('change:begin', request);
+      queue.add(function(data, next) {
+        _self.emit('change:begin', request);
 
-      // Valid state exists
-      if(prevState) _queueHistory(prevState);
-      _current = nextState;
+        // Valid state exists
+        if(prevState) _queueHistory(prevState);
+        _current = nextState;
 
-      
+        next();
+      });
 
-      
-
-
-
-      // TODO implement loadable interface
-      _self.emit('load:start');
-      _self.emit('load:progress');
-      _self.emit('load:end');
-      //_self.emit('error:load');
-
-
-      // TODO resolve 
-      _self.emit('resolve:start');
-      //_self.emit('error:resolve');
-      _self.emit('resolve:end');
-
-
-
-
-      // Rendered view
-      _self.emit('render', request);
-
-
-
-
-      //_self.emit('error', new Error('An unknown error occurred.'), request);
+      // Add middleware
+      if(useMiddleware) {
+        queue.add(_layerList);
+      }
 
       // Process ended
-      _self.emit('change:end', request);
+      queue.add(function(data, next) {
+        _self.emit('change:end', request);
+        next();
+      });
     }
 
-    // Completion
-    _self.emit('change:complete', error, request);
-    if(callback) callback(error);
+    // Run
+    queue.execute(function(err) {
+      _self.emit('change:complete', err, request);
+
+      if(callback) {
+        callback(err);
+      }
+    });
   };
 
   /**
@@ -306,7 +370,7 @@ module.exports = [function() {
   };
 
   /**
-   * Sett/get state data.  Define the states.  
+   * Set/get state data.  Define the states.  
    *
    * @param  {String}      name   A unique identifier for the state; using dot-notation
    * @param  {Object}      [data] A state definition data object, optional
@@ -323,16 +387,16 @@ module.exports = [function() {
   /**
    * Initialize, asynchronous operation.  Definition is done, initialize.  
    * 
-   * @param  {String}      name     An initial state to start in.  
-   * @param  {Object}      [params] A parameters data object
-   * @return {StateRouter}          Itself; chainable
+   * @param  {String}      name   An initial state to start in.  
+   * @param  {Object}      [data] A data object
+   * @return {StateRouter}        Itself; chainable
    */
-  _self.init = function(name, params) {
+  _self.init = function(name, data) {
     process.nextTick(function() {
     
       // Initialize with state
       if(name) {
-        _changeState(name, params, function() {
+        _changeState(name, data, true, function() {
           _self.emit('init');
         });
 
@@ -346,13 +410,43 @@ module.exports = [function() {
   };
 
   /**
-   * Public method to change state, asynchronous operation
+   * Change state, asynchronous operation
    * 
-   * @param  {String} name     A unique identifier for the state; using dot-notation
-   * @param  {Object} [params] A parameters data object
+   * @param  {String}      name   A unique identifier for the state; using dot-notation
+   * @param  {Object}      [data] A parameters data object
+   * @return {StateRouter}        Itself; chainable
    */
-  _self.change = function(name, params) {
-    process.nextTick(angular.bind(null, _changeState, name, params));
+  _self.change = function(name, data) {
+    process.nextTick(angular.bind(null, _changeState, name, data, true));
+    return _self;
+  };
+
+  /**
+   * Change state based on $location.url(), asynchronous operation.  Used internally by $urlManager.
+   * 
+   * @param  {String}      url A url matching defind states
+   * @return {StateRouter}     Itself; chainable
+   */
+  _self.$location = function(url) {
+    var state = _urlDictionary.lookup(url);
+    if(state) {
+      process.nextTick(angular.bind(null, _changeState, state.name, null, false));
+    }
+    return _self;
+  };
+
+  /**
+   * Add middleware, executing next(err);
+   * 
+   * @param  {Function}    handler A callback, function(request, next)
+   * @return {StateRouter}         Itself; chainable
+   */
+  _self.$use = function(handler) {
+    if(typeof handler !== 'function') {
+      throw new Error('Middleware must be a function');
+    }
+
+    _layerList.push(handler);
     return _self;
   };
 
