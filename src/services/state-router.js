@@ -427,10 +427,10 @@ module.exports = [function() {
    * @param  {String}      url A url matching defind states
    * @return {StateRouter}     Itself; chainable
    */
-  _self.$location = function(url) {
+  _self.$location = function(url, data) {
     var state = _urlDictionary.lookup(url);
     if(state) {
-      process.nextTick(angular.bind(null, _changeState, state.name, null, false));
+      process.nextTick(angular.bind(null, _changeState, state.name, data, false));
     }
     return _self;
   };

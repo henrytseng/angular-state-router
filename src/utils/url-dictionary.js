@@ -6,7 +6,6 @@
 function UrlDictionary() {
   this._patterns = [];
   this._refs = [];
-  this._params = [];
 }
 
 /**
@@ -42,12 +41,6 @@ UrlDictionary.prototype.add = function(pattern, ref) {
       }
     }).join('\\/')) +
     '[\\/]?$';
-
-  // Params
-  
-
-  // Querystring
-
 
   this._patterns[i] = new RegExp(expr);
   this._refs[i] = ref;
