@@ -7,7 +7,7 @@ angular
     'angular-state-loadable'
   ])
 
-  .run(function($rootScope, $stateRouter) {
+  .run(function($rootScope, $stateRouter, $location) {
     $rootScope.$stateRouter = $stateRouter;
 
     $stateRouter
@@ -17,16 +17,24 @@ angular
         url: '/'
       })
 
-      .state('products.listing', {
-        url: '/products'
+      .state('notation', {
+        url: '/notation'
       })
 
-      .state('products', {
-        url: '/products/:id'
+      .state('states', {
+        url: '/states'
       })
 
-      .state('account', {
-        url: '/account'
+      .state('events', {
+        url: '/events'
+      })
+
+      .state('loadables', {
+        url: '/loadables'
+      })
+
+      .state('views', {
+        url: '/views'
       })
 
       // Initialization
@@ -39,7 +47,7 @@ angular
 
     // Direct call to StateRouter
     $scope.callout = function() {
-      $stateRouter.change('products.listing');
+      $stateRouter.change('states.define');
     };
 
     $scope.clearMessages = function() {
@@ -52,7 +60,6 @@ angular
         body: 'StateRouter has initialized.'
       });
       $scope.$apply();
-      console.log('init');
     });
 
     $stateRouter.on('change:complete', function() {

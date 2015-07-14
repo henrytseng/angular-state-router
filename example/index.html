@@ -30,9 +30,10 @@
         <!-- Collect the nav links, forms, and other content for toggling -->
         <div class="collapse navbar-collapse" id="bs-example-navbar-collapse-1">
           <ul class="nav navbar-nav">
-            <li ng-class="{'active': $stateRouter.active('landing') }"><a href="#" sref="landing">Home</a></li>
-            <li ng-class="{'active': $stateRouter.active('products') }"><a href="#" sref="products.listing">Products</a></li>
-            <li ng-class="{'active': $stateRouter.active('account') }"><a href="#" sref="account">Account</a></li>
+            <li ng-class="{'active': $stateRouter.active('states') }"><a href="#" sref="states">States</a></li>
+            <li ng-class="{'active': $stateRouter.active('events') }"><a href="#" sref="events">Events</a></li>
+            <li ng-class="{'active': $stateRouter.active('loadables') }"><a href="#" sref="loadables">Loadables</a></li>
+            <li ng-class="{'active': $stateRouter.active('views') }"><a href="#" sref="views">Views</a></li>
           </ul>
         </div>
       </div>
@@ -42,81 +43,75 @@
       <div class="jumbotron">
         <div class="container">
           <h1>Demo</h1>
-          <p>Full example using:</p>
+          <p>StateRouter is an AngularJS state-based router designed for flexibility and ease of use.</p>
+          <p>StateRouter is designed to be used in a modular integration with:</p>
           <ul>
             <li>StateRouter</li>
             <li>StateView</li>
             <li>StateLoadable</li>
           </ul>
-
-          <p>An example of a direct link.</p>
-          <p>
-            <a class="btn btn-primary btn-lg" href="#" role="button" ng-click="callout()">See All Products</a>
-          </p>
         </div>
       </div>
     </section>
 
-    <section class="screen" ng-class="{'active': $stateRouter.active('products') }">
-      <div class="container">
-        <h1>Products</h1>
-
-        <div class="row" ng-show="$stateRouter.active('products.listing')">
-          <div class="col-xs-6 col-md-3">
-            <a href="#" sref="products" class="thumbnail">
-              Item 1
-            </a>
-          </div>
-          <div class="col-xs-6 col-md-3">
-            <a href="#" sref="products" class="thumbnail">
-              Item 2
-            </a>
-          </div>
-          <div class="col-xs-6 col-md-3">
-            <a href="#" sref="products" class="thumbnail">
-              Item 3
-            </a>
-          </div>
-          <div class="col-xs-6 col-md-3">
-            <a href="#" sref="products" class="thumbnail">
-              Item 4
-            </a>
-          </div>
+    <section class="screen" ng-class="{'active': $stateRouter.active('states') }">
+      <div class="jumbotron">
+        <div class="container">
+          <h1>States</h1>
+          <p>Lorem ipsum:</p>
+          <blockquote>
+            A finite state machine is a mathematical abstraction used to design algorithms. In simple terms, a state machine will read a series of inputs.  When it reads an input it will switch to a different state.  Each state specifies which state to switch for a given input.  This sounds complicated but it is really quite simple.
+          </blockquote>
         </div>
-
       </div>
     </section>
 
-    <section class="screen" ng-class="{'active': $stateRouter.active('account') }">
-      <div class="container">
-        <h1>Account</h1>
-
-        <form>
-          <div class="form-group">
-            <label for="exampleInputEmail1">Email address</label>
-            <input type="email" class="form-control" id="exampleInputEmail1" placeholder="Email">
-          </div>
-          <div class="form-group">
-            <label for="exampleInputPassword1">Password</label>
-            <input type="password" class="form-control" id="exampleInputPassword1" placeholder="Password">
-          </div>
-          <button type="submit" class="btn btn-default">Submit</button>
-        </form>
+    <section class="screen" ng-class="{'active': $stateRouter.active('events') }">
+      <div class="jumbotron">
+        <div class="container">
+          <h1>Events</h1>
+          <p>Lorem ipsum:</p>
+        </div>
       </div>
     </section>
 
-    <!-- Messages -->
+    <section class="screen" ng-class="{'active': $stateRouter.active('loadables') }">
+      <div class="jumbotron">
+        <div class="container">
+          <h1>Loadables</h1>
+          <p>Lorem ipsum:</p>
+        </div>
+      </div>
+    </section>
+
+    <section class="screen" ng-class="{'active': $stateRouter.active('views') }">
+      <div class="jumbotron">
+        <div class="container">
+          <h1>Views</h1>
+          <p>Lorem ipsum:</p>
+        </div>
+      </div>
+    </section>
+
+    <!-- Log -->
     <div class="container messages">
-      <h3>State changes from StateRouter ({{ $stateRouter.current().name }}) </h3>
-      <div class="media" ng-repeat="item in messages">
-        <div class="media-body">
-          <h4 class="media-heading">{{item.title}}</h4>
-          {{item.body}}
+      <div class="panel panel-info">
+        <div class="panel-heading">
+          <h3 class="panel-title">StateRouter Events</h3>
+        </div>
+        <div class="panel-body">
+          <div class="media" ng-repeat="item in messages">
+            <div class="media-body">
+              <h4 class="media-heading">{{item.title}}</h4>
+              {{item.body}}
+            </div>
+          </div>
+        </div>
+        <div class="panel-body">
+          <a class="btn btn-default" ng-click="clearMessages()">Clear</a>
         </div>
       </div>
 
-      <br>
-      <a class="btn btn-default" ng-click="clearMessages()">Clear</a>
     </div>
 
   </body>

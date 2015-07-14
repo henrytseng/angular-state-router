@@ -5,7 +5,7 @@
 var events = require('events');
 var UrlDictionary = require('../utils/url-dictionary');
 
-module.exports = [function() {
+module.exports = ['$location', function($location) {
   // Current state
   var _current;
 
@@ -385,7 +385,7 @@ module.exports = [function() {
   };
 
   /**
-   * Initialize, asynchronous operation.  Definition is done, initialize.  
+   * Initialize with current address and fallback to default, asynchronous operation.  
    * 
    * @param  {String}      name   An initial state to start in.  
    * @param  {Object}      [data] A data object
@@ -393,9 +393,16 @@ module.exports = [function() {
    */
   _self.init = function(name, data) {
     process.nextTick(function() {
-    
+
+      // Initial location
+      var initalLocation = _urlDictionary.lookup($location.url());
+      if(initalLocation !== null) {
+        _changeState(initalLocation.name, data, true, function() {
+          _self.emit('init');
+        });
+
       // Initialize with state
-      if(name) {
+      } else if(name) {
         _changeState(name, data, true, function() {
           _self.emit('init');
         });

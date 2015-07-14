@@ -18,15 +18,19 @@ module.exports = ['$stateRouter', '$location', function($stateRouter, $location)
 
     if(nextUrl !== lastUrl) {
       _url = nextUrl;
-      $stateRouter.$location(_url, _self);
-
 
       // TODO parse params to state data
 
 
+      
 
 
 
+
+
+
+
+      $stateRouter.$location(_url, _self);
 
       _self.emit('update:location');
     }
