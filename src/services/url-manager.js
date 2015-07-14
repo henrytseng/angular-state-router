@@ -4,7 +4,7 @@ var events = require('events');
 var UrlDictionary = require('../utils/url-dictionary');
 
 module.exports = ['$stateRouter', '$location', function($stateRouter, $location) {
-  var _url = null;
+  var _url = $location.url();
 
   // Instance of EventEmitter
   var _self = new events.EventEmitter();
