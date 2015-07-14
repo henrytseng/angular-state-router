@@ -208,11 +208,11 @@ module.exports = ['$location', function($location) {
   };
 
   /**
-   * Queue history and correct length
+   * Add history and correct length
    * 
    * @param  {Object} data An Object
    */
-  var _queueHistory = function(data) {
+  var _pushHistory = function(data) {
     if(data) {
       _history.push(data);
     }
@@ -271,8 +271,6 @@ module.exports = ['$location', function($location) {
         nextHandler();
       }
     };
-
-    
   };
 
   /**
@@ -324,7 +322,7 @@ module.exports = ['$location', function($location) {
         _self.emit('change:begin', request);
 
         // Valid state exists
-        if(prevState) _queueHistory(prevState);
+        if(prevState) _pushHistory(prevState);
         _current = nextState;
 
         next();
@@ -363,7 +361,7 @@ module.exports = ['$location', function($location) {
 
     if(params.hasOwnProperty('historyLength')) {
       _historyLength = params.historyLength;
-      _queueHistory(null);
+      _pushHistory(null);
     }
 
     return _self;
