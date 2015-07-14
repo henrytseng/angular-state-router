@@ -29,6 +29,13 @@ angular
         url: '/events'
       })
 
+      .state('events.details', {
+        url: '/events/:id',
+        params: {
+          id: 'init'
+        }
+      })
+
       .state('loadables', {
         url: '/loadables'
       })

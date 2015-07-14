@@ -67,8 +67,20 @@
       <div class="jumbotron">
         <div class="container">
           <h1>Events</h1>
-          <p>Lorem ipsum:</p>
+          <p>Dispatched from <a href="https://nodejs.org/api/events.html#events_class_events_eventemitter">events.EventEmitter</a>, events use the event delegation pattern.</p>
+          <ul>
+            <li>
+              <a href="#/events/init" sref="events.details">init</a>
+            </li>
+          </ul>
         </div>
+      </div>
+    </section>
+
+    <section class="screen" ng-class="{'active': $stateRouter.active('events.details') }">
+      <div class="container">
+        <h1>Event: init</h1>
+        <p>Lorem ipsum</p>
       </div>
     </section>
 
