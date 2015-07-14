@@ -1,5 +1,7 @@
 'use strict';
 
+var Url = require('./url');
+
 /**
  * Constructor
  */
@@ -19,14 +21,13 @@ UrlDictionary.prototype.add = function(pattern, ref) {
   var _self = this;
   var i = this._patterns.length;
 
-  var pathChain, queryChain;
+  var pathChain;
 
   if(pattern.indexOf('?') === -1) {
-    pathChain = UrlDictionary.path(pattern).split('/');
+    pathChain = Url(pattern).path().split('/');
 
   } else {
-    pathChain = UrlDictionary.path(pattern).split('/');
-    queryChain = UrlDictionary.querystring(pattern).split('&');
+    pathChain = Url(pattern).path().split('/');
   }
 
   // URL matching
@@ -54,7 +55,7 @@ UrlDictionary.prototype.add = function(pattern, ref) {
  * @return {Object}          A reference to a stored object
  */
 UrlDictionary.prototype.lookup = function(url, defaults) {
-  var inflected = UrlDictionary.path(url || '');
+  var inflected = Url(url || '').path();
 
   for(var i=this._patterns.length-1; i>=0; i--) {
     if(inflected.match(this._patterns[i]) !== null) {
@@ -63,28 +64,6 @@ UrlDictionary.prototype.lookup = function(url, defaults) {
   }
 
   return null;
-};
-
-/**
- * Get the path of a URL
- * 
- * @param  {String} url A URL to test for
- * @return {String}     A querystring from URL
- */
-UrlDictionary.path = function(url) {
-  var inflected = (url || '').replace(/\?.*/, '');
-  return inflected;
-};
-
-/**
- * Get the querystring of a URL
- * 
- * @param  {String} url A URL to test for
- * @return {String}     A querystring from URL
- */
-UrlDictionary.querystring = function(url) {
-  var inflected = (url || '').replace(/.*\?/, '');
-  return inflected;
 };
 
 module.exports = UrlDictionary;

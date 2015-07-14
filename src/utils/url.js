@@ -27,5 +27,4 @@ function Url(url) {
   };
 }
 
-
 module.exports = Url;
