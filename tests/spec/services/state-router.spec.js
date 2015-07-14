@@ -2,11 +2,13 @@
 
 describe('$stateRouter', function() {
   var _stateRouter;
+  var $location;
 
   beforeEach(angular.mock.module('angular-state-router'));
 
-  beforeEach(angular.mock.inject(function($stateRouter) {
+  beforeEach(angular.mock.inject(function($stateRouter, _$location_) {
     _stateRouter = $stateRouter;
+    $location = _$location_;
   }));
 
   describe('#state', function() {
@@ -178,6 +180,72 @@ describe('$stateRouter', function() {
     it('Should emit "init" event after initialization', function(done) {
       _stateRouter.on('init', done);
       _stateRouter.init();
+    });
+
+    it('Should init with $location.url()', function(done) {
+      var companyState;
+
+      expect($location.url()).not.toBe('/company/profile');
+
+      // Set location
+      $location.url('/company/profile');
+
+      // Testing scope
+      var _testScope = {
+        onInit: function() {
+          expect($location.url()).toBe('/company/profile');
+          expect(_testScope.onInit).toHaveBeenCalled();
+
+          done();
+        }
+      };
+
+      spyOn(_testScope, 'onInit').and.callThrough();
+
+      _stateRouter
+
+        // Define states
+        .state('company', companyState = {
+          url: '/company/profile'
+        })
+        .state('stores', companyState = {
+          url: '/stores/:id'
+        })
+
+        // Initialize
+        .init('stores')
+
+        .on('init', _testScope.onInit);
+    });
+
+    it('Should fallback init to default initial location', function(done) {
+      var companyState;
+
+      expect($location.url()).not.toBe('/company/profile');
+
+      // Testing scope
+      var _testScope = {
+        onInit: function() {
+          expect($location.url()).toBe('/company/profile');
+          expect(_testScope.onInit).toHaveBeenCalled();
+
+          done();
+        }
+      };
+
+      spyOn(_testScope, 'onInit').and.callThrough();
+
+      _stateRouter
+
+        // Define states
+        .state('company', companyState = {
+          url: '/company/profile'
+        })
+
+        // Initialize
+        .init('company')
+
+        .on('init', _testScope.onInit);
     });
   });
 
