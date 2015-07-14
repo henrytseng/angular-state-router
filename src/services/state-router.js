@@ -385,23 +385,23 @@ module.exports = ['$location', function($location) {
   /**
    * Initialize with current address and fallback to default, asynchronous operation.  
    * 
-   * @param  {String}      name   An initial state to start in.  
-   * @param  {Object}      [data] A data object
-   * @return {StateRouter}        Itself; chainable
+   * @param  {String}      name     An initial state to start in.  
+   * @param  {Object}      [params] A parameters data object
+   * @return {StateRouter}          Itself; chainable
    */
-  _self.init = function(name, data) {
+  _self.init = function(name, params) {
     process.nextTick(function() {
 
       // Initial location
       var initalLocation = _urlDictionary.lookup($location.url());
       if(initalLocation !== null) {
-        _changeState(initalLocation.name, data, true, function() {
+        _changeState(initalLocation.name, params, true, function() {
           _self.emit('init');
         });
 
       // Initialize with state
       } else if(name) {
-        _changeState(name, data, true, function() {
+        _changeState(name, params, true, function() {
           _self.emit('init');
         });
 
@@ -417,25 +417,26 @@ module.exports = ['$location', function($location) {
   /**
    * Change state, asynchronous operation
    * 
-   * @param  {String}      name   A unique identifier for the state; using dot-notation
-   * @param  {Object}      [data] A parameters data object
-   * @return {StateRouter}        Itself; chainable
+   * @param  {String}      name     A unique identifier for the state; using dot-notation
+   * @param  {Object}      [params] A parameters data object
+   * @return {StateRouter}          Itself; chainable
    */
-  _self.change = function(name, data) {
-    process.nextTick(angular.bind(null, _changeState, name, data, true));
+  _self.change = function(name, params) {
+    process.nextTick(angular.bind(null, _changeState, name, params, true));
     return _self;
   };
 
   /**
    * Change state based on $location.url(), asynchronous operation.  Used internally by $urlManager.
    * 
-   * @param  {String}      url A url matching defind states
-   * @return {StateRouter}     Itself; chainable
+   * @param  {String}      url      A url matching defind states
+   * @param  {Object}      [params] A parameters data object
+   * @return {StateRouter}          Itself; chainable
    */
-  _self.$location = function(url, data) {
+  _self.$location = function(url, params) {
     var state = _urlDictionary.lookup(url);
     if(state) {
-      process.nextTick(angular.bind(null, _changeState, state.name, data, false));
+      process.nextTick(angular.bind(null, _changeState, state.name, params, false));
     }
     return _self;
   };
@@ -468,9 +469,10 @@ module.exports = ['$location', function($location) {
    * Check query against current state
    *
    * @param  {Mixed}   query  A string using state notation or a RegExp
+   * @param  {Object}  params A parameters data object
    * @return {Boolean}        A true if state is parent to current state
    */
-  _self.active = function(query) {
+  _self.active = function(query, params) {
     query = query || '';
     
     // No state
