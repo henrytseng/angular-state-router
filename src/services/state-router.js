@@ -4,6 +4,7 @@
 
 var events = require('events');
 var UrlDictionary = require('../utils/url-dictionary');
+var Parameters = require('../utils/parameters');
 
 module.exports = ['$location', function($location) {
   // Current state
@@ -512,6 +513,32 @@ module.exports = ['$location', function($location) {
 
     // Non-matching
     return false;
+  };
+
+  /**
+   * Parse state notation name-params.  
+   * 
+   * Assume all parameter values are strings; equivalent to URL querystring translation.  
+   * 
+   * @param  {String} name A name-params string
+   * @return {Array}       A name string and param Object
+   */
+  _self.parse = function(name) {
+    if(name && name.match(/[a-zA-Z0-9\.]*\(.*\)/)) {
+      var npart = name.substr(0, name.indexOf('('));
+      var ppart = Parameters( name.substr(name.indexOf('(')+1) );
+
+      return {
+        name: npart,
+        params: ppart
+      };
+
+    } else {
+      return {
+        name: name,
+        params: null
+      };
+    }
   };
 
   /**

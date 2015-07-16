@@ -818,4 +818,13 @@ describe('$stateRouter', function() {
     });
   });
 
+  xdescribe('#parse', function() {
+
+    it('Should parse name and params from name-params string', function() {
+      expect(_stateRouter.parse("lorem.sed.ut({id:'lorem', solution:(1+2)*3})")).toEqual(['lorem.sed.ut', {id:'lorem', solution:(1+2)*3}]);
+    });
+
+  });
+
+
 });
