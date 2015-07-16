@@ -259,7 +259,7 @@ This event occurs when a state change is finished.  This event is always trigger
 State Notation
 --------------
 
-States use dot-notation where state names are `/[a-zA-Z0-9]*/` strings separated by dots `.` and are case sensitive.  
+States use dot-notation where state names are `/[a-zA-Z0-9_]*/` strings separated by dots `.` and are case sensitive.  
 
 The following are examples of valid unique state names:
 
@@ -268,6 +268,14 @@ The following are examples of valid unique state names:
 	ochestra56.clarinet
 	ochestra1
 
+
+### Parameters
+
+Data Objects can be included in an expression (not query) given by Object literal notation.  Using name-value pairs of Boolean/Number/String/null.
+
+They are expressed using parenthesis `()` surrounding the Object literal at the end of a state expression.  
+
+	ochestra1.trombone.position.6({id:'49829f', color:329, custom:true})
 
 
 ### Queries
@@ -288,6 +296,7 @@ Both of the following will match the state `catalog.index.list`
 
 	catalog.*.list
 	catalog.**
+
 
 
 

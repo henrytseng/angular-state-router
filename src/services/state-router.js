@@ -28,6 +28,32 @@ module.exports = ['$location', function($location) {
   var _self = new events.EventEmitter();
 
   /**
+   * Parse state notation name-params.  
+   * 
+   * Assume all parameter values are strings
+   * 
+   * @param  {String} name A name-params string
+   * @return {Array}       A name string and param Object
+   */
+  var _parseName = function(name) {
+    if(name && name.match(/[a-zA-Z0-9_\.]*\(.*\)/)) {
+      var npart = name.substr(0, name.indexOf('('));
+      var ppart = Parameters( name.substr(name.indexOf('(')+1) );
+
+      return {
+        name: npart,
+        params: ppart
+      };
+
+    } else {
+      return {
+        name: name,
+        params: null
+      };
+    }
+  };
+
+  /**
    * Add default values to a state
    * 
    * @param  {Object} data An Object
@@ -52,7 +78,7 @@ module.exports = ['$location', function($location) {
 
     var nameChain = name.split('.');
     for(var i=0; i<nameChain.length; i++) {
-      if(!nameChain[i].match(/[a-zA-Z0-9]+/)) {
+      if(!nameChain[i].match(/[a-zA-Z0-9_]+/)) {
         return false;
       }
     }
@@ -73,7 +99,7 @@ module.exports = ['$location', function($location) {
 
     var nameChain = query.split('.');
     for(var i=0; i<nameChain.length; i++) {
-      if(!nameChain[i].match(/(\*(\*)?|[a-zA-Z0-9]+)/)) {
+      if(!nameChain[i].match(/(\*(\*)?|[a-zA-Z0-9_]+)/)) {
         return false;
       }
     }
@@ -87,23 +113,7 @@ module.exports = ['$location', function($location) {
    * @return {Boolean} True if states are the same, false if states are different
    */
   var _compareStates = function(a, b) {
-    var _copy = function(data) {
-      // Copy
-      data = angular.copy(data);
-
-      // Track resolve
-      if(data && data.resolve) {
-        for(var n in data.resolve) {
-          data.resolve[n] = true;
-        }
-      }
-
-      return data;
-    };
-    var ai = _copy(a);
-    var bi = _copy(b);
-
-    return angular.equals(ai, bi);
+    return angular.equals(a, b);
   };
 
   /**
@@ -127,7 +137,7 @@ module.exports = ['$location', function($location) {
   /**
    * Internal method to crawl library heirarchy
    * 
-   * @param  {String} name   A unique identifier for the state; using dot-notation
+   * @param  {String} name   A unique identifier for the state; using state-notation
    * @return {Object}        A state data Object
    */
   var _getState = function(name) {
@@ -170,11 +180,11 @@ module.exports = ['$location', function($location) {
   };
 
   /**
-   * Internal method to store a state definition
+   * Internal method to store a state definition.  Parameters should be included in data Object not state name.  
    * 
-   * @param  {String} name   A unique identifier for the state; using dot-notation
-   * @param  {Object} [data] A state definition data Object, optional
-   * @return {Object}        A state data Object
+   * @param  {String} name A unique identifier for the state; using state-notation
+   * @param  {Object} data A state definition data Object
+   * @return {Object}      A state data Object
    */
   var _defineState = function(name, data) {
     if(name === null || typeof name === 'undefined') {
@@ -197,7 +207,7 @@ module.exports = ['$location', function($location) {
     // Set definition
     _library[name] = state;
 
-    // Clear cache on updates
+    // Reset cache
     _cache = {};
 
     // URL mapping
@@ -275,27 +285,35 @@ module.exports = ['$location', function($location) {
   };
 
   /**
-   * Internal change to state.  
+   * Internal change to state.  Parameters in `params` takes precedence over state-notation `name` expression.  
    * 
-   * @param  {String}   name          A unique identifier for the state; using dot-notation
-   * @param  {Object}   data          A data object
+   * @param  {String}   name          A unique identifier for the state; using state-notation including optional parameters
+   * @param  {Object}   params        A data object of params
    * @param  {Boolean}  useMiddleware A flag to trigger middleware
    * @param  {Function} [callback]    A callback, function(err)
    */
-  var _changeState = function(name, data, useMiddleware, callback) {
+  var _changeState = function(name, params, useMiddleware, callback) {
+    params = params || {};
     useMiddleware = typeof useMiddleware === 'undefined' ? true : useMiddleware;
+
+    // Parse state-notation expression
+    var nameExpr = _parseName(name);
+    name = nameExpr.name;
+    params = angular.extend(nameExpr.params || {}, params);
 
     var error = null;
     var request = {
       name: name,
-      data: data
+      params: params
     };
 
-    var nextState = _getState(name);
+    var nextState = angular.copy(_getState(name));
     var prevState = _current;
 
     // Set parameters
-    nextState = nextState !== null ? angular.extend({}, nextState, data) : null;
+    if(nextState) {
+      nextState.params = angular.extend(nextState.params || {}, params);
+    }
 
     // Compile execution phases
     var queue = _QueueHandler().data(request);
@@ -352,16 +370,16 @@ module.exports = ['$location', function($location) {
   };
 
   /**
-   * Set configuration options for StateRouter
+   * Set configuration data parameters for StateRouter
    * 
-   * @param  {Object}      params A data Object
-   * @return {StateRouter}        Itself; chainable
+   * @param  {Object}      options A data Object
+   * @return {StateRouter}         Itself; chainable
    */
-  _self.options = function(params) {
-    params = params || {};
+  _self.options = function(options) {
+    options = options || {};
 
-    if(params.hasOwnProperty('historyLength')) {
-      _historyLength = params.historyLength;
+    if(options.hasOwnProperty('historyLength')) {
+      _historyLength = options.historyLength;
       _pushHistory(null);
     }
 
@@ -371,15 +389,15 @@ module.exports = ['$location', function($location) {
   /**
    * Set/get state data.  Define the states.  
    *
-   * @param  {String}      name   A unique identifier for the state; using dot-notation
-   * @param  {Object}      [data] A state definition data object, optional
-   * @return {StateRouter}        Itself; chainable
+   * @param  {String}      name    A unique identifier for the state; using dot-notation
+   * @param  {Object}      [state] A state definition data object, optional
+   * @return {StateRouter}         Itself; chainable
    */
-  _self.state = function(name, data) {
-    if(!data) {
+  _self.state = function(name, state) {
+    if(!state) {
       return _getState(name);
     }
-    _defineState(name, data);
+    _defineState(name, state);
     return _self;
   };
 
@@ -463,7 +481,7 @@ module.exports = ['$location', function($location) {
    * @return {Object} A copy of current state
    */
   _self.current = function() {
-    return !_current ? null : angular.copy(_current);
+    return (!_current) ? null : angular.copy(_current);
   };
 
   /**
@@ -498,9 +516,9 @@ module.exports = ['$location', function($location) {
           .split('.')
           .map(function(item) {
             if(item === '*') {
-              return '[a-zA-Z0-9]*';
+              return '[a-zA-Z0-9_]*';
             } else if(item === '**') {
-              return '[a-zA-Z0-9\\.]*';
+              return '[a-zA-Z0-9_\\.]*';
             } else {
               return item;
             }
@@ -518,28 +536,12 @@ module.exports = ['$location', function($location) {
   /**
    * Parse state notation name-params.  
    * 
-   * Assume all parameter values are strings; equivalent to URL querystring translation.  
+   * Assume all parameter values are strings
    * 
    * @param  {String} name A name-params string
    * @return {Array}       A name string and param Object
    */
-  _self.parse = function(name) {
-    if(name && name.match(/[a-zA-Z0-9\.]*\(.*\)/)) {
-      var npart = name.substr(0, name.indexOf('('));
-      var ppart = Parameters( name.substr(name.indexOf('(')+1) );
-
-      return {
-        name: npart,
-        params: ppart
-      };
-
-    } else {
-      return {
-        name: name,
-        params: null
-      };
-    }
-  };
+  _self.parse = _parseName;
 
   /**
    * Retrieve definition of states

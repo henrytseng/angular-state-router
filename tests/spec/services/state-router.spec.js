@@ -341,9 +341,7 @@ describe('$stateRouter', function() {
 
         // Assume asynchronous operation
         .change('company', {
-          params: {
-            lorem: 'ipsum'
-          }
+          lorem: 'ipsum'
         })
 
         // Begins before state change
@@ -369,62 +367,36 @@ describe('$stateRouter', function() {
         onComplete: [
           
           function() {
-            expect(_testScope.onBegin.calls.count()).toEqual(1);
-            expect(_testScope.onEnd.calls.count()).toEqual(1);
+            expect(_testScope.onBegin.calls.count()).toBe(1);
+            expect(_testScope.onEnd.calls.count()).toBe(1);
 
             // No change
             _stateRouter.change('company');
           },
 
           function() {
-            expect(_testScope.onBegin.calls.count()).toEqual(1);
-            expect(_testScope.onEnd.calls.count()).toEqual(1);
+            expect(_testScope.onBegin.calls.count()).toBe(1);
+            expect(_testScope.onEnd.calls.count()).toBe(1);
 
             // Change with additional params
             _stateRouter.change('company', {
-              params: {
-                lorem: 'ipsum'
-              }
+              lorem: 'ipsum'
             });
           },
 
           function() {
-            expect(_testScope.onBegin.calls.count()).toEqual(2);
-            expect(_testScope.onEnd.calls.count()).toEqual(2);
+            expect(_testScope.onBegin.calls.count()).toBe(2);
+            expect(_testScope.onEnd.calls.count()).toBe(2);
 
-            // Change resolve
+            // No change in parameters
             _stateRouter.change('company', {
-              resolve: {
-                lorem: function() {
-                  return false;
-                }
-              },
-              params: {
-                lorem: 'ipsum'
-              }
+              lorem: 'dolor'
             });
           },
 
           function() {
-            expect(_testScope.onBegin.calls.count()).toEqual(3);
-            expect(_testScope.onEnd.calls.count()).toEqual(3);
-
-            // No change in resolve properties
-            _stateRouter.change('company', {
-              resolve: {
-                lorem: function() {
-                  return true;
-                }
-              },
-              params: {
-                lorem: 'ipsum'
-              }
-            });
-          },
-
-          function() {
-            expect(_testScope.onBegin.calls.count()).toEqual(3);
-            expect(_testScope.onEnd.calls.count()).toEqual(3);
+            expect(_testScope.onBegin.calls.count()).toBe(3);
+            expect(_testScope.onEnd.calls.count()).toBe(3);
 
             done();
           }
@@ -436,7 +408,10 @@ describe('$stateRouter', function() {
 
         // Define states
         .state('company', companyState = {
-          url: '/company/profile'
+          url: '/company/profile',
+          params: {
+            lorem: 'sed ut'
+          }
         })
 
         // Initialize
@@ -818,10 +793,10 @@ describe('$stateRouter', function() {
     });
   });
 
-  xdescribe('#parse', function() {
+  describe('#parse', function() {
 
     it('Should parse name and params from name-params string', function() {
-      expect(_stateRouter.parse("lorem.sed.ut({id:'lorem', solution:(1+2)*3})")).toEqual(['lorem.sed.ut', {id:'lorem', solution:(1+2)*3}]);
+      expect(_stateRouter.parse("lorem.sed.ut({id:'lorem', solution:2.7329e-29})")).toEqual({ name:'lorem.sed.ut', params:{id:'lorem', solution:2.7329e-29}});
     });
 
   });
