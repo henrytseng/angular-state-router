@@ -55,6 +55,14 @@ var _resolveValue = function(value) {
 
 // Find values in an object literal
 var _listify = function(str) {
+
+  // Trim
+  str = str.replace(/^\s*/, '').replace(/\s*$/, '');
+
+  if(str.match(/^\s*{.*}\s*$/) === null) {
+    throw new Error('Parameters expects an Object');
+  }
+
   var sanitizeName = function(name) {
     return name.replace(/^[\{,]?\s*["']?/, '').replace(/["']?\s*$/, '');
   };

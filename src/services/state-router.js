@@ -32,13 +32,13 @@ module.exports = ['$location', function($location) {
    * 
    * Assume all parameter values are strings
    * 
-   * @param  {String} name A name-params string
-   * @return {Array}       A name string and param Object
+   * @param  {String} nameParams A name-params string
+   * @return {Object}             A name string and param Object
    */
-  var _parseName = function(name) {
-    if(name && name.match(/[a-zA-Z0-9_\.]*\(.*\)/)) {
-      var npart = name.substr(0, name.indexOf('('));
-      var ppart = Parameters( name.substr(name.indexOf('(')+1) );
+  var _parseName = function(nameParams) {
+    if(nameParams && nameParams.match(/^[a-zA-Z0-9_\.]*\(.*\)$/)) {
+      var npart = nameParams.substring(0, nameParams.indexOf('('));
+      var ppart = Parameters( nameParams.substring(nameParams.indexOf('(')+1, nameParams.lastIndexOf(')')) );
 
       return {
         name: npart,
@@ -47,7 +47,7 @@ module.exports = ['$location', function($location) {
 
     } else {
       return {
-        name: name,
+        name: nameParams,
         params: null
       };
     }
@@ -538,8 +538,8 @@ module.exports = ['$location', function($location) {
    * 
    * Assume all parameter values are strings
    * 
-   * @param  {String} name A name-params string
-   * @return {Array}       A name string and param Object
+   * @param  {String} nameParams A name-params string
+   * @return {Object}             A name string and param Object
    */
   _self.parse = _parseName;
 

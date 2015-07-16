@@ -388,16 +388,22 @@ describe('$stateRouter', function() {
             expect(_testScope.onBegin.calls.count()).toBe(2);
             expect(_testScope.onEnd.calls.count()).toBe(2);
 
+
+
+
+
+
+
             // No change in parameters
-            _stateRouter.change('company', {
-              lorem: 'dolor'
-            });
+            _stateRouter.change('company({lorem:"dolor"})');
           },
 
           function() {
             expect(_testScope.onBegin.calls.count()).toBe(3);
             expect(_testScope.onEnd.calls.count()).toBe(3);
 
+            expect(_stateRouter.current().params.lorem).toBe('dolor');
+            
             done();
           }
 
@@ -797,6 +803,10 @@ describe('$stateRouter', function() {
 
     it('Should parse name and params from name-params string', function() {
       expect(_stateRouter.parse("lorem.sed.ut({id:'lorem', solution:2.7329e-29})")).toEqual({ name:'lorem.sed.ut', params:{id:'lorem', solution:2.7329e-29}});
+    });
+
+    it('Should accept spacing around parameters', function() {
+      expect(_stateRouter.parse("lorem.sed.ut( {id:'lorem', solution:2.7329e-29} )")).toEqual({ name:'lorem.sed.ut', params:{id:'lorem', solution:2.7329e-29}});
     });
 
   });
