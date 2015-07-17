@@ -35,7 +35,7 @@ UrlDictionary.prototype.add = function(pattern, ref) {
     '^' +
     (pathChain.map(function(chunk) {
       if(chunk[0] === ':') {
-        return '[a-zA-Z0-9\\-_\\.~]+';
+        return '[a-zA-Z0-9\\-_\\.~%]+';
 
       } else {
         return chunk;

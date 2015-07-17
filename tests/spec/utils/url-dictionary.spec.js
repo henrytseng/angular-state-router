@@ -18,11 +18,17 @@ describe('UrlDictionary', function() {
       var ud = new UrlDictionary();
       var data1, data2, data3, data4;
 
+      // Match parameter variable
       ud.add('/pets/:id', data1 = { dolor: 'sed' });
       expect(ud.lookup('/pets/cat')).toBe(data1);
 
+      // Match parameter variable
       ud.add('/pets/:id/color', data2 = { lorem: 'sed' });
       expect(ud.lookup('/pets/cat/color')).toBe(data2);
+
+      // Match special characters
+      ud.add('/pets/:id/color/:color', data1 = { dolor: 'sed' });
+      expect(ud.lookup('/pets/cat/color/yellow%20purple')).toBe(data1);
 
       // Matches newest
       ud.add('/pets/:id/color?hue', data3 = { ut: 'sed' });
