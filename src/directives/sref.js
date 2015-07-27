@@ -1,6 +1,6 @@
 'use strict';
 
-module.exports = ['$stateRouter', function ($stateRouter) {
+module.exports = ['$state', function ($state) {
   return {
     restrict: 'A',
     scope: {
@@ -8,7 +8,7 @@ module.exports = ['$stateRouter', function ($stateRouter) {
     link: function(scope, element, attrs) {
       element.css('cursor', 'pointer');
       element.on('click', function(e) {
-        $stateRouter.change(attrs.sref);
+        $state.change(attrs.sref);
         e.preventDefault();
       });
     }

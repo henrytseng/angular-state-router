@@ -7,10 +7,10 @@ angular
     'angular-state-loadable'
   ])
 
-  .run(function($rootScope, $stateRouter) {
-    $rootScope.$stateRouter = $stateRouter;
+  .run(function($rootScope, $state) {
+    $rootScope.$state = $state;
 
-    $stateRouter
+    $state
 
       // Define states
       .state('landing', {
@@ -46,44 +46,43 @@ angular
 
       // Initialization
       .init('landing');
-
   })
 
-  .controller('FrameCtrl', function($scope, $stateRouter, $urlManager) {
+  .controller('FrameCtrl', function($scope, $state, $urlManager) {
     $scope.messages = [];
 
-    // Direct call to StateRouter
+    // Direct call to State
     $scope.callout = function() {
-      $stateRouter.change('states.define');
+      $state.change('states.define');
     };
 
     $scope.clearMessages = function() {
       $scope.messages = [];
     };
 
-    $stateRouter.on('init', function() {
-      console.log('init', $stateRouter.current().params);
+    $state.on('init', function() {
+      console.log('init', $state.current().params);
 
       $scope.messages.unshift({
         title: 'init',
-        body: 'StateRouter has initialized.'
+        body: 'State has initialized.'
       });
       $scope.$apply();
     });
 
-    $stateRouter.on('change:complete', function() {
+    $state.on('change:complete', function() {
       $scope.messages.unshift({
-        title: 'change:complete ('+ $stateRouter.current().name +')',
+        title: 'change:complete ('+ $state.current().name +')',
         body: 'State change request has been completed.'
       });
       $scope.$apply();
     });
 
     $urlManager.on('update', function() {
-      console.log('update', $stateRouter.current().params);
+      console.log('update', $state.current().params);
     });
 
     $urlManager.on('update:location', function() {
-      console.log('update:location', $stateRouter.current().params);
+      console.log('update:location', $state.current().params);
     });
   });

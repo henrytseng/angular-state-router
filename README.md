@@ -48,9 +48,9 @@ Add StateRouter as a dependency when your application module is instantiated
 Then **define** your states and **initialize** StateRouter
 
 	angular.module('myApp')
-	  .run(function($stateRouter) {
+	  .run(function($state) {
 
-	    $stateRouter
+	    $state
 
 	      // Define states
 	      .state('landing', {
@@ -86,8 +86,8 @@ States are data objects with an associated dot-notation name.  Child states inhe
 States must be first defined.  This is usually done in the angular `run` phase.  
 
 	angular.module('myApp')
-	  .run(function($stateRouter) {
-	    $stateRouter
+	  .run(function($state) {
+	    $state
 	      .state('account', {
 	        url: '/accounts',
 	        params: { endpoint: 'test.com' }
@@ -108,14 +108,14 @@ Initialization should occur before StateRouter API calls are made.  An initializ
 
 To listen to the init event:
 
-	$stateRouter.on('init', function() {  });
+	$state.on('init', function() {  });
 
 
 ### Use
 
 After states are defined they can be retrieved
 
-	var accountState = $stateRouter.state('account.profile');
+	var accountState = $state.state('account.profile');
 
 `StateRouter#state` returns a cached data object with values inherited from its parents.  
 
@@ -137,11 +137,11 @@ Will be inherited by in the `account.profile` state but not the `account.transac
 Events
 ------
 
-Events are emit from $stateRouter; where $stateRouter inherits from [events.EventEmitter](https://nodejs.org/api/events.html).  
+Events are emit from $state; where $state inherits from [events.EventEmitter](https://nodejs.org/api/events.html).  
 
 To listen to events 
 
-	$stateRouter.on('change:complete', function() {
+	$state.on('change:complete', function() {
 		// ...
 	});
 
@@ -150,7 +150,7 @@ To listen to events
 Event: 'init'
 -------------
 
-This event is emitted when $stateRouter is initialized.  If an initial state is specified `'init'` occurs current state is set.  
+This event is emitted when $state is initialized.  If an initial state is specified `'init'` occurs current state is set.  
 
 
 

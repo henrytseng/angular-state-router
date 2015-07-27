@@ -1,19 +1,19 @@
 'use strict';
 
-describe('$stateRouter', function() {
-  var _stateRouter;
+describe('$state', function() {
+  var _state;
   var $location;
 
   beforeEach(angular.mock.module('angular-state-router'));
 
-  beforeEach(angular.mock.inject(function($stateRouter, _$location_) {
-    _stateRouter = $stateRouter;
+  beforeEach(angular.mock.inject(function($state, _$location_) {
+    _state = $state;
     $location = _$location_;
   }));
 
   describe('#state', function() {
     it('Should define states without error', function() {
-      _stateRouter
+      _state
 
         // A state
         .state('dashboard', {
@@ -46,7 +46,7 @@ describe('$stateRouter', function() {
     });
 
     it('Should use defined state heirarchy parameters inherit from parent chain', function() {
-      _stateRouter
+      _state
 
         // Parent state
         .state('organism', {
@@ -96,30 +96,30 @@ describe('$stateRouter', function() {
           inherit: false
         });
 
-      var organism = _stateRouter.state('organism');
+      var organism = _state.state('organism');
       expect(organism).toBeTruthy();
 
-      var plant = _stateRouter.state('organism.plant');
+      var plant = _state.state('organism.plant');
       expect(plant).toBeTruthy();
 
-      var tree = _stateRouter.state('organism.plant.tree');
+      var tree = _state.state('organism.plant.tree');
       expect(tree).toBeTruthy();
 
-      var apple = _stateRouter.state('organism.plant.tree.apple');
+      var apple = _state.state('organism.plant.tree.apple');
       expect(apple).toBeTruthy();
 
-      var fuji = _stateRouter.state('organism.plant.tree.apple.fuji');
+      var fuji = _state.state('organism.plant.tree.apple.fuji');
       expect(fuji).toBeTruthy();
 
-      var hybrid = _stateRouter.state('organism.plant.tree.hybrid');
+      var hybrid = _state.state('organism.plant.tree.hybrid');
       expect(hybrid).toBeTruthy();
 
       // Nonexisting with parents
-      var nonexisting = _stateRouter.state('organism.plant.tree.nonexisting');
+      var nonexisting = _state.state('organism.plant.tree.nonexisting');
       expect(nonexisting).toBeTruthy();
 
       // Non-existing without parents
-      var invalid = _stateRouter.state('does.not.exist.invalid');
+      var invalid = _state.state('does.not.exist.invalid');
       expect(invalid).toBe(null);
 
       // Inherit by default
@@ -141,7 +141,7 @@ describe('$stateRouter', function() {
     });
 
     it('Should use cache until next update', function() {
-      _stateRouter
+      _state
         .state('organism.plant.tree', {
           url: '/trees',
           params: {
@@ -149,11 +149,11 @@ describe('$stateRouter', function() {
           }
         });
 
-      var tree1 = _stateRouter.state('organism.plant.tree');
+      var tree1 = _state.state('organism.plant.tree');
       expect(tree1).toBeTruthy();
-      expect(tree1).toBe(_stateRouter.state('organism.plant.tree'));
+      expect(tree1).toBe(_state.state('organism.plant.tree'));
 
-      _stateRouter
+      _state
         .state('organism.plant.tree', {
           url: '/trees',
           params: {
@@ -162,24 +162,24 @@ describe('$stateRouter', function() {
           }
         });
 
-      var tree2 = _stateRouter.state('organism.plant.tree');
+      var tree2 = _state.state('organism.plant.tree');
       expect(tree2).not.toBe(tree1);
     });
   });
 
   describe('#init', function() {
     it('Should pass-through EventEmitter methods', function() {
-      expect(_stateRouter.addListener).toBeDefined();
-      expect(_stateRouter.on).toBeDefined();
-      expect(_stateRouter.once).toBeDefined();
-      expect(_stateRouter.removeListener).toBeDefined();
-      expect(_stateRouter.removeAllListeners).toBeDefined();
-      expect(_stateRouter.emit).toBeDefined();
+      expect(_state.addListener).toBeDefined();
+      expect(_state.on).toBeDefined();
+      expect(_state.once).toBeDefined();
+      expect(_state.removeListener).toBeDefined();
+      expect(_state.removeAllListeners).toBeDefined();
+      expect(_state.emit).toBeDefined();
     });
 
     it('Should emit "init" event after initialization', function(done) {
-      _stateRouter.on('init', done);
-      _stateRouter.init();
+      _state.on('init', done);
+      _state.init();
     });
 
     it('Should init with $location.url()', function(done) {
@@ -198,9 +198,9 @@ describe('$stateRouter', function() {
           expect(_testScope.onInit).toHaveBeenCalled();
 
           // Parameters exist
-          expect(_stateRouter.current().params.company).toBe('xyco');
-          expect(_stateRouter.current().params.employee).toBe('charliewells');
-          expect(_stateRouter.current().params.trend).toBe('upwards');
+          expect(_state.current().params.company).toBe('xyco');
+          expect(_state.current().params.employee).toBe('charliewells');
+          expect(_state.current().params.trend).toBe('upwards');
 
           done();
         }
@@ -208,7 +208,7 @@ describe('$stateRouter', function() {
 
       spyOn(_testScope, 'onInit').and.callThrough();
 
-      _stateRouter
+      _state
 
         // Define states
         .state('company', companyState = {
@@ -244,7 +244,7 @@ describe('$stateRouter', function() {
 
       spyOn(_testScope, 'onInit').and.callThrough();
 
-      _stateRouter
+      _state
 
         // Define states
         .state('company', companyState = {
@@ -265,12 +265,12 @@ describe('$stateRouter', function() {
       // Testing scope
       var _testScope = {
         onBegin: function() {
-          expect(_stateRouter.current()).toBe(null);
+          expect(_state.current()).toBe(null);
         },
         
         onEnd: function() {
-          expect(_stateRouter.current().name).toEqual('company');
-          expect(_stateRouter.current().url).toEqual(companyState.url);
+          expect(_state.current().name).toEqual('company');
+          expect(_state.current().url).toEqual(companyState.url);
         },
 
         onComplete: function() {
@@ -286,7 +286,7 @@ describe('$stateRouter', function() {
       spyOn(_testScope, 'onEnd').and.callThrough();
       spyOn(_testScope, 'onComplete').and.callThrough();
 
-      _stateRouter
+      _state
 
         // Define states
         .state('company', companyState = {
@@ -315,12 +315,12 @@ describe('$stateRouter', function() {
       // Testing scope
       var _testScope = {
         onBegin: function() {
-          expect(_stateRouter.current()).toBe(null);
+          expect(_state.current()).toBe(null);
         },
         
         onEnd: function() {
-          expect(_stateRouter.current().name).toEqual('company');
-          expect(_stateRouter.current().url).toEqual(companyState.url);
+          expect(_state.current().name).toEqual('company');
+          expect(_state.current().url).toEqual(companyState.url);
         },
 
         onComplete: function() {
@@ -328,7 +328,7 @@ describe('$stateRouter', function() {
           expect(_testScope.onEnd).toHaveBeenCalled();
           expect(_testScope.onComplete).toHaveBeenCalled();
 
-          expect(_stateRouter.current().params.lorem).toBe('ipsum');
+          expect(_state.current().params.lorem).toBe('ipsum');
 
           done();
         }
@@ -338,7 +338,7 @@ describe('$stateRouter', function() {
       spyOn(_testScope, 'onEnd').and.callThrough();
       spyOn(_testScope, 'onComplete').and.callThrough();
 
-      _stateRouter
+      _state
 
         // Define states
         .state('company', companyState = {
@@ -380,7 +380,7 @@ describe('$stateRouter', function() {
             expect(_testScope.onEnd.calls.count()).toBe(1);
 
             // No change
-            _stateRouter.change('company');
+            _state.change('company');
           },
 
           function() {
@@ -388,7 +388,7 @@ describe('$stateRouter', function() {
             expect(_testScope.onEnd.calls.count()).toBe(1);
 
             // Change with additional params
-            _stateRouter.change('company', {
+            _state.change('company', {
               lorem: 'ipsum'
             });
           },
@@ -404,14 +404,14 @@ describe('$stateRouter', function() {
 
 
             // No change in parameters
-            _stateRouter.change('company({lorem:"dolor"})');
+            _state.change('company({lorem:"dolor"})');
           },
 
           function() {
             expect(_testScope.onBegin.calls.count()).toBe(3);
             expect(_testScope.onEnd.calls.count()).toBe(3);
 
-            expect(_stateRouter.current().params.lorem).toBe('dolor');
+            expect(_state.current().params.lorem).toBe('dolor');
             
             done();
           }
@@ -419,7 +419,7 @@ describe('$stateRouter', function() {
         ]
       };
 
-      _stateRouter
+      _state
 
         // Define states
         .state('company', companyState = {
@@ -448,9 +448,9 @@ describe('$stateRouter', function() {
     it('Should emit "error:notfound" when requested state does not exist', function(done) {
       var onNotFoundError, onError;
 
-      _stateRouter.on('error:notfound', onNotFoundError = jasmine.createSpy('Not found'));
-      _stateRouter.on('error', onError = jasmine.createSpy('Error'));
-      _stateRouter.on('change:complete', function() {
+      _state.on('error:notfound', onNotFoundError = jasmine.createSpy('Not found'));
+      _state.on('error', onError = jasmine.createSpy('Error'));
+      _state.on('change:complete', function() {
 
         expect(onNotFoundError).toHaveBeenCalled();
         expect(onError).toHaveBeenCalled();
@@ -458,21 +458,21 @@ describe('$stateRouter', function() {
         done();
       });
 
-      _stateRouter.init();
-      _stateRouter.change('somestatethatdoesntexist');
+      _state.init();
+      _state.change('somestatethatdoesntexist');
     });
 
     it('Should define a state and initialize to it automatically', function(done) {
-      _stateRouter
+      _state
         .state('employees', {
           url: '/employees/:id/profile'
         })
         .init();
 
       // Assume asynchronous operation
-      _stateRouter.change('employees');
+      _state.change('employees');
 
-      _stateRouter.on('change:complete', function() {
+      _state.on('change:complete', function() {
         done();
       });
     });
@@ -493,7 +493,7 @@ describe('$stateRouter', function() {
 
       spyOn(_testScope, 'onMiddle').and.callThrough();
 
-      _stateRouter
+      _state
         .init()
 
         .state('product.shoes', {
@@ -517,7 +517,7 @@ describe('$stateRouter', function() {
     it('Should require middleware to be function', function() {
       expect(function() {
         
-        _stateRouter.$use(null);
+        _state.$use(null);
 
       }).toThrow(new Error('Middleware must be a function'));
     });
@@ -528,7 +528,7 @@ describe('$stateRouter', function() {
     it('Should retrieve copy of current state', function(done) {
       var companyLobbyState;
 
-      _stateRouter
+      _state
 
         // Create state
         .state('company.lobby', companyLobbyState = {
@@ -548,11 +548,11 @@ describe('$stateRouter', function() {
         .on('change:complete', function() {
 
           // Not same reference
-          expect(_stateRouter.current()).not.toBe(companyLobbyState);
+          expect(_state.current()).not.toBe(companyLobbyState);
 
-          expect(_stateRouter.current().name).toBe('company.lobby');
-          expect(_stateRouter.current().url).toBe(companyLobbyState.url);
-          expect(_stateRouter.current().params).toEqual(companyLobbyState.params);
+          expect(_state.current().name).toBe('company.lobby');
+          expect(_state.current().url).toBe(companyLobbyState.url);
+          expect(_state.current().params).toEqual(companyLobbyState.params);
 
           done();
         });
@@ -561,7 +561,7 @@ describe('$stateRouter', function() {
 
   describe('#active', function() {
     it('Should check for active state using query with state notation', function(done) {
-      _stateRouter
+      _state
 
         // Define
         .state('company.lobby', {
@@ -578,42 +578,42 @@ describe('$stateRouter', function() {
 
         // Empty should not throw error
         .on('init', function() {
-          expect(_stateRouter.active('company.lobby.personel')).toBeFalsy();
+          expect(_state.active('company.lobby.personel')).toBeFalsy();
         })
 
         // Completion event is always fired even on error
         .on('change:complete', function() {
 
           // Parent
-          expect(_stateRouter.active('company.lobby.personel')).toBeTruthy();
-          expect(_stateRouter.active('company.lobby')).toBeTruthy();
-          expect(_stateRouter.active('company')).toBeTruthy();
+          expect(_state.active('company.lobby.personel')).toBeTruthy();
+          expect(_state.active('company.lobby')).toBeTruthy();
+          expect(_state.active('company')).toBeTruthy();
 
           // RegExp
-          expect(_stateRouter.active(/.*/)).toBeTruthy();
-          expect(_stateRouter.active('/.*/')).toBeTruthy();
+          expect(_state.active(/.*/)).toBeTruthy();
+          expect(_state.active('/.*/')).toBeTruthy();
 
           // Wildcards
-          expect(_stateRouter.active('company.*.personel')).toBeTruthy();
-          expect(_stateRouter.active('company.*.*')).toBeTruthy();
-          expect(_stateRouter.active('*.lobby')).toBeTruthy();
-          expect(_stateRouter.active('*.lobby.*')).toBeTruthy();
-          expect(_stateRouter.active('*.lobby.*.doesnotexist')).toBeFalsy();
-          expect(_stateRouter.active('*.lobby.doesnotexist.*')).toBeFalsy();
-          expect(_stateRouter.active('doesnotexist.*.lobby.*')).toBeFalsy();
+          expect(_state.active('company.*.personel')).toBeTruthy();
+          expect(_state.active('company.*.*')).toBeTruthy();
+          expect(_state.active('*.lobby')).toBeTruthy();
+          expect(_state.active('*.lobby.*')).toBeTruthy();
+          expect(_state.active('*.lobby.*.doesnotexist')).toBeFalsy();
+          expect(_state.active('*.lobby.doesnotexist.*')).toBeFalsy();
+          expect(_state.active('doesnotexist.*.lobby.*')).toBeFalsy();
 
           // Double wildcards
-          expect(_stateRouter.active('company.**')).toBeTruthy();
-          expect(_stateRouter.active('company.lobby.**')).toBeTruthy();
-          expect(_stateRouter.active('company.**.personel')).toBeTruthy();
-          expect(_stateRouter.active('company.**.doesnotexist')).toBeFalsy();
-          expect(_stateRouter.active('doesnotexist.**.lobby.*')).toBeFalsy();
+          expect(_state.active('company.**')).toBeTruthy();
+          expect(_state.active('company.lobby.**')).toBeTruthy();
+          expect(_state.active('company.**.personel')).toBeTruthy();
+          expect(_state.active('company.**.doesnotexist')).toBeFalsy();
+          expect(_state.active('doesnotexist.**.lobby.*')).toBeFalsy();
 
           // Invalid
-          expect(_stateRouter.active('doesnotexist')).toBeFalsy();
+          expect(_state.active('doesnotexist')).toBeFalsy();
 
           // Validate
-          expect(_stateRouter.current().name).toBe('company.lobby.personel');
+          expect(_state.current().name).toBe('company.lobby.personel');
 
           done();
         });
@@ -623,7 +623,7 @@ describe('$stateRouter', function() {
   describe('#library', function() {
     it('Should get defined states', function() {
 
-      _stateRouter
+      _state
 
         .state('students', {
           url: '/students/:id',
@@ -644,7 +644,7 @@ describe('$stateRouter', function() {
           url: '/classrooms/:id'
         });
 
-      expect(_stateRouter.library()).toEqual({
+      expect(_state.library()).toEqual({
         'students': {
           name: 'students',
           url: '/students/:id',
@@ -673,47 +673,47 @@ describe('$stateRouter', function() {
 
   describe('#validate.name', function() {
     it('Should test for valid state names', function() {
-      expect(_stateRouter.validate.name('lorem.ipsum.dolor.sed.ut')).toBe(true);
-      expect(_stateRouter.validate.name('lorem.ipsum')).toBe(true);
-      expect(_stateRouter.validate.name('lorem')).toBe(true);
-      expect(_stateRouter.validate.name('lorem.0')).toBe(true);
-      expect(_stateRouter.validate.name('Lorem.0')).toBe(true);
-      expect(_stateRouter.validate.name('DOLOR.dolor')).toBe(true);
+      expect(_state.validate.name('lorem.ipsum.dolor.sed.ut')).toBe(true);
+      expect(_state.validate.name('lorem.ipsum')).toBe(true);
+      expect(_state.validate.name('lorem')).toBe(true);
+      expect(_state.validate.name('lorem.0')).toBe(true);
+      expect(_state.validate.name('Lorem.0')).toBe(true);
+      expect(_state.validate.name('DOLOR.dolor')).toBe(true);
     });
 
     it('Should test for invalid state names', function() {
-      expect(_stateRouter.validate.name('lorem..sed.ut')).toBe(false);
-      expect(_stateRouter.validate.name('lorem.*.dolor.sed.ut')).toBe(false);
-      expect(_stateRouter.validate.name('lorem.**.dolor.sed.ut')).toBe(false);
-      expect(_stateRouter.validate.name('.lorem.dolor.ut')).toBe(false);
-      expect(_stateRouter.validate.name('lorem.dolor.ut.')).toBe(false);
-      expect(_stateRouter.validate.name('lorem..dolor.sed.ut')).toBe(false);
+      expect(_state.validate.name('lorem..sed.ut')).toBe(false);
+      expect(_state.validate.name('lorem.*.dolor.sed.ut')).toBe(false);
+      expect(_state.validate.name('lorem.**.dolor.sed.ut')).toBe(false);
+      expect(_state.validate.name('.lorem.dolor.ut')).toBe(false);
+      expect(_state.validate.name('lorem.dolor.ut.')).toBe(false);
+      expect(_state.validate.name('lorem..dolor.sed.ut')).toBe(false);
     });
   });
 
   describe('#validate.query', function() {
     it('Should test for valid state queries', function() {
-      expect(_stateRouter.validate.query('lorem.ipsum.dolor.sed.ut')).toBe(true);
-      expect(_stateRouter.validate.query('lorem.ipsum')).toBe(true);
-      expect(_stateRouter.validate.query('lorem')).toBe(true);
-      expect(_stateRouter.validate.query('lorem.0')).toBe(true);
-      expect(_stateRouter.validate.query('Lorem.0')).toBe(true);
-      expect(_stateRouter.validate.query('DOLOR.dolor')).toBe(true);
-      expect(_stateRouter.validate.query('lorem.*.dolor.sed.ut')).toBe(true);
-      expect(_stateRouter.validate.query('lorem.**.dolor.sed.ut')).toBe(true);
+      expect(_state.validate.query('lorem.ipsum.dolor.sed.ut')).toBe(true);
+      expect(_state.validate.query('lorem.ipsum')).toBe(true);
+      expect(_state.validate.query('lorem')).toBe(true);
+      expect(_state.validate.query('lorem.0')).toBe(true);
+      expect(_state.validate.query('Lorem.0')).toBe(true);
+      expect(_state.validate.query('DOLOR.dolor')).toBe(true);
+      expect(_state.validate.query('lorem.*.dolor.sed.ut')).toBe(true);
+      expect(_state.validate.query('lorem.**.dolor.sed.ut')).toBe(true);
     });
 
     it('Should test for invalid state queries', function() {
-      expect(_stateRouter.validate.query('lorem..sed.ut')).toBe(false);
-      expect(_stateRouter.validate.query('.lorem.dolor.ut')).toBe(false);
-      expect(_stateRouter.validate.query('lorem.dolor.ut.')).toBe(false);
-      expect(_stateRouter.validate.query('lorem..dolor.sed.ut')).toBe(false);
+      expect(_state.validate.query('lorem..sed.ut')).toBe(false);
+      expect(_state.validate.query('.lorem.dolor.ut')).toBe(false);
+      expect(_state.validate.query('lorem.dolor.ut.')).toBe(false);
+      expect(_state.validate.query('lorem..dolor.sed.ut')).toBe(false);
     });
   });
 
   describe('#options', function() {
     it('Should define limit for history length', function() {
-      _stateRouter.options({
+      _state.options({
         historyLength: 8
       });
     });
@@ -721,7 +721,7 @@ describe('$stateRouter', function() {
     it('Should remove history beyond defined length', function(done) {
       var itrResponse;
 
-      _stateRouter
+      _state
         .options({
           historyLength: 2
         })
@@ -776,32 +776,32 @@ describe('$stateRouter', function() {
       // Iterated responses
       itrResponse = [
         function() {
-          expect(_stateRouter.current().name).toBe('animals.listing');
-          expect(_stateRouter.history().length).toBe(0);
+          expect(_state.current().name).toBe('animals.listing');
+          expect(_state.history().length).toBe(0);
         },
         function() {
-          expect(_stateRouter.current().name).toBe('vets.listing');
-          expect(_stateRouter.history().length).toBe(1);
+          expect(_state.current().name).toBe('vets.listing');
+          expect(_state.history().length).toBe(1);
         },
         function() {
-          expect(_stateRouter.current().name).toBe('vets.policy');
-          expect(_stateRouter.history().length).toBe(2);
+          expect(_state.current().name).toBe('vets.policy');
+          expect(_state.history().length).toBe(2);
         },
         function() {
-          expect(_stateRouter.current().name).toBe('owners.listing');
-          expect(_stateRouter.history().length).toBe(2);
+          expect(_state.current().name).toBe('owners.listing');
+          expect(_state.history().length).toBe(2);
         },
         function() {
-          expect(_stateRouter.current().name).toBe('owners');
-          expect(_stateRouter.history().length).toBe(2);
+          expect(_state.current().name).toBe('owners');
+          expect(_state.history().length).toBe(2);
 
           // Last two are saved
-          expect(_stateRouter.history()[0].name).toBe('vets.policy');
-          expect(_stateRouter.history()[1].name).toBe('owners.listing');
+          expect(_state.history()[0].name).toBe('vets.policy');
+          expect(_state.history()[1].name).toBe('owners.listing');
 
         },
         function() {
-          expect(_stateRouter.current().name).toBe('owners.animals');
+          expect(_state.current().name).toBe('owners.animals');
           done();
         }
       ];
@@ -811,11 +811,11 @@ describe('$stateRouter', function() {
   describe('#parse', function() {
 
     it('Should parse name and params from name-params string', function() {
-      expect(_stateRouter.parse("lorem.sed.ut({id:'lorem', solution:2.7329e-29})")).toEqual({ name:'lorem.sed.ut', params:{id:'lorem', solution:2.7329e-29}});
+      expect(_state.parse("lorem.sed.ut({id:'lorem', solution:2.7329e-29})")).toEqual({ name:'lorem.sed.ut', params:{id:'lorem', solution:2.7329e-29}});
     });
 
     it('Should accept spacing around parameters', function() {
-      expect(_stateRouter.parse("lorem.sed.ut( {id:'lorem', solution:2.7329e-29} )")).toEqual({ name:'lorem.sed.ut', params:{id:'lorem', solution:2.7329e-29}});
+      expect(_state.parse("lorem.sed.ut( {id:'lorem', solution:2.7329e-29} )")).toEqual({ name:'lorem.sed.ut', params:{id:'lorem', solution:2.7329e-29}});
     });
 
   });

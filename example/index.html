@@ -11,6 +11,7 @@
     <script src="/node_modules/angular-state-view/dist/state-view.min.js"></script>
     <script src="/node_modules/angular-state-loadable/dist/state-loadable.min.js"></script>
     <script src="/app.js"></script>
+    <base href="http://localhost:3000/">
   </head>
   <body ng-controller="FrameCtrl">
 
@@ -30,16 +31,16 @@
         <!-- Collect the nav links, forms, and other content for toggling -->
         <div class="collapse navbar-collapse" id="bs-example-navbar-collapse-1">
           <ul class="nav navbar-nav">
-            <li ng-class="{'active': $stateRouter.active('states') }"><a href="#" sref="states">States</a></li>
-            <li ng-class="{'active': $stateRouter.active('events') }"><a href="#" sref="events">Events</a></li>
-            <li ng-class="{'active': $stateRouter.active('loadables') }"><a href="#" sref="loadables">Loadables</a></li>
-            <li ng-class="{'active': $stateRouter.active('views') }"><a href="#" sref="views">Views</a></li>
+            <li ng-class="{'active': $state.active('states') }"><a href="#" sref="states">States</a></li>
+            <li ng-class="{'active': $state.active('events') }"><a href="#" sref="events">Events</a></li>
+            <li ng-class="{'active': $state.active('loadables') }"><a href="#" sref="loadables">Loadables</a></li>
+            <li ng-class="{'active': $state.active('views') }"><a href="#" sref="views">Views</a></li>
           </ul>
         </div>
       </div>
     </nav>
 
-    <section class="screen" ng-class="{'active': $stateRouter.active('landing') }">
+    <section class="screen" ng-class="{'active': $state.active('landing') }">
       <div class="jumbotron">
         <div class="container">
           <h1>Demo</h1>
@@ -54,7 +55,7 @@
       </div>
     </section>
 
-    <section class="screen" ng-class="{'active': $stateRouter.active('states') }">
+    <section class="screen" ng-class="{'active': $state.active('states') }">
       <div class="jumbotron">
         <div class="container">
           <h1>States</h1>
@@ -63,7 +64,7 @@
       </div>
     </section>
 
-    <section class="screen" ng-class="{'active': $stateRouter.active('events') }">
+    <section class="screen" ng-class="{'active': $state.active('events') }">
       <div class="jumbotron">
         <div class="container">
           <h1>Events</h1>
@@ -80,14 +81,14 @@
       </div>
     </section>
 
-    <section class="screen" ng-class="{'active': $stateRouter.active('events.details') }">
+    <section class="screen" ng-class="{'active': $state.active('events.details') }">
       <div class="container">
         <h1>Event: init</h1>
         <p>Lorem ipsum</p>
       </div>
     </section>
 
-    <section class="screen" ng-class="{'active': $stateRouter.active('loadables') }">
+    <section class="screen" ng-class="{'active': $state.active('loadables') }">
       <div class="jumbotron">
         <div class="container">
           <h1>Loadables</h1>
@@ -96,7 +97,7 @@
       </div>
     </section>
 
-    <section class="screen" ng-class="{'active': $stateRouter.active('views') }">
+    <section class="screen" ng-class="{'active': $state.active('views') }">
       <div class="jumbotron">
         <div class="container">
           <h1>Views</h1>

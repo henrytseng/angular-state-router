@@ -3,7 +3,7 @@
 var events = require('events');
 var UrlDictionary = require('../utils/url-dictionary');
 
-module.exports = ['$stateRouter', '$location', function($stateRouter, $location) {
+module.exports = ['$state', '$location', function($state, $location) {
   var _url = $location.url();
 
   // Instance of EventEmitter
@@ -19,7 +19,7 @@ module.exports = ['$stateRouter', '$location', function($stateRouter, $location)
     if(nextUrl !== lastUrl) {
       _url = nextUrl;
 
-      $stateRouter.$location(_url);
+      $state.$location(_url);
       _self.emit('update:location');
     }
   };
@@ -28,7 +28,7 @@ module.exports = ['$stateRouter', '$location', function($stateRouter, $location)
    * Update URL based on state
    */
   var _update = function() {
-    var state = $stateRouter.current();
+    var state = $state.current();
 
     if(state && state.url) {
       _url = state.url;
@@ -60,7 +60,7 @@ module.exports = ['$stateRouter', '$location', function($stateRouter, $location)
   };
 
   // Register middleware layer
-  $stateRouter.$use(function(request, next) {
+  $state.$use(function(request, next) {
     _update();
     next();
   });

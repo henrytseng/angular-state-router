@@ -13,7 +13,7 @@ require('./utils/process');
 // Instantiate module
 angular.module('angular-state-router', [])
 
-  .factory('$stateRouter', require('./services/state-router'))
+  .provider('$state', require('./services/state-router'))
 
   .factory('$urlManager', require('./services/url-manager'))
 
