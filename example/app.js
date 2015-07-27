@@ -62,6 +62,9 @@ angular
     };
 
     $stateRouter.on('init', function() {
+
+      console.log($stateRouter.current().params);
+
       $scope.messages.unshift({
         title: 'init',
         body: 'StateRouter has initialized.'

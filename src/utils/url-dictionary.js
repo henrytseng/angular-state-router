@@ -8,6 +8,7 @@ var Url = require('./url');
 function UrlDictionary() {
   this._patterns = [];
   this._refs = [];
+  this._params = [];
 }
 
 /**
@@ -22,6 +23,7 @@ UrlDictionary.prototype.add = function(pattern, ref) {
   var i = this._patterns.length;
 
   var pathChain;
+  var params = {};
 
   if(pattern.indexOf('?') === -1) {
     pathChain = Url(pattern).path().split('/');
@@ -30,40 +32,84 @@ UrlDictionary.prototype.add = function(pattern, ref) {
     pathChain = Url(pattern).path().split('/');
   }
 
-  // URL matching
-  var expr = 
-    '^' +
-    (pathChain.map(function(chunk) {
-      if(chunk[0] === ':') {
-        return '[a-zA-Z0-9\\-_\\.~%]+';
+  // Start
+  var searchExpr = '^';
 
-      } else {
-        return chunk;
-      }
-    }).join('\\/')) +
-    '[\\/]?$';
+  // Items
+  (pathChain.forEach(function(chunk, i) {
+    if(i!==0) {
+      searchExpr += '\\/';
+    }
 
-  this._patterns[i] = new RegExp(expr);
+    if(chunk[0] === ':') {
+      searchExpr += '[^\\/]*';
+      params[chunk.substring(1)] = new RegExp(searchExpr);
+
+    } else {
+      searchExpr += chunk;
+    }
+  }));
+
+  // End
+  searchExpr += '[\\/]?$';
+
+  this._patterns[i] = new RegExp(searchExpr);
   this._refs[i] = ref;
+  this._params[i] = params;
 };
 
 /**
- * Find a reference according to a URL pattern
+ * Find a reference according to a URL pattern and retrieve params defined in URL
  * 
  * @param  {String} url      A URL to test for
  * @param  {Object} defaults A data Object of default parameter values
  * @return {Object}          A reference to a stored object
  */
 UrlDictionary.prototype.lookup = function(url, defaults) {
-  var inflected = Url(url || '').path();
+  url = url || '';
+  var p = Url(url).path();
+  var q = Url(url).queryparams();
 
-  for(var i=this._patterns.length-1; i>=0; i--) {
-    if(inflected.match(this._patterns[i]) !== null) {
-      return this._refs[i];
+  var _self = this;
+
+  // Check dictionary
+  var _findPattern = function(check) {
+    check = check || '';
+    for(var i=_self._patterns.length-1; i>=0; i--) {
+      if(check.match(_self._patterns[i]) !== null) {
+        return i;
+      }
     }
-  }
+    return -1;
+  };
 
-  return null;
+  var i = _findPattern(p);
+  
+  // Matching pattern found
+  if(i !== -1) {
+
+    // Retrieve params in pattern match
+    var params = {};
+    for(var n in this._params[i]) {
+      var paramParser = this._params[i][n];
+      var urlMatch = (url.match(paramParser) || []).pop() || '';
+      var varMatch = urlMatch.split('/').pop();
+      params[n] = varMatch;
+    }
+
+    // Retrieve params in querystring match
+    params = angular.extend(q, params);
+
+    return {
+      url: url,
+      ref: this._refs[i],
+      params: params
+    };
+
+  // Not in dictionary
+  } else {
+    return null;
+  }
 };
 
 module.exports = UrlDictionary;

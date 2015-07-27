@@ -18,7 +18,7 @@ module.exports = ['$location', function($location) {
   var _library = {};
   var _cache = {};
 
-  // URL dictionary
+  // URL to state dictionary
   var _urlDictionary = new UrlDictionary();
 
   // Middleware layers
@@ -412,9 +412,8 @@ module.exports = ['$location', function($location) {
     process.nextTick(function() {
 
       // Initial location
-      var initalLocation = _urlDictionary.lookup($location.url());
-      if(initalLocation !== null) {
-        _changeState(initalLocation.name, params, true, function() {
+      if($location.url() !== '') {
+        _self.$location($location.url(), function() {
           _self.emit('init');
         });
 
@@ -446,17 +445,24 @@ module.exports = ['$location', function($location) {
   };
 
   /**
-   * Change state based on $location.url(), asynchronous operation.  Used internally by $urlManager.
+   * Change state based on $location.url(), asynchronous operation using internal methods, quiet fallback.  
    * 
-   * @param  {String}      url      A url matching defind states
-   * @param  {Object}      [params] A parameters data object
-   * @return {StateRouter}          Itself; chainable
+   * @param  {String}      url        A url matching defind states
+   * @param  {Function}    [callback] A callback, function(err)
+   * @return {StateRouter}            Itself; chainable
    */
-  _self.$location = function(url, params) {
-    var state = _urlDictionary.lookup(url);
-    if(state) {
-      process.nextTick(angular.bind(null, _changeState, state.name, params, false));
+  _self.$location = function(url, callback) {
+    var data = _urlDictionary.lookup(url);
+
+    if(data) {
+      var state = data.ref;
+
+      if(state) {
+        // Parse params from url
+        process.nextTick(angular.bind(null, _changeState, state.name, data.params, false, callback));
+      }
     }
+
     return _self;
   };
 

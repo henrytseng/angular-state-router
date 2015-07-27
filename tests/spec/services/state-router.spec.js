@@ -185,16 +185,22 @@ describe('$stateRouter', function() {
     it('Should init with $location.url()', function(done) {
       var companyState;
 
-      expect($location.url()).not.toBe('/company/profile');
-
       // Set location
-      $location.url('/company/profile');
+      expect($location.url()).not.toBe('/company/profile/xyco/employees/charliewells/proxy');
+      $location.url('/company/profile/xyco/employees/charliewells/proxy');
+      expect($location.url()).toBe('/company/profile/xyco/employees/charliewells/proxy');
 
       // Testing scope
       var _testScope = {
         onInit: function() {
-          expect($location.url()).toBe('/company/profile');
+          // URL to be correct according to state
+          expect($location.url()).toBe('/company/profile/xyco/employees/charliewells/proxy');
           expect(_testScope.onInit).toHaveBeenCalled();
+
+          // Parameters exist
+          expect(_stateRouter.current().params.company).toBe('xyco');
+          expect(_stateRouter.current().params.employee).toBe('charliewells');
+          expect(_stateRouter.current().params.trend).toBe('upwards');
 
           done();
         }
@@ -206,14 +212,17 @@ describe('$stateRouter', function() {
 
         // Define states
         .state('company', companyState = {
-          url: '/company/profile'
+          url: '/company/profile/:company/employees/:employee/proxy',
+          params: {
+            trend: 'upwards'
+          }
         })
-        .state('stores', companyState = {
-          url: '/stores/:id'
+        .state('stores', {
+          url: '/stores/:store'
         })
 
-        // Initialize
-        .init('stores')
+        // Initialize, with default but uses location instead
+        .init('stores', {store: 'cornerstore'})
 
         .on('init', _testScope.onInit);
     });
@@ -226,7 +235,7 @@ describe('$stateRouter', function() {
       // Testing scope
       var _testScope = {
         onInit: function() {
-          expect($location.url()).toBe('/company/profile');
+          expect($location.url()).toBe('/company/profile/abcco');
           expect(_testScope.onInit).toHaveBeenCalled();
 
           done();
@@ -239,11 +248,11 @@ describe('$stateRouter', function() {
 
         // Define states
         .state('company', companyState = {
-          url: '/company/profile'
+          url: '/company/profile/:company'
         })
 
         // Initialize
-        .init('company')
+        .init('company', { company: 'abcco'})
 
         .on('init', _testScope.onInit);
     });

@@ -19,19 +19,7 @@ module.exports = ['$stateRouter', '$location', function($stateRouter, $location)
     if(nextUrl !== lastUrl) {
       _url = nextUrl;
 
-      // TODO parse params to state data
-
-
-      
-
-
-
-
-
-
-
-      $stateRouter.$location(_url, _self);
-
+      $stateRouter.$location(_url);
       _self.emit('update:location');
     }
   };
@@ -45,13 +33,11 @@ module.exports = ['$stateRouter', '$location', function($stateRouter, $location)
     if(state && state.url) {
       _url = state.url;
 
-      // TODO Add parameters or use default parameters
-
-
-
-
-
-
+      // Add parameters or use default parameters
+      var params = state.params || {};
+      for(var name in params) {
+        _url = _url.replace(new RegExp(':'+name, 'g'), params[name]);
+      }
 
       $location.url(_url);
     }
