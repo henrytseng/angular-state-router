@@ -42,7 +42,7 @@ UrlDictionary.prototype.add = function(pattern, ref) {
     }
 
     if(chunk[0] === ':') {
-      searchExpr += '[^\\/]*';
+      searchExpr += '[^\\/?]*';
       params[chunk.substring(1)] = new RegExp(searchExpr);
 
     } else {

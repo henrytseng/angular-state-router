@@ -19,6 +19,7 @@ angular.module('angular-state-router', [])
 
   .run(['$rootScope', '$urlManager', function($rootScope, $urlManager) {
     $rootScope.$on('$locationChangeSuccess', function() {
+      console.log(arguments);
       $urlManager.location(arguments);
     });
   }])

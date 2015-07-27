@@ -37,13 +37,19 @@ describe('UrlDictionary', function() {
         color: 'yellow%20purple'
       });
 
-      // Matches newest
+      // Matches query strings
       ud.add('/pets/:id/color?hue', data3 = { ut: 'sed' });
       expect(ud.lookup('/pets/cat/color?hue=green').ref).toBe(data3);
       expect(ud.lookup('/pets/cat/color?hue=green')).not.toBe(data2);
       expect(ud.lookup('/pets/cat/color?hue=green').params).toEqual({
         id: 'cat',
         hue: 'green'
+      });
+
+      // Match query strings bleeding into variables when followed immediately
+      expect(ud.lookup('/pets/horse?desaturate').params).toEqual({
+        id: 'horse',
+        desaturate: true
       });
 
       // Including escape characters

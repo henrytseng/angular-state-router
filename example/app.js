@@ -7,7 +7,7 @@ angular
     'angular-state-loadable'
   ])
 
-  .run(function($rootScope, $stateRouter, $location) {
+  .run(function($rootScope, $stateRouter) {
     $rootScope.$stateRouter = $stateRouter;
 
     $stateRouter
@@ -62,8 +62,7 @@ angular
     };
 
     $stateRouter.on('init', function() {
-
-      console.log($stateRouter.current().params);
+      console.log('init', $stateRouter.current().params);
 
       $scope.messages.unshift({
         title: 'init',
@@ -81,10 +80,10 @@ angular
     });
 
     $urlManager.on('update', function() {
-      console.log('update');
+      console.log('update', $stateRouter.current().params);
     });
 
     $urlManager.on('update:location', function() {
-      console.log('update:location');
+      console.log('update:location', $stateRouter.current().params);
     });
   });
