@@ -357,13 +357,20 @@ Given the URL `http://test.com/#/events/birthday_event?color=blue`
 
 
 
-Running Tests
--------------
+Views
+-----
 
-To run tests 
+Current states can be checked using the `active` method which accepts a state notation query
 
-	npm install
-	gulp test
+	<li ng-class="{'active': $state.active('company') }"><a href="#" sref="company">Company</a></li>
+
+And in the same method a state can be triggered using the `sref` attribute.  
+
+	<a href="#" sref="company">Company</a>
+
+Parameters can be sent similarly
+
+	<a href="#" sref="company({id:'Lorem ipsum'})">Company</a>
 
 
 
