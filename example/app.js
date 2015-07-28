@@ -7,10 +7,8 @@ angular
     'angular-state-loadable'
   ])
 
-  .run(function($rootScope, $state) {
-    $rootScope.$state = $state;
-
-    $state
+  .config(function($stateProvider) {
+    $stateProvider
 
       // Define states
       .state('landing', {
@@ -44,8 +42,12 @@ angular
         url: '/views'
       })
 
-      // Initialization
       .init('landing');
+
+  })
+
+  .run(function($rootScope, $state) {
+    $rootScope.$state = $state;
   })
 
   .controller('FrameCtrl', function($scope, $state, $urlManager) {

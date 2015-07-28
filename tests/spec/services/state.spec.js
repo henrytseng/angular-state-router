@@ -6,8 +6,8 @@ describe('$state', function() {
 
   beforeEach(angular.mock.module('angular-state-router'));
 
-  beforeEach(angular.mock.inject(function($state, _$location_) {
-    _state = $state;
+  beforeEach(angular.mock.inject(function(_$state_, _$location_) {
+    _state = _$state_;
     $location = _$location_;
   }));
 
@@ -167,97 +167,6 @@ describe('$state', function() {
     });
   });
 
-  describe('#init', function() {
-    it('Should pass-through EventEmitter methods', function() {
-      expect(_state.addListener).toBeDefined();
-      expect(_state.on).toBeDefined();
-      expect(_state.once).toBeDefined();
-      expect(_state.removeListener).toBeDefined();
-      expect(_state.removeAllListeners).toBeDefined();
-      expect(_state.emit).toBeDefined();
-    });
-
-    it('Should emit "init" event after initialization', function(done) {
-      _state.on('init', done);
-      _state.init();
-    });
-
-    it('Should init with $location.url()', function(done) {
-      var companyState;
-
-      // Set location
-      expect($location.url()).not.toBe('/company/profile/xyco/employees/charliewells/proxy');
-      $location.url('/company/profile/xyco/employees/charliewells/proxy');
-      expect($location.url()).toBe('/company/profile/xyco/employees/charliewells/proxy');
-
-      // Testing scope
-      var _testScope = {
-        onInit: function() {
-          // URL to be correct according to state
-          expect($location.url()).toBe('/company/profile/xyco/employees/charliewells/proxy');
-          expect(_testScope.onInit).toHaveBeenCalled();
-
-          // Parameters exist
-          expect(_state.current().params.company).toBe('xyco');
-          expect(_state.current().params.employee).toBe('charliewells');
-          expect(_state.current().params.trend).toBe('upwards');
-
-          done();
-        }
-      };
-
-      spyOn(_testScope, 'onInit').and.callThrough();
-
-      _state
-
-        // Define states
-        .state('company', companyState = {
-          url: '/company/profile/:company/employees/:employee/proxy',
-          params: {
-            trend: 'upwards'
-          }
-        })
-        .state('stores', {
-          url: '/stores/:store'
-        })
-
-        // Initialize, with default but uses location instead
-        .init('stores', {store: 'cornerstore'})
-
-        .on('init', _testScope.onInit);
-    });
-
-    it('Should fallback init to default initial location', function(done) {
-      var companyState;
-
-      expect($location.url()).not.toBe('/company/profile');
-
-      // Testing scope
-      var _testScope = {
-        onInit: function() {
-          expect($location.url()).toBe('/company/profile/abcco');
-          expect(_testScope.onInit).toHaveBeenCalled();
-
-          done();
-        }
-      };
-
-      spyOn(_testScope, 'onInit').and.callThrough();
-
-      _state
-
-        // Define states
-        .state('company', companyState = {
-          url: '/company/profile/:company'
-        })
-
-        // Initialize
-        .init('company', { company: 'abcco'})
-
-        .on('init', _testScope.onInit);
-    });
-  });
-
   describe('#change', function() {
     it('Should change state asynchronously', function(done) {
       var companyState;
@@ -294,7 +203,7 @@ describe('$state', function() {
         })
 
         // Initialize
-        .init()
+        .$ready()
 
         // Assume asynchronous operation
         .change('company')
@@ -346,7 +255,7 @@ describe('$state', function() {
         })
 
         // Initialize
-        .init()
+        .$ready()
 
         // Assume asynchronous operation
         .change('company', {
@@ -397,12 +306,6 @@ describe('$state', function() {
             expect(_testScope.onBegin.calls.count()).toBe(2);
             expect(_testScope.onEnd.calls.count()).toBe(2);
 
-
-
-
-
-
-
             // No change in parameters
             _state.change('company({lorem:"dolor"})');
           },
@@ -430,7 +333,7 @@ describe('$state', function() {
         })
 
         // Initialize
-        .init()
+        .$ready()
 
         // First. change
         .change('company')
@@ -458,8 +361,9 @@ describe('$state', function() {
         done();
       });
 
-      _state.init();
-      _state.change('somestatethatdoesntexist');
+      _state
+        .$ready()
+        .change('somestatethatdoesntexist');
     });
 
     it('Should define a state and initialize to it automatically', function(done) {
@@ -467,7 +371,7 @@ describe('$state', function() {
         .state('employees', {
           url: '/employees/:id/profile'
         })
-        .init();
+        .$ready();
 
       // Assume asynchronous operation
       _state.change('employees');
@@ -494,7 +398,7 @@ describe('$state', function() {
       spyOn(_testScope, 'onMiddle').and.callThrough();
 
       _state
-        .init()
+        .$ready()
 
         .state('product.shoes', {
           params: {
@@ -519,7 +423,7 @@ describe('$state', function() {
         
         _state.$use(null);
 
-      }).toThrow(new Error('Middleware must be a function'));
+      }).toThrow(new Error('Middleware must be a function.'));
     });
   });
 
@@ -539,7 +443,7 @@ describe('$state', function() {
         })
 
         // Initialize
-        .init()
+        .$ready()
 
         // Change
         .change('company.lobby')
@@ -572,7 +476,7 @@ describe('$state', function() {
         })
 
         // Initialize
-        .init()
+        .$ready()
 
         .change('company.lobby.personel')
 
@@ -708,103 +612,6 @@ describe('$state', function() {
       expect(_state.validate.query('.lorem.dolor.ut')).toBe(false);
       expect(_state.validate.query('lorem.dolor.ut.')).toBe(false);
       expect(_state.validate.query('lorem..dolor.sed.ut')).toBe(false);
-    });
-  });
-
-  describe('#options', function() {
-    it('Should define limit for history length', function() {
-      _state.options({
-        historyLength: 8
-      });
-    });
-
-    it('Should remove history beyond defined length', function(done) {
-      var itrResponse;
-
-      _state
-        .options({
-          historyLength: 2
-        })
-
-        .state('animals.listing', {
-          url: '/animals'
-        })
-
-        .state('animals', {
-          url: '/animals/:id'
-        })
-
-        .state('vets.listing', {
-          url: '/vets'
-        })
-
-        .state('vets', {
-          url: '/vets/:id'
-        })
-
-        .state('vets.policy', {
-          url: '/vets/:id/policy/:id'
-        })
-
-        .state('owners.listing', {
-          url: '/owners/:id'
-        })
-
-        .state('owners', {
-          url: '/owners/:id'
-        })
-
-        .state('owners.animals.listing', {
-          url: '/owners/:id/animals'
-        })
-
-        .state('owners.animals', {
-          url: '/owners/:id/animals/:id'
-        })
-
-        .init('animals.listing')
-        .change('vets.listing')
-        .change('vets.policy')
-        .change('owners.listing')
-        .change('owners')
-        .change('owners.animals')
-
-        .on('change:complete', function() {
-          itrResponse.shift().apply(null, arguments);
-        });
-
-      // Iterated responses
-      itrResponse = [
-        function() {
-          expect(_state.current().name).toBe('animals.listing');
-          expect(_state.history().length).toBe(0);
-        },
-        function() {
-          expect(_state.current().name).toBe('vets.listing');
-          expect(_state.history().length).toBe(1);
-        },
-        function() {
-          expect(_state.current().name).toBe('vets.policy');
-          expect(_state.history().length).toBe(2);
-        },
-        function() {
-          expect(_state.current().name).toBe('owners.listing');
-          expect(_state.history().length).toBe(2);
-        },
-        function() {
-          expect(_state.current().name).toBe('owners');
-          expect(_state.history().length).toBe(2);
-
-          // Last two are saved
-          expect(_state.history()[0].name).toBe('vets.policy');
-          expect(_state.history()[1].name).toBe('owners.listing');
-
-        },
-        function() {
-          expect(_state.current().name).toBe('owners.animals');
-          done();
-        }
-      ];
     });
   });
 

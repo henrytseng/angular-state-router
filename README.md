@@ -45,12 +45,12 @@ Add StateRouter as a dependency when your application module is instantiated
 
 	angular.module('myApp', ['angular-state-router']);
 
-Then **define** your states and **initialize** StateRouter
+Then **define** your states and optionally an **default initial location**
 
 	angular.module('myApp')
-	  .run(function($state) {
+	  .config(function($stateProvider) {
 
-	    $state
+	    $stateProvider
 
 	      // Define states
 	      .state('landing', {
@@ -69,9 +69,16 @@ Then **define** your states and **initialize** StateRouter
 	        url: '/account'
 	      })
 
-	      // Initialization
+	      // Set initialization location; optionally
 	      .init('landing');
 
+	  })
+	  
+	  .controller('MyController', function($state) {
+	  
+	  	 // Get the current state
+	    var current = $state.current();
+	    
 	  });
 
 
@@ -79,22 +86,25 @@ Then **define** your states and **initialize** StateRouter
 States
 ------
 
-States are data objects with an associated dot-notation name.  Child states inherit from parent states.  
+States are data objects with an associated dot-notation name.  Child states inherit from parent states by default.  
 
 ### Definition
 
-States must be first defined.  This is usually done in the angular `run` phase.  
+States must be first defined.  This is usually done in the angular **configuration phase** but *can* also be done later.  
 
 	angular.module('myApp')
-	  .run(function($state) {
+	  .config(function($state) {
+	  
 	    $state
 	      .state('account', {
 	        url: '/accounts',
 	        params: { endpoint: 'test.com' }
 	      })
+	      
 	      .state('account.profile', {
 	        url: '/accounts/:id'
 	      })
+	      
 	      .state('account.transactions', {
 	        url: '/accounts/:id/transactions',
 	        inherit: false
@@ -102,22 +112,38 @@ States must be first defined.  This is usually done in the angular `run` phase.
 	  });
 
 
+
 ### Initialization
 
-Initialization should occur before StateRouter API calls are made.  An initialization `'init'` event is emitted from the StateRouter.  
+Initialization occurs when the application is kickedstarted.  This is why it is *often* important to define all possible deep linked states during the **configuration phase**.  
+
+An initialization `'init'` event is emitted from the StateRouter.  
 
 To listen to the init event:
 
-	$state.on('init', function() {  });
+	angular.module('myApp')
+	  .run(function($state) {
+	    $state.on('init', function() {  });
+	  });
+
+Or also register during the **configuration phase**
+
+	angular.module('myApp')
+	  .config(function($stateProvider) {
+	    $stateProvider.on('init', function() {  });
+	  });
+
 
 
 ### Use
 
 After states are defined they can be retrieved
 
-	var accountState = $state.state('account.profile');
+	// Change state
+	$state.change('account.profile', { employee: 'e92792-2389' });
 
-`StateRouter#state` returns a cached data object with values inherited from its parents.  
+State changes are asynchronous operations.  
+
 
 
 ### Inheritance
@@ -297,6 +323,37 @@ Both of the following will match the state `catalog.index.list`
 	catalog.*.list
 	catalog.**
 
+
+
+URLs
+----
+
+URLs in state definitions take the form:
+
+	$stateProvider.state('events.details', {
+	  url: '/events/:eventid',
+	    params: {
+	      eventid: 'init'
+	    }
+	  })
+
+Where parameters are specified in URLs using variable names starting with a colon, e.g. - `:id`.  And a default value can be specified using a `params` Object.  
+
+To retrieve the current state and its parameter values use (e.g. - for example finding the value of `eventid`):
+
+	$state.current().params.eventid
+
+
+### Query String
+
+Query string values are also set in the params object.  
+
+Given the URL `http://test.com/#/events/birthday_event?color=blue`
+
+	assert(params).equal({
+		eventid: 'birthday_event',
+		color: 'blue'
+	});
 
 
 

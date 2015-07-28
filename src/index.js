@@ -17,11 +17,14 @@ angular.module('angular-state-router', [])
 
   .factory('$urlManager', require('./services/url-manager'))
 
-  .run(['$rootScope', '$urlManager', function($rootScope, $urlManager) {
+  .run(['$rootScope', '$urlManager', '$state', function($rootScope, $urlManager, $state) {
+    // Update location changes
     $rootScope.$on('$locationChangeSuccess', function() {
-      console.log(arguments);
       $urlManager.location(arguments);
     });
+
+    // Initialize
+    $state.$ready();
   }])
 
   .directive('sref', require('./directives/sref'));
