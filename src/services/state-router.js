@@ -5,6 +5,7 @@
 var events = require('events');
 var UrlDictionary = require('../utils/url-dictionary');
 var Parameters = require('../utils/parameters');
+var QueueHandler = require('../utils/queue-handler');
 
 module.exports = function StateRouterProvider() {
   // Instance
@@ -240,58 +241,6 @@ module.exports = function StateRouterProvider() {
     return data;
   };
 
-  // TODO externalize ExecutionQueue
-
-  /**
-   * Execute a series of functions; used in tandem with middleware
-   */
-  var ExecutionQueue = function() {
-    var _list = [];
-    var _data = null;
-
-    return {
-      add: function(handler) {
-        if(handler && handler.constructor === Array) {
-          _list = _list.concat(handler);
-        } else {
-          _list.push(handler);
-        }
-        return this;
-      },
-
-      data: function(data) {
-        _data = data;
-        return this;
-      },
-
-      execute: function(callback) {
-        var nextHandler;
-        nextHandler = function() {
-          var handler = _list.shift();
-
-          if(!handler) {
-            return callback(null);
-          }
-
-          handler.call(null, _data, function(err) {
-
-            // Error
-            if(err) {
-              _dispatcher.emit('error', err, _data);
-              callback(err);
-
-            // Continue
-            } else {
-              nextHandler();
-            }
-          });
-        };
-
-        nextHandler();
-      }
-    };
-  };
-
   /**
    * Set configuration data parameters for StateRouter
    *
@@ -398,7 +347,7 @@ module.exports = function StateRouterProvider() {
       }
 
       // Compile execution phases
-      var queue = ExecutionQueue().data(request);
+      var queue = QueueHandler().data(request);
 
       // Does not exist
       if(!nextState) {
@@ -443,6 +392,9 @@ module.exports = function StateRouterProvider() {
 
       // Run
       queue.execute(function(err) {
+        if(err) {
+          _dispatcher.emit('error', err, request);
+        }
         _dispatcher.emit('change:complete', err, request);
 
         if(callback) {
