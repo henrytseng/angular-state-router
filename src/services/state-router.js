@@ -2,7 +2,7 @@
 
 /* global process:false */
 
-var events = require('events');
+var EventEmitter = require('events').EventEmitter;
 var UrlDictionary = require('../utils/url-dictionary');
 var Parameters = require('../utils/parameters');
 var QueueHandler = require('../utils/queue-handler');
@@ -30,7 +30,7 @@ module.exports = function StateRouterProvider() {
   var _layerList = [];
 
   // Delegated EventEmitter
-  var _dispatcher = new events.EventEmitter();
+  var _dispatcher = new EventEmitter();
 
   // Inital location
   var _initialLocation;
