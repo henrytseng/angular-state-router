@@ -13,6 +13,7 @@ gulp.task('watch', function() {
 
   watch([
     'src/**/*.js',
+    'tests/helpers/**/*.helper.js',
     'tests/spec/**/*.spec.js'
   ], function() {
     runSequence('lint', 'build', 'test');

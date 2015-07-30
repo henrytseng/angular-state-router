@@ -8,6 +8,10 @@ describe('$urlManager', function() {
 
     // Load helpers
     require('../../helpers/state-router.helper')(_fakeApp);
+
+    require('../../helpers/state-router.helper').$service.current = function() {
+      console.log('123');
+    };
   });
 
   beforeEach(angular.mock.module('angular-state-router', 'fakeApp'));
