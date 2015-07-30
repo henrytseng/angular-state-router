@@ -10,107 +10,110 @@
     <script src="/node_modules/angular-state-router/dist/state-router.min.js"></script>
     <script src="/node_modules/angular-state-view/dist/state-view.min.js"></script>
     <script src="/node_modules/angular-state-loadable/dist/state-loadable.min.js"></script>
+    <script src="/node_modules/d3/d3.min.js"></script>
     <script src="/app.js"></script>
+    <script src="/sview.js"></script>
     <base href="http://localhost:3000/">
   </head>
   <body ng-controller="FrameCtrl">
 
-    <nav class="navbar navbar-default">
-      <div class="container-fluid">
-        <!-- Brand and toggle get grouped for better mobile display -->
-        <div class="navbar-header">
-          <button type="button" class="navbar-toggle collapsed" data-toggle="collapse" data-target="#bs-example-navbar-collapse-1" aria-expanded="false">
-            <span class="sr-only">Toggle navigation</span>
-            <span class="icon-bar"></span>
-            <span class="icon-bar"></span>
-            <span class="icon-bar"></span>
-          </button>
-          <a class="navbar-brand" href="#/" sref="landing">Demo</a>
+    <!-- Navigation -->
+    <ng-include src="'/navigation.html'"></ng-include>
+    <!-- Navigation -->
+
+    <!-- Content Body -->
+    <sview id="stateDiagram"></sview>
+
+    <sview id="contentBody">
+
+      <!-- Default content -->
+      <section class="screen">
+        <div class="jumbotron">
+          <div class="container">
+            <h1>Getting Started</h1>
+            <p>An AngularJS state-based router designed for flexibility and ease of use.</p>
+            <p>StateRouter is designed to be used in a modular integration with:</p>
+            <ul>
+              <li>
+                <a href="https://www.npmjs.com/package/angular-state-router">StateRouter</a>
+              </li>
+              <li>
+                <a href="https://www.npmjs.com/package/angular-state-view">StateView</a>
+              </li>
+              <li>
+                <a href="https://www.npmjs.com/package/angular-state-loadable">StateLoadable</a>
+              </li>
+            </ul>
+          </div>
         </div>
 
-        <!-- Collect the nav links, forms, and other content for toggling -->
-        <div class="collapse navbar-collapse" id="bs-example-navbar-collapse-1">
-          <ul class="nav navbar-nav">
-            <li ng-class="{'active': $state.active('states') }"><a href="#" sref="states">States</a></li>
-            <li ng-class="{'active': $state.active('events') }"><a href="#" sref="events">Events</a></li>
-            <li ng-class="{'active': $state.active('loadables') }"><a href="#" sref="loadables">Loadables</a></li>
-            <li ng-class="{'active': $state.active('views') }"><a href="#" sref="views">Views</a></li>
-          </ul>
-        </div>
-      </div>
-    </nav>
+        <article class="container">
+          <h2>Installation</h2>
+          <p>To install in your project, simply install from <a href="https://www.npmjs.com/">npm</a> in your project folder</p>
+          <pre>
+$ cd my_project
+$ npm install angular-state-router --save</pre>
+          <p>Then include the script in your &lt;head&gt; tag</p>
+          <pre>
+&lt;script src="/node_modules/angular-state-router/dist/state-router.min.js"&gt;&lt;/script&gt;</pre>
+        </article>
 
-    <section class="screen" ng-class="{'active': $state.active('landing') }">
-      <div class="jumbotron">
-        <div class="container">
-          <h1>Demo</h1>
-          <p>StateRouter is an AngularJS state-based router designed for flexibility and ease of use.</p>
-          <p>StateRouter is designed to be used in a modular integration with:</p>
-          <ul>
-            <li>StateRouter</li>
-            <li>StateView</li>
-            <li>StateLoadable</li>
-          </ul>
-        </div>
-      </div>
-    </section>
+        <article class="container">
+          <h2>Definition</h2>
+          <p>Set up application, typically during the configuration phase, through <a sref="docs"><strong>$stateProvider</strong></a> provider</p>
+          <pre>
+angular.module('myApp', ['angular-state-router'])
+  .config(function($stateProvider) {
 
-    <section class="screen" ng-class="{'active': $state.active('states') }">
-      <div class="jumbotron">
-        <div class="container">
-          <h1>States</h1>
-          <p>Lorem ipsum</p>
-        </div>
-      </div>
-    </section>
+    $stateProvider
 
-    <section class="screen" ng-class="{'active': $state.active('events') }">
-      <div class="jumbotron">
-        <div class="container">
-          <h1>Events</h1>
-          <p>Dispatched from <a href="https://nodejs.org/api/events.html#events_class_events_eventemitter">events.EventEmitter</a>, events use the event delegation pattern.</p>
-          <ul>
-            <li>
-              <a href="#/events/init" sref="events.details({id:'init'})">init</a>
-            </li>
-            <li>
-              <a href="#/events/error" sref="events.details({id:'error'})">error</a>
-            </li>
-          </ul>
-        </div>
-      </div>
-    </section>
+      // Define states
+      .state('landing', {
+        url: '/'
+      })
 
-    <section class="screen" ng-class="{'active': $state.active('events.details') }">
-      <div class="container">
-        <h1>Event: init</h1>
-        <p>Lorem ipsum</p>
-      </div>
-    </section>
+      // Set initialization location; optionally
+      .init('landing');
 
-    <section class="screen" ng-class="{'active': $state.active('loadables') }">
-      <div class="jumbotron">
-        <div class="container">
-          <h1>Loadables</h1>
-          <p>Lorem ipsum:</p>
-        </div>
-      </div>
-    </section>
+  });</pre>
+        </article>
 
-    <section class="screen" ng-class="{'active': $state.active('views') }">
-      <div class="jumbotron">
-        <div class="container">
-          <h1>Views</h1>
-          <p>Lorem ipsum:</p>
-        </div>
-      </div>
-    </section>
+        <article class="container">
+          <h2>Use</h2>
+          <p>Access application state through <a sref="docs"><strong>$state</strong></a> service</p>
+          <pre>
+angular.module('myApp')
+  .controller('MyController', function($scope, $state) {
+  
+    // Listen to events
+    $state.on('change:complete', function() {
 
-    <!-- Log -->
+      // Get the current state
+      var current = $state.current();
+
+      console.log(current.name);
+    });
+
+    $scope.onClickMarketingCampaign = function() {
+
+      // Request changes
+      $state.change('catalogs.products.items', { id: 'e239' });
+
+    };
+
+  });</pre>
+        </article>
+      </section>
+      <!-- Default content -->
+
+    </sview>
+    <!-- Content Body -->
+    
+    <!-- Debugging Log -->
     <div class="container messages">
       <div class="panel panel-info">
         <div class="panel-heading">
-          <h3 class="panel-title">StateRouter Events</h3>
+          <h3 class="panel-title">Debug</h3>
         </div>
         <div class="panel-body">
           <div class="media" ng-repeat="item in messages">
@@ -124,8 +127,8 @@
           <a class="btn btn-default" ng-click="clearMessages()">Clear</a>
         </div>
       </div>
-
     </div>
+    <!-- Debugging Log -->
 
   </body>
 </html>

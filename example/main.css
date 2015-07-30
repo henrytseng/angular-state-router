@@ -8,7 +8,6 @@ body {
 }
 
 .screen {
-  display: none;
 }
 
 .screen.active {
@@ -18,4 +17,9 @@ body {
 .messages {
   color: #666;
   margin-top: 50px;
+}
+
+.jumbotron blockquote {
+  font-weight: 200;
+  color: #666;
 }

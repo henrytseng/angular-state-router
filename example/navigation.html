@@ -8,15 +8,18 @@
         <span class="icon-bar"></span>
         <span class="icon-bar"></span>
       </button>
-      <a class="navbar-brand" href="#" sref="gettingstarted">StateRouter</a>
+      <a class="navbar-brand" href="#" sref="landing">StateRouter</a>
     </div>
 
     <div class="collapse navbar-collapse" id="bs-example-navbar-collapse-1">
       <ul class="nav navbar-nav">
-        <li ng-class="{'active': $state.active('gettingstarted') }"><a href="#" sref="gettingstarted">Getting Started</a></li>
+        <li ng-class="{'active': $state.active('landing') }"><a href="#" sref="landing">Getting Started</a></li>
         <li ng-class="{'active': $state.active('docs') }"><a href="#" sref="docs">Documentation</a></li>
         <li ng-class="{'active': $state.active('components') }"><a href="#" sref="components">Components</a></li>
+        <li ng-class="{'active': $state.active('experiment') }"><a href="#" sref="experiment">Experiment</a></li>
       </ul>
+
+      <p class="navbar-text navbar-right">{{ $state.current().name }}</p>
     </div>
   </div>
 </nav>

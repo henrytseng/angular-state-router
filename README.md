@@ -3,7 +3,7 @@ StateRouter
 
 [![Build Status](https://travis-ci.org/henrytseng/angular-state-router.svg?branch=master)](https://travis-ci.org/henrytseng/angular-state-router) [![Join the chat at https://gitter.im/henrytseng/angular-state-router](https://badges.gitter.im/Join%20Chat.svg)](https://gitter.im/henrytseng/angular-state-router?utm_source=badge&utm_medium=badge&utm_campaign=pr-badge&utm_content=badge) 
 
-StateRouter is an AngularJS state-based router designed for flexibility and ease of use.  
+An AngularJS state-based router designed for flexibility and ease of use.  
 
 StateRouter is designed to be used in a modular integration with:
 
@@ -16,10 +16,10 @@ While not required, StateRouter was originally developed with Browserify.
 
 
 
-Install
--------
+Installation
+------------
 
-To install in your project, simply install from NPM 
+To install in your project, simply install from npm 
 
 	npm install angular-state-router --save
 
@@ -86,7 +86,9 @@ Then **define** your states and optionally an **default initial location**
 States
 ------
 
-States are data objects with an associated dot-notation name.  Child states inherit from parent states by default.  
+StateRouter is design for building applications that can be represented with a [finite-state machine model](https://en.wikipedia.org/wiki/Finite-state_machine) (FSM), a computational model.  
+
+States are represented through data objects with an associated dot-notation name.  Child states inherit from parent states by default.  
 
 ### Definition
 
@@ -189,27 +191,6 @@ This event is emitted when a requested change to a valid state exists.
 
 
 
-Event: 'load:start'
--------------------
-
-This event is emitted when a loadable object starts loading.  
-
-
-
-Event: 'load:progress'
-----------------------
-
-This event is emitted when a loadable object progresses loading.  This event must occur once before `'end'` is emitted.  
-
-
-
-Event: 'load:end'
------------------
-
-This event is emitted when a loadable object completes loading.  
-
-
-
 Event: 'resolve:start'
 ----------------------
 
@@ -221,13 +202,6 @@ Event: 'resolve:end'
 --------------------
 
 This event is emitted when a states ends resolve.  
-
-
-
-Event: 'render'
----------------
-
-This event is emitted when the view is rendered.  
 
 
 
@@ -401,6 +375,6 @@ Then using your browser visit [http://localhost:3000/index.html](http://localhos
 License
 -------
 
-Copyright (c) 2014 Henry Tseng
+Copyright (c) 2015 Henry Tseng
 
 Released under the MIT license. See LICENSE for details.

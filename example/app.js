@@ -15,35 +15,28 @@ angular
         url: '/'
       })
 
-      .state('notation', {
-        url: '/notation'
+      .state('docs', {
+        url: '/docs'
       })
 
-      .state('states', {
-        url: '/states'
-      })
-
-      .state('events', {
-        url: '/events'
-      })
-
-      .state('events.details', {
-        url: '/events/:id',
-        params: {
-          id: 'init'
+      .state('components', {
+        url: '/components',
+        templates: {
+          contentBody: function($templateCache) {
+            $templateCache.get('/components.html');
+          }
         }
       })
 
-      .state('loadables', {
-        url: '/loadables'
+      .state('components.modules', {
+        url: '/components/:module'
       })
 
-      .state('views', {
-        url: '/views'
+      .state('experiment', {
+        url: '/experiment'
       })
 
       .init('landing');
-
   })
 
   .run(function($rootScope, $state) {
@@ -52,6 +45,8 @@ angular
 
   .controller('FrameCtrl', function($scope, $state, $urlManager) {
     $scope.messages = [];
+
+    $scope.additional = "Sed ut perspiciatis unde omnis iste natus error sit voluptatem accusantium doloremque laudantium, totam rem aperiam, eaque ipsa quae ab illo inventore veritatis et quasi architecto beatae vitae dicta sunt explicabo.";
 
     // Direct call to State
     $scope.callout = function() {
