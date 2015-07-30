@@ -11,12 +11,16 @@ angular
     $stateProvider
 
       // Define states
-      .state('landing', {
+      .state('gettingstarted', {
         url: '/'
       })
 
-      .state('docs', {
-        url: '/docs'
+      .state('api', {
+        url: '/api'
+      })
+
+      .state('api.methods', {
+        url: '/api/:method'
       })
 
       .state('components', {
@@ -36,7 +40,7 @@ angular
         url: '/experiment'
       })
 
-      .init('landing');
+      .init('gettingstarted');
   })
 
   .run(function($rootScope, $state) {

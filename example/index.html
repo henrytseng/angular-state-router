@@ -60,7 +60,7 @@ $ npm install angular-state-router --save</pre>
 
         <article class="container">
           <h2>Definition</h2>
-          <p>Set up application, typically during the configuration phase, through <a sref="docs"><strong>$stateProvider</strong></a> provider</p>
+          <p>Set up application, typically during the configuration phase, through <a sref="api.methods({method:'$stateProvider'})"><strong>$stateProvider</strong></a> provider</p>
           <pre>
 angular.module('myApp', ['angular-state-router'])
   .config(function($stateProvider) {
@@ -80,7 +80,7 @@ angular.module('myApp', ['angular-state-router'])
 
         <article class="container">
           <h2>Use</h2>
-          <p>Access application state through <a sref="docs"><strong>$state</strong></a> service</p>
+          <p>Access application state through <a sref="api.methods({method:'$state'})"><strong>$state</strong></a> service</p>
           <pre>
 angular.module('myApp')
   .controller('MyController', function($scope, $state) {
