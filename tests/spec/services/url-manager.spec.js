@@ -2,23 +2,31 @@
 
 describe('$urlManager', function() {
   var _fakeApp;
+  var _stateRouterHelper = require('../../helpers/state-router.helper');
 
   beforeEach(function() {
     _fakeApp = angular.module('fakeApp', function() {});
 
     // Load helpers
-    require('../../helpers/state-router.helper')(_fakeApp);
-
-    require('../../helpers/state-router.helper').$service.current = function() {
-      console.log('123');
-    };
+    _stateRouterHelper.factory(_fakeApp).reset();
   });
 
   beforeEach(angular.mock.module('angular-state-router', 'fakeApp'));
 
   describe('#update', function() {
 
-    it('Should update URL location according to state', function() {
+    it('Should update incorrect URL location according to state', function() {
+
+      _stateRouterHelper.$service.current = function() {
+        return {
+          name: 'accounting.employees',
+          url: '/accounting/employees/:employee',
+          params: {
+            employee: '283202aef00'
+          }
+        };
+      };
+
       angular.mock.inject(function($urlManager, $location) {
         expect($location.url()).toBe('');
 

@@ -1,75 +1,87 @@
 'use strict';
 
+var _template = {
 
+  provider: {
+    // EventEmitter
+    addListener: function() { },
+    on: function() { },
+    once: function() { },
+    removeListener: function() { },
+    removeAllListeners: function() { },
+    listeners: function() { },
+    emit: function() { },
 
-// TODO add reset
-
-
-
-
-var _provider = {
-
-  // EventEmitter
-  addListener: function() {},
-  on: function() {},
-  once: function() {},
-  removeListener: function() {},
-  removeAllListeners: function() {},
-  listeners: function() {},
-  emit: function() {},
-
-  // Provider
-  option: function() { },
-  state: function() { },
-  init: function() { },
-
-};
-var _service = {
-  options: function() { },
-  state: function() { },
-  $use: function() { },
-  $ready: function() { },
-
-  parse: function() { },
-  library: function() { },
-  history: function() { },
-  change: function() { },
-  $location: function() { },
-
-  current: function() {
-    return {
-      name: 'accounting.employees',
-      url: '/accounting/employees/:employee',
-      params: {
-        employee: '283202aef00'
-      }
-    };
+    // Provider
+    option: function() { },
+    state: function() { },
+    init: function() { },
   },
-  active: function() { }
+
+  service: {
+    options: function() { },
+    state: function() { },
+    $use: function() { },
+    $ready: function() { },
+
+    parse: function() { },
+    library: function() { },
+    history: function() { },
+    change: function() { },
+    $location: function() { },
+
+    current: function() { },
+    active: function() { }
+  }
 };
 
-module.exports = function(app) {
+var _provider;
+var _service;
+var _reset = function() {
+  var entity = angular.copy(_template);
 
-  app
-    .provider('$state', function StateRouterProvider() {
+  _provider = entity.provider;
+  _service = entity.service;
 
-      var _self = this;
+  module.exports.$provider = _provider;
+  module.exports.$service = _service;
+};
 
-      // Delegate method
-      Object.keys(_provider).forEach(function(method) {
-        _self[method] = function() {
-          return _provider[method].apply(_provider, arguments);
+module.exports = {
+
+  factory: function(app) {
+    if(!_provider || !_service) _reset();
+
+    app
+      .provider('$state', function StateRouterProvider() {
+
+        var _self = this;
+
+        Object.keys(_provider).forEach(function(method) {
+          // Delegate method
+          if(typeof _provider[method] === 'function') {
+            _self[method] = function() {
+              return _provider[method].apply(_provider, arguments);
+            };
+
+          // Set property
+          } else {
+            _self[method] = _provider[method];
+          }
+        });
+
+        // Instance
+        this.$get = function() {
+          return _service;
         };
       });
 
-      // Instance
-      this.$get = function() {
-        return _service;
-      };
-    });
+    return this;
+  },
+
+  reset: function() {
+    _reset();
+    return this;
+  }
 
 };
-
-module.exports.$provider = _provider;
-
-module.exports.$service = _service;
