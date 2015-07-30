@@ -290,14 +290,13 @@ module.exports = function StateRouterProvider() {
    */
   this.$get = ['$location', function StateRouterFactory($location) {
 
-    // Internal variables
     var _iOptions;
     var _iInitialLocation;
     var _history = [];
     var _isInit = false;
 
     /**
-     * Add history and correct length
+     * Internal method to add history and correct length
      * 
      * @param  {Object} data An Object
      */
@@ -316,7 +315,7 @@ module.exports = function StateRouterProvider() {
     };
 
     /**
-     * Internal change to state.  Parameters in `params` takes precedence over state-notation `name` expression.  
+     * Internal method to change to state.  Parameters in `params` takes precedence over state-notation `name` expression.  
      * 
      * @param  {String}   name          A unique identifier for the state; using state-notation including optional parameters
      * @param  {Object}   params        A data object of params

@@ -5,8 +5,9 @@ describe('$stateProvider', function() {
 
   beforeEach(function() {
     _fakeApp = angular.module('fakeApp', function() {});
-    angular.mock.module('angular-state-router', 'fakeApp');
   });
+
+  beforeEach(angular.mock.module('angular-state-router', 'fakeApp'));
 
   describe('#state', function() {
     it('Should instantiate provider with state method', function() {
