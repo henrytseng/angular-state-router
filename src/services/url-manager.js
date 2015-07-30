@@ -1,13 +1,13 @@
 'use strict';
 
-var events = require('events');
+var EventEmitter = require('events').EventEmitter;
 var UrlDictionary = require('../utils/url-dictionary');
 
 module.exports = ['$state', '$location', function($state, $location) {
   var _url = $location.url();
 
   // Instance of EventEmitter
-  var _self = new events.EventEmitter();
+  var _self = new EventEmitter();
 
   /**
    * Detect URL change and dispatch state change
