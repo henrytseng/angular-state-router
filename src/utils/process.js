@@ -5,18 +5,10 @@
 /* global setImmediate:false */
 /* global setTimeout:false */
 
-// Polyfill process.nextTick()
-
-if(window) {
-  if(!window.process) {
-
-    var _process = {
-      nextTick: function(callback) {
-        setTimeout(callback, 0);
-      }
-    };
-
-    // Export
-    window.process = _process;
+var _process = {
+  nextTick: function(callback) {
+    setTimeout(callback, 0);
   }
-}
+};
+
+module.exports = _process;

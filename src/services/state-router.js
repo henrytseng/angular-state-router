@@ -1,8 +1,7 @@
 'use strict';
 
-/* global process:false */
-
 var EventEmitter = require('events').EventEmitter;
+var process = require('../utils/process');
 var UrlDictionary = require('../utils/url-dictionary');
 var Parameters = require('../utils/parameters');
 var QueueHandler = require('../utils/queue-handler');

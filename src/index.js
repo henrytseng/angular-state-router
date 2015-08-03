@@ -7,9 +7,6 @@ if (typeof module !== "undefined" && typeof exports !== "undefined" && module.ex
   module.exports = 'angular-state-router';
 }
 
-// Polyfill
-require('./utils/process');
-
 // Instantiate module
 angular.module('angular-state-router', [])
 

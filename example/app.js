@@ -62,13 +62,10 @@ angular
     };
 
     $state.on('init', function() {
-      console.log('init', $state.current().params);
-
       $scope.messages.unshift({
         title: 'init',
         body: 'State has initialized.'
       });
-      $scope.$apply();
     });
 
     $state.on('change:complete', function() {
@@ -76,14 +73,5 @@ angular
         title: 'change:complete ('+ $state.current().name +')',
         body: 'State change request has been completed.'
       });
-      $scope.$apply();
-    });
-
-    $urlManager.on('update', function() {
-      console.log('update', $state.current().params);
-    });
-
-    $urlManager.on('update:location', function() {
-      console.log('update:location', $state.current().params);
     });
   });
