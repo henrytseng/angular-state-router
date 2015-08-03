@@ -27,21 +27,25 @@ var QueueHandler = function() {
       nextHandler = function() {
         var handler = _list.shift();
 
+        // Complete
         if(!handler) {
           return callback(null);
+
+        // Next handler
+        } else {
+          handler.call(null, _data, function(err) {
+
+            // Error
+            if(err) {
+              callback(err);
+
+            // Continue
+            } else {
+              nextHandler();
+            }
+          });
         }
 
-        handler.call(null, _data, function(err) {
-
-          // Error
-          if(err) {
-            callback(err);
-
-          // Continue
-          } else {
-            nextHandler();
-          }
-        });
       };
 
       nextHandler();
