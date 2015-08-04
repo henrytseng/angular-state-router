@@ -1,7 +1,7 @@
 {
   "name": "angular-state-router",
-  "version": "1.7.4",
-  "description": "An AngularJS state-based router",
+  "version": "1.7.5",
+  "description": "An AngularJS state-based router designed for flexibility and ease of use.",
   "main": "dist/state-router.js",
   "scripts": {
     "watch": "gulp watch",

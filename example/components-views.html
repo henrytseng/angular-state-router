@@ -1,11 +1,59 @@
 <section class="screen">
   <div class="jumbotron">
     <div class="container">
-      <h1>Views</h1>
-      <p>StateView when included allows templates to be easily included in pages and configured during state definition.</p>
+      <h1>StateView</h1>
+      <p>When included allows templates to be easily included in pages and configured during state definition.</p>
     </div>
   </div>
 
-  <div class="container">
-  </div>
+  <article class="container">
+    <h2>Definition</h2>
+    <p>Templates can be either functions that generate responses directly or HTML fragments included through <code>ng-include</code></p>
+
+    <h3>HTML Fragment</h3>
+
+    <h3>Function</h3>
+    
+    <pre>
+angular.module('myApp', ['angular-state-router'])
+.config(function($stateProvider) {
+
+$stateProvider
+
+// Define states
+.state('landing', {
+  url: '/'
+})
+
+// Set initialization location; optionally
+.init('landing');
+
+});</pre>
+  </article>
+
+  <article class="container">
+    <h2>Usage</h2>
+    <p>Access application state through <a sref="api.methods({method:'$state'})"><strong>$state</strong></a> service</p>
+    <pre>
+angular.module('myApp')
+.controller('MyController', function($scope, $state) {
+
+// Listen to events
+$state.on('change:complete', function() {
+
+// Get the current state
+var current = $state.current();
+
+console.log(current.name);
+});
+
+$scope.onClickMarketingCampaign = function() {
+
+// Request changes
+$state.change('catalogs.products.items', { id: 'e239' });
+
+};
+
+});</pre>
+  </article>
 </section>

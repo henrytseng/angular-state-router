@@ -8,9 +8,9 @@ An AngularJS state-based router designed for flexibility and ease of use.
 StateRouter is designed to be used in a modular integration with:
 
 * [StateView](https://www.npmjs.com/package/angular-state-view)
-	* A view rendering engine
+	* Provides nested view management with template support.  
 * [StateLoadable](https://www.npmjs.com/package/angular-state-loadable)
-	* A lazy loading scheme
+	* Adds a lazy loading scheme
 
 While not required, StateRouter was originally developed with Browserify.  
 
