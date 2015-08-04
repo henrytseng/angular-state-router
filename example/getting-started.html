@@ -1,0 +1,77 @@
+<section class="screen">
+  <div class="jumbotron">
+    <div class="container">
+      <h1>Getting Started</h1>
+      <p>An AngularJS state-based router designed for flexibility and ease of use.</p>
+      <p>StateRouter is designed to be used in a modular integration with:</p>
+      <ul>
+        <li>
+          <a href="https://www.npmjs.com/package/angular-state-router">StateRouter</a>
+        </li>
+        <li>
+          <a href="https://www.npmjs.com/package/angular-state-view">StateView</a>
+        </li>
+        <li>
+          <a href="https://www.npmjs.com/package/angular-state-loadable">StateLoadable</a>
+        </li>
+      </ul>
+    </div>
+  </div>
+
+  <article class="container">
+    <h2>Installation</h2>
+    <p>To install in your project, simply install from <a href="https://www.npmjs.com/">npm</a> in your project folder</p>
+    <pre>
+$ cd my_project
+$ npm install angular-state-router --save</pre>
+    <p>Then include the script in your &lt;head&gt; tag</p>
+    <pre>
+&lt;script src="/node_modules/angular-state-router/dist/state-router.min.js"&gt;&lt;/script&gt;</pre>
+  </article>
+
+  <article class="container">
+    <h2>Definition</h2>
+    <p>Set up application, typically during the configuration phase, through <a sref="api.methods({method:'$stateProvider'})"><strong>$stateProvider</strong></a> provider</p>
+    <pre>
+angular.module('myApp', ['angular-state-router'])
+.config(function($stateProvider) {
+
+$stateProvider
+
+// Define states
+.state('landing', {
+  url: '/'
+})
+
+// Set initialization location; optionally
+.init('landing');
+
+});</pre>
+  </article>
+
+  <article class="container">
+    <h2>Use</h2>
+    <p>Access application state through <a sref="api.methods({method:'$state'})"><strong>$state</strong></a> service</p>
+    <pre>
+angular.module('myApp')
+.controller('MyController', function($scope, $state) {
+
+// Listen to events
+$state.on('change:complete', function() {
+
+// Get the current state
+var current = $state.current();
+
+console.log(current.name);
+});
+
+$scope.onClickMarketingCampaign = function() {
+
+// Request changes
+$state.change('catalogs.products.items', { id: 'e239' });
+
+};
+
+});</pre>
+  </article>
+</section>

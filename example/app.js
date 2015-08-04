@@ -1,7 +1,6 @@
 'use strict';
 
-angular
-  .module('myApp', [
+angular.module('myApp', [
     'angular-state-router',
     'angular-state-view',
     'angular-state-loadable'
@@ -12,7 +11,12 @@ angular
 
       // Define states
       .state('gettingstarted', {
-        url: '/'
+        url: '/',
+        templates: {
+          contentBody: function() {
+            return '<ng-include src="\'/getting-started.html\'"></ng-include>';
+          }
+        }
       })
 
       .state('api', {
@@ -27,7 +31,7 @@ angular
         url: '/components',
         templates: {
           contentBody: function($templateCache) {
-            return 'fadfsdfasd';
+            return '<div class="container">components</div>';
           }
         }
       })
