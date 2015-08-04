@@ -174,7 +174,7 @@ describe('$state', function() {
       // Testing scope
       var _testScope = {
         onBegin: function() {
-          expect(_state.current()).toBe(null);
+          expect(_state.current().name).toEqual('company');
         },
         
         onEnd: function() {
@@ -216,6 +216,10 @@ describe('$state', function() {
 
         .on('change:complete', _testScope.onComplete);
 
+      expect(_testScope.onBegin).not.toHaveBeenCalled();
+      expect(_testScope.onEnd).not.toHaveBeenCalled();
+      expect(_testScope.onComplete).not.toHaveBeenCalled();
+
     });
 
     it('Should change set parameters on state', function(done) {
@@ -224,7 +228,7 @@ describe('$state', function() {
       // Testing scope
       var _testScope = {
         onBegin: function() {
-          expect(_state.current()).toBe(null);
+          expect(_state.current().name).toEqual('company');
         },
         
         onEnd: function() {

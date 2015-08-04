@@ -336,6 +336,9 @@ module.exports = function StateRouterProvider() {
         params: params
       };
 
+      // Compile execution phases
+      var queue = QueueHandler().data(request);
+
       var nextState = angular.copy(_getState(name));
       var prevState = _current;
 
@@ -344,35 +347,36 @@ module.exports = function StateRouterProvider() {
         nextState.params = angular.extend(nextState.params || {}, params);
       }
 
-      // Compile execution phases
-      var queue = QueueHandler().data(request);
-
       // Does not exist
-      if(!nextState) {
-        error = new Error('Requested state was not defined.');
-        error.code = 'notfound';
-
+      if(nextState === null) {
         queue.add(function(data, next) {
-          _dispatcher.emit('error:notfound', error, request);
+          error = new Error('Requested state was not defined.');
+          error.code = 'notfound';
 
+          _dispatcher.emit('error:notfound', error, request);
           next(error);
         });
 
       // State not changed
       } else if(_compareStates(prevState, nextState)) {
-        _current = nextState;
-
-      // Exists
+        queue.add(function(data, next) {
+          _current = nextState;
+          next();
+        });
+        
+      // Valid state exists
       } else {
+        // Make state change
+        queue.add(function(data, next) {
+          if(prevState) _pushHistory(prevState);
+          _current = nextState;
+          
+          next();
+        });
 
         // Process started
         queue.add(function(data, next) {
           _dispatcher.emit('change:begin', request);
-
-          // Valid state exists
-          if(prevState) _pushHistory(prevState);
-          _current = nextState;
-
           next();
         });
 
@@ -393,6 +397,7 @@ module.exports = function StateRouterProvider() {
         if(err) {
           _dispatcher.emit('error', err, request);
         }
+
         _dispatcher.emit('change:complete', err, request);
 
         if(callback) {
@@ -400,6 +405,7 @@ module.exports = function StateRouterProvider() {
         }
       });
     };
+
 
     // Instance
     var _inst;

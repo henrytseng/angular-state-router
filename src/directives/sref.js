@@ -1,6 +1,12 @@
 'use strict';
 
-module.exports = ['$state', function ($state) {
+var process = require('../utils/process');
+
+module.exports = ['$state', '$rootScope', function ($state, $rootScope) {
+  $state.on('change:complete', function() {
+    $rootScope.$apply();
+  });
+
   return {
     restrict: 'A',
     scope: {
