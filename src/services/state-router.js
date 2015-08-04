@@ -318,12 +318,10 @@ module.exports = function StateRouterProvider() {
      * 
      * @param  {String}   name          A unique identifier for the state; using state-notation including optional parameters
      * @param  {Object}   params        A data object of params
-     * @param  {Boolean}  useMiddleware A flag to trigger middleware
      * @param  {Function} [callback]    A callback, function(err)
      */
-    var _changeState = function(name, params, useMiddleware, callback) {
+    var _changeState = function(name, params, callback) {
       params = params || {};
-      useMiddleware = typeof useMiddleware === 'undefined' ? true : useMiddleware;
 
       // Parse state-notation expression
       var nameExpr = _parseName(name);
@@ -381,9 +379,7 @@ module.exports = function StateRouterProvider() {
         });
 
         // Add middleware
-        if(useMiddleware) {
-          queue.add(_layerList);
-        }
+        queue.add(_layerList);
 
         // Process ended
         queue.add(function(data, next) {
@@ -474,7 +470,7 @@ module.exports = function StateRouterProvider() {
 
             // Initialize with state
             } else if(_iInitialLocation) {
-              _changeState(_iInitialLocation.name, _iInitialLocation.params, true, function() {
+              _changeState(_iInitialLocation.name, _iInitialLocation.params, function() {
                 _dispatcher.emit('init');
               });
 
@@ -515,7 +511,7 @@ module.exports = function StateRouterProvider() {
        * @return {$state}               Itself; chainable
        */
       change: function(name, params) {
-        process.nextTick(angular.bind(null, _changeState, name, params, true));
+        process.nextTick(angular.bind(null, _changeState, name, params));
         return _inst;
       },
 
@@ -534,7 +530,7 @@ module.exports = function StateRouterProvider() {
 
           if(state) {
             // Parse params from url
-            process.nextTick(angular.bind(null, _changeState, state.name, data.params, false, callback));
+            process.nextTick(angular.bind(null, _changeState, state.name, data.params, callback));
           }
         }
 

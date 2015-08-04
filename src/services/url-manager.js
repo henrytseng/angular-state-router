@@ -60,9 +60,11 @@ module.exports = ['$state', '$location', function($state, $location) {
   };
 
   // Register middleware layer
-  $state.$use(function(request, next) {
-    _update();
-    next();
+  $state.on('init', function() {
+    $state.$use(function(request, next) {
+      _update();
+      next();
+    });
   });
 
   return _self;
