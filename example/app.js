@@ -13,9 +13,7 @@ angular.module('myApp', [
       .state('gettingstarted', {
         url: '/',
         templates: {
-          contentBody: function() {
-            return '<ng-include src="\'/getting-started.html\'"></ng-include>';
-          }
+          contentBody: '/getting-started.html'
         }
       })
 
@@ -30,18 +28,29 @@ angular.module('myApp', [
       .state('components', {
         url: '/components',
         templates: {
-          contentBody: function($templateCache) {
-            return '<div class="container">components</div>';
-          }
+          contentBody: '/components.html'
         }
       })
 
-      .state('components.modules', {
-        url: '/components/:module'
+      .state('components.views', {
+        url: '/components/views',
+        templates: {
+          contentBody: '/components-views.html'
+        }
+      })
+
+      .state('components.loadables', {
+        url: '/components/loadables',
+        templates: {
+          contentBody: '/components-loadables.html'
+        }
       })
 
       .state('experiment', {
-        url: '/experiment'
+        url: '/experiment',
+        templates: {
+          contentBody: '/experiment.html'
+        }
       })
 
       .init('gettingstarted');
