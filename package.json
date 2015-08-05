@@ -1,6 +1,6 @@
 {
   "name": "angular-state-router",
-  "version": "1.7.5",
+  "version": "1.7.6",
   "description": "An AngularJS state-based router designed for flexibility and ease of use.",
   "main": "dist/state-router.js",
   "scripts": {

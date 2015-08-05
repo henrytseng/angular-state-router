@@ -5,12 +5,12 @@ StateRouter
 
 An AngularJS state-based router designed for flexibility and ease of use.  
 
-StateRouter is designed to be used in a modular integration with:
+[StateRouter](https://www.npmjs.com/package/angular-state-router) is designed to be used in a modular integration with components:
 
 * [StateView](https://www.npmjs.com/package/angular-state-view)
-	* Provides nested view management with template support.  
+	* A view rendering engine
 * [StateLoadable](https://www.npmjs.com/package/angular-state-loadable)
-	* Adds a lazy loading scheme
+	* A lazy loading scheme
 
 While not required, StateRouter was originally developed with Browserify.  
 
@@ -41,13 +41,11 @@ Include the `state-router.min.js` script tag in your `.html`:
 	  </body>
 	</html>
 
-Add StateRouter as a dependency when your application module is instantiated
+In `app.js` add `angular-state-router` as a dependency when your application module is instantiated.
+
+And **define** your states and optionally an **default initial location**
 
 	angular.module('myApp', ['angular-state-router']);
-
-Then **define** your states and optionally an **default initial location**
-
-	angular.module('myApp')
 	  .config(function($stateProvider) {
 
 	    $stateProvider
@@ -58,7 +56,10 @@ Then **define** your states and optionally an **default initial location**
 	      })
 
 	      .state('products.listing', {
-	        url: '/products'
+	        url: '/products', 
+	        params: {
+	        	catalog: '1b'
+	        }
 	      })
 
 	      .state('products', {
@@ -92,12 +93,12 @@ States are represented through data objects with an associated dot-notation name
 
 ### Definition
 
-States must be first defined.  This is usually done in the angular **configuration phase** but *can* also be done later.  
+States must be first defined.  This is usually done in the angular **configuration phase** with `$stateProvider` but *can* also be done later with `$state`.   
 
 	angular.module('myApp')
-	  .config(function($state) {
+	  .config(function($stateProvider) {
 	  
-	    $state
+	    $stateProvider
 	      .state('account', {
 	        url: '/accounts',
 	        params: { endpoint: 'test.com' }
@@ -111,6 +112,19 @@ States must be first defined.  This is usually done in the angular **configurati
 	        url: '/accounts/:id/transactions',
 	        inherit: false
 	      });
+	  });
+
+Once a state is defined a transition to the state can be made.
+
+	angular.module('myApp')
+	  .controller(function($scope, $state) {
+	    $scope.buttonClick = function() {
+	      $state.change('products.catalogs.items.variations', { 
+	        item: '423', 
+	        catalog: 'e534', 
+	        variation: '320902'
+	      });
+	    };
 	  });
 
 
