@@ -41,7 +41,7 @@ Include the `state-router.min.js` script tag in your `.html`:
 	  </body>
 	</html>
 
-In `app.js` add `angular-state-router` as a dependency when your application module is instantiated.
+In `app.js` add `angular-state-router` as a dependency when your application module is instantiated.  
 
 And **define** your states and optionally an **default initial location**
 
@@ -101,7 +101,7 @@ States must be first defined.  This is usually done in the angular **configurati
 	    $stateProvider
 	      .state('account', {
 	        url: '/accounts',
-	        params: { endpoint: 'test.com' }
+	        params: { endpoint: '2998293e' }
 	      })
 	      
 	      .state('account.profile', {
@@ -118,20 +118,25 @@ Once a state is defined a transition to the state can be made.
 
 	angular.module('myApp')
 	  .controller(function($scope, $state) {
+
 	    $scope.buttonClick = function() {
+	    
+	      // Update
 	      $state.change('products.catalogs.items.variations', { 
 	        item: '423', 
 	        catalog: 'e534', 
 	        variation: '320902'
 	      });
+	      
 	    };
+	    
 	  });
 
 
 
 ### Initialization
 
-Initialization occurs when the application is kickedstarted.  This is why it is *often* important to define all possible deep linked states during the **configuration phase**.  
+Initialization occurs when the application is kicked-started.  This is why it is *often* important to define all possible deep linked states during the **configuration phase**.  
 
 An initialization `'init'` event is emitted from the StateRouter.  
 
@@ -139,19 +144,14 @@ To listen to the init event:
 
 	angular.module('myApp')
 	  .run(function($state) {
+	  
 	    $state.on('init', function() {  });
-	  });
-
-Or also register during the **configuration phase**
-
-	angular.module('myApp')
-	  .config(function($stateProvider) {
-	    $stateProvider.on('init', function() {  });
+	  
 	  });
 
 
 
-### Use
+### Usage
 
 After states are defined they can be retrieved
 
@@ -160,26 +160,58 @@ After states are defined they can be retrieved
 
 State changes are asynchronous operations.  
 
+Current states can be checked using the `active` method which accepts a state notation query
+
+	<li ng-class="{'active': $state.active('company') }"><a href="#" sref="company">Company</a></li>
+
+And in the same method a state can be triggered using the `sref` attribute.  
+
+	<a href="#" sref="company">Company</a>
+
+Parameters can be sent similarly
+
+	<a href="#" sref="company({id:'Lorem ipsum'})">Company</a>
+
 
 
 ### Inheritance
 
-States inherit from each other through a parent-child relationship by default; where `account` is the parent of `account.profile` state.  
+States inherit from each other through a parent-child relationship by default; where `campus` is the parent of `campus.classrooms` state.  
 
 A child state will inherit from it's each of its parents until a `inherit` value of `false` value is encountered.  
 
-For example, in definition above the `params` value 
+For example, given this definition
 
-	{ endpoint: 'test.com' }
+	angular.module('myApp')
+	  .config(function($stateProvider) {
+	  
+	    $stateProvider
+	      .state('campus', {
+	        url: '/campus',
+	        params: { availability: false }
+	      })
+	      
+	      .state('campus.classrooms', {
+	        url: '/campus/rms/:id',
+	        params: { size: 30 }
+	      });
 
-Will be inherited by in the `account.profile` state but not the `account.transactions` state.  
+	  });
 
+We see that `campus.classrooms` will have a `params` value
+
+	{ 
+	  availability: false,
+	  size: 30
+	}
+
+Where `availability` is inherited from `campus`, its parent
 
 
 Events
 ------
 
-Events are emit from $state; where $state inherits from [events.EventEmitter](https://nodejs.org/api/events.html).  
+Events are emit from `$state` both `$stateProvider`; where both inherit from [events.EventEmitter](https://nodejs.org/api/events.html).  
 
 To listen to events 
 
@@ -345,20 +377,19 @@ Given the URL `http://test.com/#/events/birthday_event?color=blue`
 
 
 
-Views
------
+Components
+----------
 
-Current states can be checked using the `active` method which accepts a state notation query
 
-	<li ng-class="{'active': $state.active('company') }"><a href="#" sref="company">Company</a></li>
 
-And in the same method a state can be triggered using the `sref` attribute.  
 
-	<a href="#" sref="company">Company</a>
 
-Parameters can be sent similarly
 
-	<a href="#" sref="company({id:'Lorem ipsum'})">Company</a>
+
+
+
+
+
 
 
 
