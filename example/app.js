@@ -15,14 +15,16 @@ angular.module('myApp', [
       .state('landing', {
         url: '/',
         templates: {
-          contentBody: '/landing.html'
+          contentBody: '/landing.html',
+          contentFooter: 'footer.html'
         }
       })
 
       .state('about', {
         url: '/about',
         templates: {
-          contentBody: '/about.html'
+          contentBody: '/about.html',
+          contentFooter: 'footer.html'
         }
       })
 
@@ -34,21 +36,24 @@ angular.module('myApp', [
           catalog: '1-aeff'
         },
         templates: {
-          contentBody: '/products.html'
+          contentBody: '/products.html',
+          contentFooter: 'footer.html'
         }
       })
 
       .state('products.items', {
         url: '/products/:catalog/:item',
         templates: {
-          contentBody: '/products-item.html'
+          contentBody: '/products-item.html',
+          contentFooter: 'footer.html'
         }
       })
 
       .state('contact', {
         url: '/contact',
         templates: {
-          contentBody: '/contact.html'
+          contentBody: '/contact.html',
+          contentFooter: 'footer.html'
         }
       })
 
