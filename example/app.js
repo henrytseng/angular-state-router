@@ -15,16 +15,18 @@ angular.module('myApp', [
       .state('landing', {
         url: '/',
         templates: {
-          contentBody: '/landing.html',
-          contentFooter: 'footer.html'
+          layout: '/layouts/one-col.html',
+          contentBody: '/screens/landing.html',
+          contentFooter: '/common/footer.html'
         }
       })
 
       .state('about', {
-        url: '/about',
+        url: '/screens/about',
         templates: {
-          contentBody: '/about.html',
-          contentFooter: 'footer.html'
+          layout: '/layouts/one-col.html',
+          contentBody: '/screens/about.html',
+          contentFooter: '/common/footer.html'
         }
       })
 
@@ -36,38 +38,53 @@ angular.module('myApp', [
           catalog: '1-aeff'
         },
         templates: {
-          contentBody: '/products.html',
-          contentFooter: 'footer.html'
+          layout: '/layouts/one-col.html',
+          contentBody: '/screens/products.html',
+          contentFooter: '/common/footer.html'
         }
       })
 
       .state('products.items', {
         url: '/products/:catalog/:item',
         templates: {
-          contentBody: '/products-item.html',
-          contentFooter: 'footer.html'
+          layout: '/layouts/one-col.html',
+          contentBody: '/screens/products-item.html',
+          contentFooter: '/common/footer.html'
         }
       })
 
       .state('contact', {
         url: '/contact',
         templates: {
-          contentBody: '/contact.html',
-          contentFooter: 'footer.html'
+          layout: '/layouts/one-col.html',
+          contentBody: '/screens/contact.html',
+          contentFooter: '/common/footer.html'
         }
       })
 
-      .state('account', {
+      .state('account.profile', {
         url: '/account',
         templates: {
-          contentBody: '/account.html'
+          layout: '/layouts/two-col.html',
+          sideBar: '/screens/account/side.html',
+          mainBody: '/screens/account/profile.html'
+        }
+      })
+
+      .state('account.preferences', {
+        url: '/account/preferences',
+        templates: {
+          layout: '/layouts/two-col.html',
+          sideBar: '/screens/account/side.html',
+          mainBody: '/screens/account/preferences.html'
         }
       })
 
       .state('account.login', {
         url: '/login',
         templates: {
-          contentBody: '/login.html'
+          layout: '/layouts/one-col.html',
+          contentBody: '/screens/login.html'
         }
       })
 

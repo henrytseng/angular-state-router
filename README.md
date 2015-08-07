@@ -380,16 +380,34 @@ Given the URL `http://test.com/#/events/birthday_event?color=blue`
 Components
 ----------
 
+Components register themselves as middleware layers and respond to state changes.  
 
+* [StateView](https://www.npmjs.com/package/angular-state-view)
+* [StateLoadable](https://www.npmjs.com/package/angular-state-loadable)
 
+### Building a Custom Component
 
+To build your own components simply register your the middleware with the `$state.$use()` method.  
 
+`$use` expects a function signature `function(request, next)` where `request` is data Object containing data for the current state transition and `next` is a completion callback.  
 
+	angular.module('myComponent', ['angular-state-router'])
 
+	  .factory(function($state) {
 
+	    // Register middleware layer
+	    $state.$use(function(request, next) {
+	    
+	      // ... Perform work
+	    
+	      // Asynchronous completion
+	      next();
 
+	    });
 
+	  });
 
+Component operate asynchronously and `next` must be called.  
 
 
 
