@@ -1,6 +1,6 @@
 'use strict';
 
-module.exports = ['$q', '$injector', '$state', '$log', function($q, $injector, $state, $log) {
+module.exports = ['$q', '$injector', '$state', function($q, $injector, $state) {
 
   // Instance
   var _self = {};
