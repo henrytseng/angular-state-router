@@ -45,7 +45,9 @@ var QueueHandler = function() {
      */
     execute: function(callback) {
       var nextHandler;
-      var executionList = _list.slice(0);
+      var executionList = _list.slice(0).sort(function(a, b) {
+        return (a.priotity || 1) < (b.priotity || 1);
+      });
 
       nextHandler = function() {
         var handler = executionList.shift();

@@ -14,7 +14,9 @@ angular.module('angular-state-router', [])
 
   .factory('$urlManager', require('./services/url-manager'))
 
-  .run(['$rootScope', '$urlManager', '$state', function($rootScope, $urlManager, $state) {
+  .factory('$resolution', require('./services/resolution'))
+
+  .run(['$rootScope', '$state', '$urlManager', '$resolution', function($rootScope, $state, $urlManager, $resolution) {
     // Update location changes
     $rootScope.$on('$locationChangeSuccess', function() {
       $urlManager.location(arguments);

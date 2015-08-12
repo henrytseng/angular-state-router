@@ -28,13 +28,13 @@ module.exports = ['$state', '$location', function($state, $location) {
    * Update URL based on state
    */
   var _update = function() {
-    var state = $state.current();
+    var current = $state.current();
 
-    if(state && state.url) {
-      _url = state.url;
+    if(current && current.url) {
+      _url = current.url;
 
       // Add parameters or use default parameters
-      var params = state.params || {};
+      var params = current.params || {};
       for(var name in params) {
         _url = _url.replace(new RegExp(':'+name, 'g'), params[name]);
       }

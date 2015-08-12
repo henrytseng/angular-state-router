@@ -287,10 +287,10 @@ module.exports = function StateRouterProvider() {
   /**
    * Get instance
    */
-  this.$get = ['$location', function StateRouterFactory($location) {
+  this.$get = ['$location', '$q', '$injector', function StateRouterFactory($location) {
 
-    var _iOptions;
-    var _iInitialLocation;
+    var _instOptions;
+    var _instInitialLocation;
     var _history = [];
     var _isInit = false;
 
@@ -301,7 +301,7 @@ module.exports = function StateRouterProvider() {
      */
     var _pushHistory = function(data) {
       // Keep the last n states (e.g. - defaults 5)
-      var historyLength = _iOptions.historyLength || 5;
+      var historyLength = _instOptions.historyLength || 5;
 
       if(data) {
         _history.push(data);
@@ -331,7 +331,8 @@ module.exports = function StateRouterProvider() {
       var error = null;
       var request = {
         name: name,
-        params: params
+        params: params,
+        locals: {}
       };
 
       // Compile execution phases
@@ -340,8 +341,11 @@ module.exports = function StateRouterProvider() {
       var nextState = angular.copy(_getState(name));
       var prevState = _current;
 
-      // Set parameters
       if(nextState) {
+        // Set locals
+        nextState.locals = request.locals;
+          
+        // Set parameters
         nextState.params = angular.extend(nextState.params || {}, params);
       }
 
@@ -364,6 +368,7 @@ module.exports = function StateRouterProvider() {
         
       // Valid state exists
       } else {
+
         // Make state change
         queue.add(function(data, next) {
           if(prevState) _pushHistory(prevState);
@@ -414,11 +419,11 @@ module.exports = function StateRouterProvider() {
        */
       options: function() {
         // Hasn't been initialized
-        if(!_iOptions) {
-          _iOptions = angular.copy(_options);
+        if(!_instOptions) {
+          _instOptions = angular.copy(_options);
         }
 
-        return _iOptions;
+        return _instOptions;
       },
 
       /**
@@ -457,28 +462,27 @@ module.exports = function StateRouterProvider() {
           _isInit = true;
 
           // Configuration
-          _iOptions = angular.copy(_options);
-          if(_initialLocation) _iInitialLocation = angular.copy(_initialLocation);
+          _instOptions = angular.copy(_options);
+          if(_initialLocation) _instInitialLocation = angular.copy(_initialLocation);
 
-          process.nextTick(function() {
+          console.log('$ready');
 
-            // Initial location
-            if($location.url() !== '') {
-              _inst.$location($location.url(), function() {
-                _dispatcher.emit('init');
-              });
-
-            // Initialize with state
-            } else if(_iInitialLocation) {
-              _changeState(_iInitialLocation.name, _iInitialLocation.params, function() {
-                _dispatcher.emit('init');
-              });
-
-            // Initialize only
-            } else {
+          // Initial location
+          if($location.url() !== '') {
+            _inst.$location($location.url(), function() {
               _dispatcher.emit('init');
-            }
-          });
+            });
+
+          // Initialize with state
+          } else if(_instInitialLocation) {
+            _changeState(_instInitialLocation.name, _instInitialLocation.params, function() {
+              _dispatcher.emit('init');
+            });
+
+          // Initialize only
+          } else {
+            _dispatcher.emit('init');
+          }
         }
 
         return _inst;
