@@ -1,28 +1,12 @@
 'use strict';
 
-var EventEmitter = require('events').EventEmitter;
 var UrlDictionary = require('../utils/url-dictionary');
 
-module.exports = ['$state', '$location', function($state, $location) {
+module.exports = ['$state', '$location', '$rootScope', function($state, $location, $rootScope) {
   var _url = $location.url();
 
-  // Instance of EventEmitter
-  var _self = new EventEmitter();
-
-  /**
-   * Detect URL change and dispatch state change
-   */
-  var _detectChange = function() {
-    var lastUrl = _url;
-    var nextUrl = $location.url();
-
-    if(nextUrl !== lastUrl) {
-      _url = nextUrl;
-
-      $state.$location(_url);
-      _self.emit('update:location');
-    }
-  };
+  // Instance
+  var _self = {};
 
   /**
    * Update URL based on state
@@ -31,18 +15,26 @@ module.exports = ['$state', '$location', function($state, $location) {
     var current = $state.current();
 
     if(current && current.url) {
-      _url = current.url;
+      var path;
+      path = current.url;
 
       // Add parameters or use default parameters
       var params = current.params || {};
+      var query = {};
       for(var name in params) {
-        _url = _url.replace(new RegExp(':'+name, 'g'), params[name]);
+        var re = new RegExp(':'+name, 'g');
+        if(path.match(re)) {
+          path = path.replace(re, params[name]);
+        } else {
+          query[name] = params[name];
+        }
       }
 
-      $location.url(_url);
+      $location.path(path);
+      $location.search(query);
+      
+      _url = $location.url();
     }
-
-    _self.emit('update');
   };
 
   /**
@@ -53,10 +45,18 @@ module.exports = ['$state', '$location', function($state, $location) {
   };
 
   /**
-   * Location was updated; force update detection
+   * Detect URL change and dispatch state change
    */
   _self.location = function() {
-    _detectChange(arguments);
+    var lastUrl = _url;
+    var nextUrl = $location.url();
+
+    if(nextUrl !== lastUrl) {
+      _url = nextUrl;
+
+      $state.$location(_url);
+      $rootScope.$broadcast('$locationStateUpdate');
+    }
   };
 
   // Register middleware layer

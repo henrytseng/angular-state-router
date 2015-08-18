@@ -1,51 +1,27 @@
 'use strict';
 
-var EventEmitter = require('events').EventEmitter;
-var process = require('../utils/process');
 var UrlDictionary = require('../utils/url-dictionary');
 var Parameters = require('../utils/parameters');
 var QueueHandler = require('../utils/queue-handler');
 
-module.exports = function StateRouterProvider() {
-  // Instance
+module.exports = [function StateRouterProvider() {
+  // Provider
   var _provider = this;
 
-  // Current state
-  var _current;
-
-  // Options
-  var _options = {
+  // Configuration, global options
+  var _configuration = {
     historyLength: 5
   };
 
-  // Library
-  var _library = {};
-  var _cache = {};
+  // State definition library
+  var _stateLibrary = {};
+  var _stateCache = {};
 
   // URL to state dictionary
   var _urlDictionary = new UrlDictionary();
 
   // Middleware layers
   var _layerList = [];
-
-  // Delegated EventEmitter
-  var _dispatcher = new EventEmitter();
-
-  // Inital location
-  var _initialLocation;
-
-  // Wrap provider methods
-  [
-    'addListener', 
-    'on', 
-    'once', 
-    'removeListener', 
-    'removeAllListeners', 
-    'listeners', 
-    'emit', 
-  ].forEach(function(method) {
-    _provider[method] = angular.bind(_dispatcher, _dispatcher[method]);
-  });
 
   /**
    * Parse state notation name-params.  
@@ -80,7 +56,6 @@ module.exports = function StateRouterProvider() {
    * @return {Object}      An Object
    */
   var _setStateDefaults = function(data) {
-
     // Default values
     data.inherit = (typeof data.inherit === 'undefined') ? true : data.inherit;
 
@@ -90,8 +65,8 @@ module.exports = function StateRouterProvider() {
   /**
    * Validate state name
    * 
-   * @param  {String} name   A unique identifier for the state; using dot-notation
-   * @return {Boolean}       True if name is valid, false if not
+   * @param  {String} name A unique identifier for the state; using dot-notation
+   * @return {Boolean}     True if name is valid, false if not
    */
   var _validateStateName = function(name) {
     name = name || '';
@@ -111,8 +86,8 @@ module.exports = function StateRouterProvider() {
   /**
    * Validate state query
    * 
-   * @param  {String} query  A query for the state; using dot-notation
-   * @return {Boolean}       True if name is valid, false if not
+   * @param  {String} query A query for the state; using dot-notation
+   * @return {Boolean}      True if name is valid, false if not
    */
   var _validateStateQuery = function(query) {
     query = query || '';
@@ -135,7 +110,9 @@ module.exports = function StateRouterProvider() {
    * @return {Boolean} True if states are the same, false if states are different
    */
   var _compareStates = function(a, b) {
-    return angular.equals(a, b);
+    a = a || {};
+    b = b || {};
+    return a.name === b.name && angular.equals(a.params, b.params);
   };
 
   /**
@@ -172,31 +149,33 @@ module.exports = function StateRouterProvider() {
       return null;
     
     // Use cache if exists
-    } else if(_cache[name]) {
-      return _cache[name];
+    } else if(_stateCache[name]) {
+      return _stateCache[name];
     }
 
     var nameChain = _getNameChain(name);
 
     var stateChain = nameChain
-      .map(function(pname) {
-        return _library[pname];
+      .map(function(name) {
+        return _stateLibrary[name];
       })
       .filter(function(parent) {
-        return parent !== null;
+        return !!parent;
       });
 
     // Walk up checking inheritance
     for(var i=stateChain.length-1; i>=0; i--) {
       if(stateChain[i]) {
-        state = angular.extend(angular.copy(stateChain[i]), state || {});
+        var nextState = angular.copy(stateChain[i]);
+        delete(nextState.resolve);
+        state = angular.merge(nextState, state || {});
       }
 
-      if(state && !state.inherit) break;
+      if(state && state.inherit === false) break;
     }
 
     // Store in cache
-    _cache[name] = state;
+    _stateCache[name] = state;
 
     return state;
   };
@@ -227,10 +206,10 @@ module.exports = function StateRouterProvider() {
     state.name = name;
 
     // Set definition
-    _library[name] = state;
+    _stateLibrary[name] = state;
 
     // Reset cache
-    _cache = {};
+    _stateCache = {};
 
     // URL mapping
     if(state.url) {
@@ -243,16 +222,16 @@ module.exports = function StateRouterProvider() {
   /**
    * Set configuration data parameters for StateRouter
    *
+   * Including parameters:
+   * 
+   * - historyLength   {Number} Defaults to 5
+   * - initialLocation {Object} An Object{name:String, params:Object} for initial state transition
+   *
    * @param  {Object}         options A data Object
    * @return {$stateProvider}         Itself; chainable
    */
   this.options = function(options) {
-    options = options || {};
-
-    if(options.hasOwnProperty('historyLength')) {
-      _options.historyLength = options.historyLength;
-    }
-
+    angular.extend(_configuration, options || {});
     return _provider;
   };
 
@@ -277,7 +256,7 @@ module.exports = function StateRouterProvider() {
    * @return {$stateProvider}        Itself; chainable
    */
   this.init = function(name, params) {
-    _initialLocation = {
+    _configuration.initialLocation = {
       name: name,
       params: params
     };
@@ -287,10 +266,13 @@ module.exports = function StateRouterProvider() {
   /**
    * Get instance
    */
-  this.$get = ['$location', '$q', '$injector', function StateRouterFactory($location) {
+  this.$get = ['$rootScope', '$location', '$q', function StateRouterFactory($rootScope, $location, $q) {
 
-    var _instOptions;
-    var _instInitialLocation;
+    // Current state
+    var _current;
+
+    var _options;
+    var _initalLocation;
     var _history = [];
     var _isInit = false;
 
@@ -301,7 +283,7 @@ module.exports = function StateRouterProvider() {
      */
     var _pushHistory = function(data) {
       // Keep the last n states (e.g. - defaults 5)
-      var historyLength = _instOptions.historyLength || 5;
+      var historyLength = _options.historyLength || 5;
 
       if(data) {
         _history.push(data);
@@ -316,11 +298,13 @@ module.exports = function StateRouterProvider() {
     /**
      * Internal method to change to state.  Parameters in `params` takes precedence over state-notation `name` expression.  
      * 
-     * @param  {String}   name          A unique identifier for the state; using state-notation including optional parameters
-     * @param  {Object}   params        A data object of params
-     * @param  {Function} [callback]    A callback, function(err)
+     * @param  {String}  name          A unique identifier for the state; using state-notation including optional parameters
+     * @param  {Object}  params        A data object of params
+     * @return {Promise}               A promise fulfilled when state change occurs
      */
-    var _changeState = function(name, params, callback) {
+    var _changeState = function(name, params) {
+      var deferred = $q.defer();
+
       params = params || {};
 
       // Parse state-notation expression
@@ -344,7 +328,7 @@ module.exports = function StateRouterProvider() {
       if(nextState) {
         // Set locals
         nextState.locals = request.locals;
-          
+        
         // Set parameters
         nextState.params = angular.extend(nextState.params || {}, params);
       }
@@ -355,7 +339,7 @@ module.exports = function StateRouterProvider() {
           error = new Error('Requested state was not defined.');
           error.code = 'notfound';
 
-          _dispatcher.emit('error:notfound', error, request);
+          $rootScope.$broadcast('$stateChangeErrorNotFound', error, request);
           next(error);
         });
 
@@ -379,7 +363,7 @@ module.exports = function StateRouterProvider() {
 
         // Process started
         queue.add(function(data, next) {
-          _dispatcher.emit('change:begin', request);
+          $rootScope.$broadcast('$stateChangeBegin', request);
           next();
         });
 
@@ -388,7 +372,7 @@ module.exports = function StateRouterProvider() {
 
         // Process ended
         queue.add(function(data, next) {
-          _dispatcher.emit('change:end', request);
+          $rootScope.$broadcast('$stateChangeEnd', request);
           next();
         });
       }
@@ -396,17 +380,18 @@ module.exports = function StateRouterProvider() {
       // Run
       queue.execute(function(err) {
         if(err) {
-          _dispatcher.emit('error', err, request);
+          $rootScope.$broadcast('$stateChangeError', err, request);
+          deferred.reject(err);
+
+        } else {
+          deferred.resolve(request);
         }
 
-        _dispatcher.emit('change:complete', err, request);
-
-        if(callback) {
-          callback(err);
-        }
+        $rootScope.$broadcast('$stateChangeComplete', request);
       });
-    };
 
+      return deferred.promise;
+    };
 
     // Instance
     var _inst;
@@ -419,11 +404,11 @@ module.exports = function StateRouterProvider() {
        */
       options: function() {
         // Hasn't been initialized
-        if(!_instOptions) {
-          _instOptions = angular.copy(_options);
+        if(!_options) {
+          _options = angular.copy(_configuration);
         }
 
-        return _instOptions;
+        return _options;
       },
 
       /**
@@ -462,27 +447,29 @@ module.exports = function StateRouterProvider() {
           _isInit = true;
 
           // Configuration
-          _instOptions = angular.copy(_options);
-          if(_initialLocation) _instInitialLocation = angular.copy(_initialLocation);
+          if(!_options) {
+            _options = angular.copy(_configuration);
+          }
 
-          console.log('$ready');
+          // Initial location
+          if(_options.hasOwnProperty('initialLocation')) {
+            _initalLocation = angular.copy(_options.initialLocation);
+          }
+
+          var readyDeferred = null;
 
           // Initial location
           if($location.url() !== '') {
-            _inst.$location($location.url(), function() {
-              _dispatcher.emit('init');
-            });
+            readyDeferred = _inst.$location($location.url());
 
           // Initialize with state
-          } else if(_instInitialLocation) {
-            _changeState(_instInitialLocation.name, _instInitialLocation.params, function() {
-              _dispatcher.emit('init');
-            });
-
-          // Initialize only
-          } else {
-            _dispatcher.emit('init');
+          } else if(_initalLocation) {
+            readyDeferred = _changeState(_initalLocation.name, _initalLocation.params);
           }
+
+          $q.when(readyDeferred).then(function() {
+            $rootScope.$broadcast('$stateInit');
+          });
         }
 
         return _inst;
@@ -493,7 +480,7 @@ module.exports = function StateRouterProvider() {
 
       // Retrieve definition of states
       library: function() {
-        return _library;
+        return _stateLibrary;
       },
 
       // Validation
@@ -515,8 +502,7 @@ module.exports = function StateRouterProvider() {
        * @return {$state}               Itself; chainable
        */
       change: function(name, params) {
-        process.nextTick(angular.bind(null, _changeState, name, params));
-        return _inst;
+        return _changeState(name, params);
       },
 
       /**
@@ -526,7 +512,7 @@ module.exports = function StateRouterProvider() {
        * @param  {Function}    [callback] A callback, function(err)
        * @return {$state}                 Itself; chainable
        */
-      $location: function(url, callback) {
+      $location: function(url) {
         var data = _urlDictionary.lookup(url);
 
         if(data) {
@@ -534,11 +520,11 @@ module.exports = function StateRouterProvider() {
 
           if(state) {
             // Parse params from url
-            process.nextTick(angular.bind(null, _changeState, state.name, data.params, callback));
+            return _changeState(state.name, data.params);
           }
         }
 
-        return _inst;
+        return $q.reject(new Error('Unable to find location in library'));
       },
       
       /**
@@ -600,20 +586,7 @@ module.exports = function StateRouterProvider() {
       }
     };
 
-    // Wrap instance methods
-    [
-      'addListener', 
-      'on', 
-      'once', 
-      'removeListener', 
-      'removeAllListeners', 
-      'listeners', 
-      'emit', 
-    ].forEach(function(method) {
-      _inst[method] = angular.bind(_dispatcher, _dispatcher[method]);
-    });
-
     return _inst;
   }];
 
-};
+}];

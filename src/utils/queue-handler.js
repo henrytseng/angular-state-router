@@ -1,7 +1,5 @@
 'use strict';
 
-var process = require('../utils/process');
-
 /**
  * Execute a series of functions; used in tandem with middleware
  */

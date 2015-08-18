@@ -1,25 +1,26 @@
 'use strict';
 
-xdescribe('$state', function() {
-  var _fakeApp;
-
-  beforeEach(function() {
-    _fakeApp = angular.module('fakeApp', function() {});
-  });
-
-  beforeEach(function() {
-    angular.mock.module('angular-state-router', 'fakeApp');
-  });
-
+describe('$state', function() {
+  
+  beforeEach(angular.mock.module('angular-state-router'));
+  
   describe('#state', function() {
-    it('Should define states without error', function() {
-      angular.mock.inject(function($state) {
-        $state
+    it('Should allow definition of states continually without error', function() {
+      var myState;
+
+      angular.mock.module(function($stateProvider) {
+        $stateProvider
 
           // A state
           .state('dashboard', {
             url: '/dashboard'
-          })
+          });
+
+        myState = $stateProvider.state('dashboard');
+      });
+
+      angular.mock.inject(function($state) {
+        $state
 
           // With parameters
           .state('profile', {
@@ -44,6 +45,16 @@ xdescribe('$state', function() {
           .state('terms.legal', {
             url: '/legal'
           });
+
+        // Previously defined states exist
+        expect($state.state('dashboard')).toEqual({
+          name: 'dashboard',
+          url: '/dashboard',
+          inherit: true
+        });
+
+        // Cached was reset
+        expect($state.state('dashboard')).not.toBe(myState);
       });
     });
 
@@ -83,7 +94,7 @@ xdescribe('$state', function() {
             }
           })
 
-          // Underling state
+          // Child's child state
           .state('organism.plant.tree.apple.fuji', {
             params: {
               location: 'Japan'
@@ -133,7 +144,9 @@ xdescribe('$state', function() {
         expect(fuji.url).toBe('/trees/apples');
 
         // Inherit properties by default
-
+        expect(fuji.params.location).toBe('Japan');
+        expect(fuji.params.chlorophyll).toBe('green');
+        expect(fuji.params.bark).toBe(1);
 
         // Do not inherit
         expect(hybrid.url).toBe('/trees/hybrid');
@@ -174,269 +187,241 @@ xdescribe('$state', function() {
   });
 
   describe('#change', function() {
-    it('Should change state asynchronously', function(done) {
-      angular.mock.inject(function($state) {
-        var companyState;
-
-        // Testing scope
-        var _testScope = {
-          onBegin: function() {
-            expect($state.current().name).toEqual('company');
-          },
-          
-          onEnd: function() {
-            expect($state.current().name).toEqual('company');
-            expect($state.current().url).toEqual(companyState.url);
-          },
-
-          onComplete: function() {
-            expect(_testScope.onBegin).toHaveBeenCalled();
-            expect(_testScope.onEnd).toHaveBeenCalled();
-            expect(_testScope.onComplete).toHaveBeenCalled();
-
-            done();
-          }
-        };
-
-        spyOn(_testScope, 'onBegin').and.callThrough();
-        spyOn(_testScope, 'onEnd').and.callThrough();
-        spyOn(_testScope, 'onComplete').and.callThrough();
-
-        $state
+    
+    it('Should change state with set parameters', function(done) {
+      angular.mock.module(function($stateProvider) {
+        $stateProvider
 
           // Define states
-          .state('company', companyState = {
-            url: '/company/profile'
-          })
-
-          // Initialize
-          .$ready()
-
-          // Assume asynchronous operation
-          .change('company')
-
-          // Begins before state change
-          .on('change:begin', _testScope.onBegin)
-
-          // Ends after change is made
-          .on('change:end', _testScope.onEnd)
-
-          .on('change:complete', _testScope.onComplete);
-
-        expect(_testScope.onBegin).not.toHaveBeenCalled();
-        expect(_testScope.onEnd).not.toHaveBeenCalled();
-        expect(_testScope.onComplete).not.toHaveBeenCalled();
-
-      });
-    });
-
-    it('Should change set parameters on state', function(done) {
-      angular.mock.inject(function($state) {
-        var companyState;
-
-        // Testing scope
-        var _testScope = {
-          onBegin: function() {
-            expect($state.current().name).toEqual('company');
-          },
-          
-          onEnd: function() {
-            expect($state.current().name).toEqual('company');
-            expect($state.current().url).toEqual(companyState.url);
-          },
-
-          onComplete: function() {
-            expect(_testScope.onBegin).toHaveBeenCalled();
-            expect(_testScope.onEnd).toHaveBeenCalled();
-            expect(_testScope.onComplete).toHaveBeenCalled();
-
-            expect($state.current().params.lorem).toBe('ipsum');
-
-            done();
-          }
-        };
-
-        spyOn(_testScope, 'onBegin').and.callThrough();
-        spyOn(_testScope, 'onEnd').and.callThrough();
-        spyOn(_testScope, 'onComplete').and.callThrough();
-
-        $state
-
-          // Define states
-          .state('company', companyState = {
-            url: '/company/profile'
-          })
-
-          // Initialize
-          .$ready()
-
-          // Assume asynchronous operation
-          .change('company', {
-            lorem: 'ipsum'
-          })
-
-          // Begins before state change
-          .on('change:begin', _testScope.onBegin)
-
-          // Ends after change is made
-          .on('change:end', _testScope.onEnd)
-
-          .on('change:complete', _testScope.onComplete);
-
-      });
-    });
-
-    it('Should not change state when next state is the same', function(done) {
-      angular.mock.inject(function($state) {
-        var companyState;
-
-        // Testing scope
-        var _testScope;
-        _testScope = {
-          onBegin: jasmine.createSpy('onBegin'),
-          
-          onEnd: jasmine.createSpy('onEnd'),
-
-          onComplete: [
-            
-            function() {
-              expect(_testScope.onBegin.calls.count()).toBe(1);
-              expect(_testScope.onEnd.calls.count()).toBe(1);
-
-              // No change
-              $state.change('company');
-            },
-
-            function() {
-              expect(_testScope.onBegin.calls.count()).toBe(1);
-              expect(_testScope.onEnd.calls.count()).toBe(1);
-
-              // Change with additional params
-              $state.change('company', {
-                lorem: 'ipsum'
-              });
-            },
-
-            function() {
-              expect(_testScope.onBegin.calls.count()).toBe(2);
-              expect(_testScope.onEnd.calls.count()).toBe(2);
-
-              // No change in parameters
-              $state.change('company({lorem:"dolor"})');
-            },
-
-            function() {
-              expect(_testScope.onBegin.calls.count()).toBe(3);
-              expect(_testScope.onEnd.calls.count()).toBe(3);
-
-              expect($state.current().params.lorem).toBe('dolor');
-              
-              done();
-            }
-
-          ]
-        };
-
-        $state
-
-          // Define states
-          .state('company', companyState = {
-            url: '/company/profile',
+          .state('companies', {
+            url: '/companies/:company', 
             params: {
-              lorem: 'sed ut'
+              company: 'XYZ Co'
             }
           })
 
-          // Initialize
-          .$ready()
+          .state('rooms', {
+            url: '/buildings/:building/rooms/:room',
+            params: {
+              building: 'f2',
+              room: 'j203'
+            }
+          });
+      });
 
-          // First. change
-          .change('company')
+      angular.mock.inject(function($state, $rootScope) {
+        $rootScope.$digest();
 
-          .on('change:begin', _testScope.onBegin)
+        expect($state.current()).toBeNull();
 
-          .on('change:end', _testScope.onEnd)
+        $state.change('companies', {
+          lorem: 'ipsum'
+        });
 
-          .on('change:complete', function() {
-            _testScope.onComplete.shift().call();
+        $rootScope.$digest();
+
+        expect($state.current().params).toEqual({
+          company: 'XYZ Co',
+          lorem: 'ipsum'
+        });
+
+        done();
+      });
+    });
+
+    it('Should dispatch events during state change', function(done) {
+      angular.mock.module(function($stateProvider) {
+        $stateProvider
+
+          // Define states
+          .state('companies', {
+            url: '/companies/:company', 
+            params: {
+              company: 'XYZ Co'
+            }
+          })
+
+          .state('rooms', {
+            url: '/buildings/:building/rooms/:room',
+            params: {
+              building: 'f2',
+              room: 'j203'
+            }
           });
 
       });
-    });
 
-    it('Should emit "error:notfound" when requested state does not exist', function(done) {
-      angular.mock.inject(function($state) {
-        var onNotFoundError, onError;
+      angular.mock.inject(function($state, $rootScope) {
+        // Spies
+        var onBegin = jasmine.createSpy('onBegin');
+        var onEnd = jasmine.createSpy('onEnd');
+        var onError = jasmine.createSpy('onError');
+        var onComplete = jasmine.createSpy('onComplete');
 
-        $state.on('error:notfound', onNotFoundError = jasmine.createSpy('Not found'));
-        $state.on('error', onError = jasmine.createSpy('Error'));
-        $state.on('change:complete', function() {
+        $rootScope.$on('$stateChangeBegin', onBegin);
+        $rootScope.$on('$stateChangeEnd', onEnd);
+        $rootScope.$on('$stateChangeError', onError);
+        $rootScope.$on('$stateChangeComplete', onComplete);
+        
+        $state.change('companies');
 
-          expect(onNotFoundError).toHaveBeenCalled();
-          expect(onError).toHaveBeenCalled();
+        $rootScope.$digest();
 
-          done();
-        });
+        expect(onBegin).toHaveBeenCalled();
+        expect(onEnd).toHaveBeenCalled();
+        expect(onError).not.toHaveBeenCalled();
+        expect(onComplete).toHaveBeenCalled();
 
-        $state
-          .$ready()
-          .change('somestatethatdoesntexist');
+        expect(onComplete.calls.count()).toEqual(1);
+
+        done();
       });
     });
 
-    it('Should define a state and initialize to it automatically', function(done) {
-      angular.mock.inject(function($state) {
-        $state
-          .state('employees', {
-            url: '/employees/:id/profile'
+    it('Should not transition state when next state is the same but should still notify process is complete', function(done) {
+      angular.mock.module(function($stateProvider) {
+        $stateProvider
+
+          // Define states
+          .state('companies', {
+            url: '/companies/:company', 
+            params: {
+              company: 'XYZ Co'
+            }
           })
-          .$ready();
 
-        // Assume asynchronous operation
-        $state.change('employees');
+          .state('rooms', {
+            url: '/buildings/:building/rooms/:room',
+            params: {
+              building: 'f2',
+              room: 'j203'
+            }
+          });
+      });
 
-        $state.on('change:complete', function() {
-          done();
+      angular.mock.inject(function($state, $rootScope) {
+        var onBegin = jasmine.createSpy('onBegin');
+        var onEnd = jasmine.createSpy('onEnd');
+        var onComplete = jasmine.createSpy('onComplete');
+
+        $rootScope.$on('$stateChangeBegin', onBegin);
+        $rootScope.$on('$stateChangeEnd', onEnd);
+        $rootScope.$on('$stateChangeComplete', onComplete);
+
+        $state.change('companies', {
+          lorem: 'ipsum'
         });
+
+        $rootScope.$digest();
+
+        $state.change('companies', {
+          lorem: 'ipsum'
+        });
+
+        $rootScope.$digest();
+
+        expect($state.current().params).toEqual({
+          company: 'XYZ Co',
+          lorem: 'ipsum'
+        });
+
+        expect(onBegin.calls.count()).toEqual(1);
+        expect(onEnd.calls.count()).toEqual(1);
+        expect(onComplete.calls.count()).toEqual(2);
+
+        done();
+      });
+    });
+
+    it('Should emit "$stateChangeErrorNotFound" when requested state does not exist', function(done) {
+      angular.mock.module(function($stateProvider) {
+        $stateProvider
+
+          // Define states
+          .state('companies', {
+            url: '/companies/:company', 
+            params: {
+              company: 'XYZ Co'
+            }
+          })
+
+          .state('rooms', {
+            url: '/buildings/:building/rooms/:room',
+            params: {
+              building: 'f2',
+              room: 'j203'
+            }
+          });
+      });
+
+      angular.mock.inject(function($state, $rootScope) {
+        var onBegin = jasmine.createSpy('onBegin');
+        var onEnd = jasmine.createSpy('onEnd');
+        var onError = jasmine.createSpy('onError');
+        var onComplete = jasmine.createSpy('onComplete');
+
+        $rootScope.$on('$stateChangeBegin', onBegin);
+        $rootScope.$on('$stateChangeEnd', onEnd);
+        $rootScope.$on('$stateChangeErrorNotFound', onError);
+        $rootScope.$on('$stateChangeComplete', onComplete);
+
+        $state.change('missingstate');
+
+        $rootScope.$digest();
+
+        expect($state.current()).toBeNull();
+
+        expect(onBegin.calls.count()).toEqual(0);
+        expect(onEnd.calls.count()).toEqual(0);
+        expect(onError.calls.count()).toEqual(1);
+        expect(onComplete.calls.count()).toEqual(1);
+
+        done();
       });
     });
   });
 
   describe('#$use', function() {
     it('Should add call middleware during render phase', function(done) {
-      angular.mock.inject(function($state) {
-        var _testScope = {
-          onMiddle: function(request, next) {
-            next();
-          },
-          onComplete: function() {
-            expect(_testScope.onMiddle.calls.count()).toEqual(1);
+      angular.mock.module(function($stateProvider) {
+        $stateProvider
 
-            done();
-          }
-        };
-
-        spyOn(_testScope, 'onMiddle').and.callThrough();
-
-        $state
-          .$ready()
-
-          .state('product.shoes', {
+          // Define states
+          .state('companies', {
+            url: '/companies/:company', 
             params: {
-              sku: '2937-UAE321',
-              colors: [ 'blue', 'green ']
+              company: 'XYZ Co'
             }
           })
 
-          .$use(function(request, next) {
-            _testScope.onMiddle(request, next);
-          })
-
-          .change('product.shoes')
-
-          .on('change:complete', function() {
-            _testScope.onComplete.call();
+          .state('rooms', {
+            url: '/buildings/:building/rooms/:room',
+            params: {
+              building: 'f2',
+              room: 'j203'
+            }
           });
+      });
+
+      angular.mock.inject(function($state, $rootScope) {
+        var _testLayer = {
+          onMiddle: function(request, next) {
+            next();
+          }
+        };
+        spyOn(_testLayer, 'onMiddle').and.callThrough();
+
+        $state
+
+          .$use(_testLayer.onMiddle)
+
+          .change('companies');
+
+        $rootScope.$digest();
+
+        expect(_testLayer.onMiddle).toHaveBeenCalled();
+
+        done();
       });
     });
 
@@ -454,45 +439,44 @@ xdescribe('$state', function() {
 
   describe('#current', function() {
     it('Should retrieve copy of current state', function(done) {
-      angular.mock.inject(function($state) {
-        var companyLobbyState;
+      var companyLobbyState;
+      angular.mock.module(function($stateProvider) {
+        $stateProvider
 
-        $state
-
-          // Create state
-          .state('company.lobby', companyLobbyState = {
+          // Define states
+          .state('company.lobby', {
             url: '/main',
             params: {
               a: 11
             }
-          })
-
-          // Initialize
-          .$ready()
-
-          // Change
-          .change('company.lobby')
-
-          // Completion event is always fired even on error
-          .on('change:complete', function() {
-
-            // Not same reference
-            expect($state.current()).not.toBe(companyLobbyState);
-
-            expect($state.current().name).toBe('company.lobby');
-            expect($state.current().url).toBe(companyLobbyState.url);
-            expect($state.current().params).toEqual(companyLobbyState.params);
-
-            done();
           });
+
+        companyLobbyState = $stateProvider.state('company.lobby');
+      });
+
+      angular.mock.inject(function($state, $rootScope) {
+
+        $state.change('company.lobby');
+
+        $rootScope.$digest();
+
+        // Not same instance
+        expect($state.current()).not.toBe(companyLobbyState);
+
+        // Same values
+        expect($state.current().name).toBe('company.lobby');
+        expect($state.current().url).toBe(companyLobbyState.url);
+        expect($state.current().params).toEqual(companyLobbyState.params);
+
+        done();
       });
     });
   });
 
   describe('#active', function() {
     it('Should check for active state using query with state notation', function(done) {
-      angular.mock.inject(function($state) {
-        $state
+      angular.mock.module(function($stateProvider) {
+        $stateProvider
 
           // Define
           .state('company.lobby', {
@@ -500,54 +484,51 @@ xdescribe('$state', function() {
           })
           .state('company.lobby.personel', {
             url: '/persons'
-          })
-
-          // Initialize
-          .$ready()
-
-          .change('company.lobby.personel')
-
-          // Empty should not throw error
-          .on('init', function() {
-            expect($state.active('company.lobby.personel')).toBeFalsy();
-          })
-
-          // Completion event is always fired even on error
-          .on('change:complete', function() {
-
-            // Parent
-            expect($state.active('company.lobby.personel')).toBeTruthy();
-            expect($state.active('company.lobby')).toBeTruthy();
-            expect($state.active('company')).toBeTruthy();
-
-            // RegExp
-            expect($state.active(/.*/)).toBeTruthy();
-            expect($state.active('/.*/')).toBeTruthy();
-
-            // Wildcards
-            expect($state.active('company.*.personel')).toBeTruthy();
-            expect($state.active('company.*.*')).toBeTruthy();
-            expect($state.active('*.lobby')).toBeTruthy();
-            expect($state.active('*.lobby.*')).toBeTruthy();
-            expect($state.active('*.lobby.*.doesnotexist')).toBeFalsy();
-            expect($state.active('*.lobby.doesnotexist.*')).toBeFalsy();
-            expect($state.active('doesnotexist.*.lobby.*')).toBeFalsy();
-
-            // Double wildcards
-            expect($state.active('company.**')).toBeTruthy();
-            expect($state.active('company.lobby.**')).toBeTruthy();
-            expect($state.active('company.**.personel')).toBeTruthy();
-            expect($state.active('company.**.doesnotexist')).toBeFalsy();
-            expect($state.active('doesnotexist.**.lobby.*')).toBeFalsy();
-
-            // Invalid
-            expect($state.active('doesnotexist')).toBeFalsy();
-
-            // Validate
-            expect($state.current().name).toBe('company.lobby.personel');
-
-            done();
           });
+      });
+
+      angular.mock.inject(function($state, $rootScope) {
+        // Initial condition
+        expect($state.active('company.lobby.personel')).toBe(false);
+
+        $state.change('company.lobby.personel');
+
+        $rootScope.$digest();
+
+        expect($state.active('company.lobby.personel')).toBe(true);
+
+        // Parent
+        expect($state.active('company.lobby.personel')).toBe(true);
+        expect($state.active('company.lobby')).toBe(true);
+        expect($state.active('company')).toBe(true);
+
+        // RegExp
+        expect($state.active(/.*/)).toBe(true);
+        expect($state.active('/.*/')).toBe(true);
+
+        // Wildcards
+        expect($state.active('company.*.personel')).toBe(true);
+        expect($state.active('company.*.*')).toBe(true);
+        expect($state.active('*.lobby')).toBe(true);
+        expect($state.active('*.lobby.*')).toBe(true);
+        expect($state.active('*.lobby.*.doesnotexist')).toBe(false);
+        expect($state.active('*.lobby.doesnotexist.*')).toBe(false);
+        expect($state.active('doesnotexist.*.lobby.*')).toBe(false);
+
+        // Double wildcards
+        expect($state.active('company.**')).toBe(true);
+        expect($state.active('company.lobby.**')).toBe(true);
+        expect($state.active('company.**.personel')).toBe(true);
+        expect($state.active('company.**.doesnotexist')).toBe(false);
+        expect($state.active('doesnotexist.**.lobby.*')).toBe(false);
+
+        // Invalid
+        expect($state.active('doesnotexist')).toBeFalsy();
+
+        // Validate
+        expect($state.current().name).toBe('company.lobby.personel');
+
+        done();
       });
     });
   });
@@ -667,6 +648,5 @@ xdescribe('$state', function() {
     });
 
   });
-
 
 });
