@@ -154,10 +154,16 @@ module.exports = [function StateRouterProvider() {
     }
 
     var nameChain = _getNameChain(name);
-
     var stateChain = nameChain
-      .map(function(name) {
-        return _stateLibrary[name];
+      .map(function(name, i) {
+        var item = angular.copy(_stateLibrary[name]);
+
+        if(item && i !== nameChain.length-1) {
+          delete(item.resolve);
+          delete(item.templates);
+        }
+
+        return item;
       })
       .filter(function(parent) {
         return !!parent;
@@ -166,8 +172,7 @@ module.exports = [function StateRouterProvider() {
     // Walk up checking inheritance
     for(var i=stateChain.length-1; i>=0; i--) {
       if(stateChain[i]) {
-        var nextState = angular.copy(stateChain[i]);
-        delete(nextState.resolve);
+        var nextState = stateChain[i];
         state = angular.merge(nextState, state || {});
       }
 

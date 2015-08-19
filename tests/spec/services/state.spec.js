@@ -57,8 +57,16 @@ describe('$state', function() {
         expect($state.state('dashboard')).not.toBe(myState);
       });
     });
+    
+    xit('Should return defined state heirarchy and not inherit templates from parent chain', function() {
 
-    it('Should use defined state heirarchy parameters inherit from parent chain', function() {
+    });
+    
+    xit('Should return defined state heirarchy and not inherit resolve promises from parent chain', function() {
+
+    });
+    
+    it('Should return defined state heirarchy parameters inherit from parent chain', function() {
       angular.mock.inject(function($state) {
         $state
 
@@ -379,10 +387,14 @@ describe('$state', function() {
         done();
       });
     });
+
+    xit('Should await all promises in resolve property', function(done) {
+      done();
+    });
   });
 
   describe('#$use', function() {
-    it('Should add call middleware during render phase', function(done) {
+    it('Should call middleware during state transition', function(done) {
       angular.mock.module(function($stateProvider) {
         $stateProvider
 
@@ -434,8 +446,37 @@ describe('$state', function() {
         }).toThrow(new Error('Middleware must be a function.'));
       });
     });
-  });
 
+    it('Should call middleware ', function(done) {
+      angular.mock.module(function($stateProvider) {
+        $stateProvider
+
+          // Define states
+          .state('companies', {
+            url: '/companies/:company', 
+            params: {
+              company: 'XYZ Co'
+            }
+          })
+
+          .state('rooms', {
+            url: '/buildings/:building/rooms/:room',
+            params: {
+              building: 'f2',
+              room: 'j203'
+            }
+          });
+      });
+
+      angular.mock.inject(function($state) {
+        expect(function() {
+          
+          $state.$use(null);
+
+        }).toThrow(new Error('Middleware must be a function.'));
+      });
+    });
+  });
 
   describe('#current', function() {
     it('Should retrieve copy of current state', function(done) {
