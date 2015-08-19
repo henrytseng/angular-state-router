@@ -474,6 +474,8 @@ describe('$state', function() {
           $state.$use(null);
 
         }).toThrow(new Error('Middleware must be a function.'));
+
+        done();
       });
     });
   });
