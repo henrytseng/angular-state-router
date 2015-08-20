@@ -1,0 +1,533 @@
+<!DOCTYPE html>
+<html lang="en-us">
+  <head>
+    <meta charset="UTF-8">
+    <title>StateRouter by henrytseng</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <link rel="stylesheet" type="text/css" href="stylesheets/normalize.css" media="screen">
+    <link href='https://fonts.googleapis.com/css?family=Open+Sans:400,700' rel='stylesheet' type='text/css'>
+    <link rel="stylesheet" type="text/css" href="stylesheets/stylesheet.css" media="screen">
+    <link rel="stylesheet" type="text/css" href="stylesheets/github-light.css" media="screen">
+  </head>
+  <body>
+    <section class="page-header">
+      <h1 class="project-name">StateRouter</h1>
+      <h2 class="project-tagline">StateRouter is an AngularJS state-based router designed for flexibility and ease of use.</h2>
+      <a href="https://github.com/henrytseng/angular-state-router" class="btn">View on GitHub</a>
+      <a href="https://github.com/henrytseng/angular-state-router/zipball/master" class="btn">Download .zip</a>
+      <a href="https://github.com/henrytseng/angular-state-router/tarball/master" class="btn">Download .tar.gz</a>
+    </section>
+
+    <section class="main-content">
+      <h1>
+<a id="staterouter" class="anchor" href="#staterouter" aria-hidden="true"><span class="octicon octicon-link"></span></a>StateRouter</h1>
+
+<p><a href="https://travis-ci.org/henrytseng/angular-state-router"><img src="https://travis-ci.org/henrytseng/angular-state-router.svg?branch=master" alt="Build Status"></a> <a href="https://gitter.im/henrytseng/angular-state-router?utm_source=badge&amp;utm_medium=badge&amp;utm_campaign=pr-badge&amp;utm_content=badge"><img src="https://badges.gitter.im/Join%20Chat.svg" alt="Join the chat at https://gitter.im/henrytseng/angular-state-router"></a> </p>
+
+<p>An AngularJS state-based router designed for flexibility and ease of use.  </p>
+
+<p><a href="https://www.npmjs.com/package/angular-state-router">StateRouter</a> is designed to be used in a modular integration with components:</p>
+
+<ul>
+<li>
+<a href="https://www.npmjs.com/package/angular-state-view">StateView</a>
+
+<ul>
+<li>Provides nested view management with template support</li>
+</ul>
+</li>
+<li>
+<a href="https://www.npmjs.com/package/angular-state-loadable">StateLoadable</a>
+
+<ul>
+<li>A lazy loading scheme</li>
+</ul>
+</li>
+</ul>
+
+<p>While not required, StateRouter was originally developed with Browserify.  </p>
+
+<h2>
+<a id="installation" class="anchor" href="#installation" aria-hidden="true"><span class="octicon octicon-link"></span></a>Installation</h2>
+
+<p>To install in your project, simply install from npm </p>
+
+<pre><code>npm install angular-state-router --save
+</code></pre>
+
+<h2>
+<a id="quick-start" class="anchor" href="#quick-start" aria-hidden="true"><span class="octicon octicon-link"></span></a>Quick Start</h2>
+
+<p>Include the <code>state-router.min.js</code> script tag in your <code>.html</code>:</p>
+
+<pre><code>&lt;html ng-app="myApp"&gt;
+  &lt;head&gt;
+    &lt;script src="/node_modules/angular/angular.min.js"&gt;&lt;/script&gt;
+    &lt;script src="/node_modules/angular-state-router/dist/state-router.min.js"&gt;&lt;/script&gt;
+    &lt;script src="/js/app.js"&gt;&lt;/script&gt;
+  &lt;/head&gt;
+  &lt;body&gt;
+    ...
+  &lt;/body&gt;
+&lt;/html&gt;
+</code></pre>
+
+<p>In <code>app.js</code> add <code>angular-state-router</code> as a dependency when your application module is instantiated.  </p>
+
+<p>And <strong>define</strong> your states and optionally an <strong>default initial location</strong></p>
+
+<pre><code>angular.module('myApp', ['angular-state-router']);
+  .config(function($stateProvider) {
+
+    $stateProvider
+
+      // Define states
+      .state('landing', {
+        url: '/'
+      })
+
+      .state('products.listing', {
+        url: '/products', 
+        params: {
+            catalog: '1b'
+        }
+      })
+
+      .state('products', {
+        url: '/products/:id'
+      })
+
+      .state('account', {
+        url: '/account'
+      })
+
+      // Set initialization location; optionally
+      .init('landing');
+
+  })
+
+  .controller('MyController', function($state) {
+
+     // Get the current state
+    var current = $state.current();
+
+  });
+</code></pre>
+
+<h2>
+<a id="states" class="anchor" href="#states" aria-hidden="true"><span class="octicon octicon-link"></span></a>States</h2>
+
+<p>StateRouter is design for building applications that can be represented with a <a href="https://en.wikipedia.org/wiki/Finite-state_machine">finite-state machine model</a> (FSM), a computational model.  </p>
+
+<p>States are represented through data objects with an associated dot-notation name.  Child states inherit from parent states by default.  </p>
+
+<h3>
+<a id="definition" class="anchor" href="#definition" aria-hidden="true"><span class="octicon octicon-link"></span></a>Definition</h3>
+
+<p>States must be first defined.  This is usually done in the angular <strong>configuration phase</strong> with <code>$stateProvider</code> but <em>can</em> also be done later with <code>$state</code>.   </p>
+
+<pre><code>angular.module('myApp')
+  .config(function($stateProvider) {
+
+    $stateProvider
+      .state('account', {
+        url: '/accounts',
+        params: { endpoint: '2998293e' }
+      })
+
+      .state('account.profile', {
+        url: '/accounts/:id'
+      })
+
+      .state('account.transactions', {
+        url: '/accounts/:id/transactions',
+        inherit: false
+      });
+  });
+</code></pre>
+
+<p>Once a state is defined a transition to the state can be made.</p>
+
+<pre><code>angular.module('myApp')
+  .controller('MyController', function($scope, $state) {
+
+    $scope.buttonClick = function() {
+
+      // Update
+      $state.change('products.catalogs.items.variations', { 
+        item: '423', 
+        catalog: 'e534', 
+        variation: '320902'
+      });
+
+    };
+
+  });
+</code></pre>
+
+<h3>
+<a id="initialization" class="anchor" href="#initialization" aria-hidden="true"><span class="octicon octicon-link"></span></a>Initialization</h3>
+
+<p>Initialization occurs automatically when the application is kicked-started.  </p>
+
+<p><code>$location.url()</code> will be checked for an initial location during initialization, if $location.url() has not been set then an alternative default initial location is used if it exists.  </p>
+
+<p>The initialization process is as follows:</p>
+
+<ol>
+<li>Configuration Phase
+
+<ul>
+<li>Define states</li>
+<li>Optionally define "initial location"</li>
+</ul>
+</li>
+<li>Run Phase
+
+<ul>
+<li>Initialization, during application kick-started</li>
+<li>Initial state set as <code>$location.url()</code>, if not empty</li>
+<li>Initial state falls back to "initial location"</li>
+</ul>
+</li>
+</ol>
+
+<p>An initialization <code>$stateInit</code> event is broadcasted on <code>$rootScope</code>.  </p>
+
+<p>To listen to the init event:</p>
+
+<pre><code>angular.module('myApp')
+  .controller('MyController', function($rootScope) {
+
+    $rootScope.$on('$stateInit', function() {
+
+        // Responding code
+
+    });
+
+  });
+</code></pre>
+
+<h3>
+<a id="usage" class="anchor" href="#usage" aria-hidden="true"><span class="octicon octicon-link"></span></a>Usage</h3>
+
+<p>After states are defined a transition can be made</p>
+
+<pre><code>// Change state
+$state.change('account.profile', { employee: 'e92792-2389' });
+</code></pre>
+
+<p>State changes are <em>asynchronous</em> operations.  </p>
+
+<p>Current states can be checked using the <code>active</code> method which accepts a state notation query</p>
+
+<pre><code>&lt;li ng-class="{'active': $state.active('company') }"&gt;&lt;a href="#" sref="company"&gt;Company&lt;/a&gt;&lt;/li&gt;
+</code></pre>
+
+<p>And in the same method a state can be triggered using the <code>sref</code> attribute.  </p>
+
+<pre><code>&lt;a href="#" sref="company"&gt;Company&lt;/a&gt;
+</code></pre>
+
+<p>Parameters can be sent similarly</p>
+
+<pre><code>&lt;a href="#" sref="company({id:'Lorem ipsum'})"&gt;Company&lt;/a&gt;
+</code></pre>
+
+<h3>
+<a id="inheritance" class="anchor" href="#inheritance" aria-hidden="true"><span class="octicon octicon-link"></span></a>Inheritance</h3>
+
+<p>States inherit from each other through a parent-child relationship by default; where <code>campus</code> is the parent of <code>campus.classrooms</code> state.  </p>
+
+<p>A child state will inherit from it's each of its parents until a <code>inherit</code> value of <code>false</code> value is encountered (with exception to <code>resolve</code> and <code>templates</code> properties).  </p>
+
+<p>For example, given this definition</p>
+
+<pre><code>angular.module('myApp')
+  .config(function($stateProvider) {
+
+    $stateProvider
+      .state('campus', {
+        url: '/campus',
+        params: { availability: false }
+      })
+
+      .state('campus.classrooms', {
+        url: '/campus/rms/:id',
+        params: { size: 30 }
+      });
+
+  });
+</code></pre>
+
+<p>We see that <code>campus.classrooms</code> will have a <code>params</code> value</p>
+
+<pre><code>{ 
+  availability: false,
+  size: 30
+}
+</code></pre>
+
+<p>Where <code>availability</code> is inherited from <code>campus</code>, its parent</p>
+
+<h2>
+<a id="resolve" class="anchor" href="#resolve" aria-hidden="true"><span class="octicon octicon-link"></span></a>Resolve</h2>
+
+<p>States that include a resolve property will resolve all promises and store results in the <code>locals</code> Object, where they can be accessed <code>$state.current().locals</code>.  </p>
+
+<pre><code>angular.module('myApp')
+  .config(function($stateProvider) {
+
+    $stateProvider
+      .state('stories', {
+        url: '/storyteller/stories',
+
+        resolve: {
+          story: function(StoryService) {
+            return StoryService.get();
+          }
+
+        }
+      });
+  })
+  .controller('StoryController', function($state) {
+    console.log($state.current().locals);
+  });
+</code></pre>
+
+<p><code>locals</code> is has with the following value at the completion of the state transition:</p>
+
+<pre><code>{
+  story: 'Lorem ipsum'
+}
+</code></pre>
+
+<h2>
+<a id="events" class="anchor" href="#events" aria-hidden="true"><span class="octicon octicon-link"></span></a>Events</h2>
+
+<p>Events are broadcast on the <code>$rootScope</code>.  </p>
+
+<h3>
+<a id="stateinit" class="anchor" href="#stateinit" aria-hidden="true"><span class="octicon octicon-link"></span></a>$stateInit</h3>
+
+<p>This event is emitted when $state is initialized.  If an initial state is specified <code>$stateInit</code> occurs after the current state is set.  </p>
+
+<h3>
+<a id="statechangebegin" class="anchor" href="#statechangebegin" aria-hidden="true"><span class="octicon octicon-link"></span></a>$stateChangeBegin</h3>
+
+<ul>
+<li>
+<code>request</code> <em>Object</em> Requested data <code>{ name: 'nextState', params: {} }</code>
+</li>
+</ul>
+
+<p>This event is emitted when a requested change to a valid state exists.  </p>
+
+<h3>
+<a id="statechangeerror" class="anchor" href="#statechangeerror" aria-hidden="true"><span class="octicon octicon-link"></span></a>$stateChangeError</h3>
+
+<ul>
+<li>
+<code>request</code> <em>Object</em> Requested data <code>{ name: 'nextState', params: {} }</code>
+</li>
+</ul>
+
+<p>This event is emitted whenever an error occurs.  </p>
+
+<h3>
+<a id="statechangeerrornotfound" class="anchor" href="#statechangeerrornotfound" aria-hidden="true"><span class="octicon octicon-link"></span></a>$stateChangeErrorNotFound</h3>
+
+<ul>
+<li>
+<code>request</code> <em>Object</em> Requested data <code>{ name: 'nextState', params: {} }</code>
+</li>
+</ul>
+
+<p>This event is emitted when a state cannot be found and no parent state(s) exist.  </p>
+
+<h3>
+<a id="statechangeerrorresolve" class="anchor" href="#statechangeerrorresolve" aria-hidden="true"><span class="octicon octicon-link"></span></a>$stateChangeErrorResolve</h3>
+
+<p>This event is emitted when an error occurred during resolve.  </p>
+
+<h3>
+<a id="statechangeend" class="anchor" href="#statechangeend" aria-hidden="true"><span class="octicon octicon-link"></span></a>$stateChangeEnd</h3>
+
+<ul>
+<li>
+<code>request</code> <em>Object</em> Requested data <code>{ name: 'nextState', params: {} }</code>
+</li>
+</ul>
+
+<p>This event occurs when a valid state change successfully finishes.  This event does not trigger when an error was encountered.  Use the <code>'change'</code> event for all change requests.  </p>
+
+<h3>
+<a id="statechangecomplete" class="anchor" href="#statechangecomplete" aria-hidden="true"><span class="octicon octicon-link"></span></a>$stateChangeComplete</h3>
+
+<ul>
+<li>
+<code>error</code>   <em>Object</em> Null if successful, <code>Error</code> object if error occurs</li>
+<li>
+<code>request</code> <em>Object</em> Requested data <code>{ name: 'nextState', params: {} }</code>
+</li>
+</ul>
+
+<p>This event occurs when a state change is finished.  This event is always triggered on any change request.  Also occurs <em>after</em> 'error' is emitted.  </p>
+
+<h2>
+<a id="state-notation" class="anchor" href="#state-notation" aria-hidden="true"><span class="octicon octicon-link"></span></a>State Notation</h2>
+
+<p>States use dot-notation where state names are <code>/[a-zA-Z0-9_]*/</code> strings separated by dots <code>.</code> and are case sensitive.  </p>
+
+<p>The following are examples of valid unique state names:</p>
+
+<pre><code>ochestra1.trombone.position.6
+ochestra1.clarinet
+ochestra56.clarinet
+ochestra1
+</code></pre>
+
+<h3>
+<a id="parameters" class="anchor" href="#parameters" aria-hidden="true"><span class="octicon octicon-link"></span></a>Parameters</h3>
+
+<p>Data Objects can be included in an expression (not query) given by Object literal notation.  Using name-value pairs of Boolean/Number/String/null.</p>
+
+<p>They are expressed using parenthesis <code>()</code> surrounding the Object literal at the end of a state expression.  </p>
+
+<pre><code>ochestra1.trombone.position.6({id:'49829f', color:329, custom:true})
+</code></pre>
+
+<h3>
+<a id="queries" class="anchor" href="#queries" aria-hidden="true"><span class="octicon octicon-link"></span></a>Queries</h3>
+
+<p>The following are examples of state notation queries that would match the state <code>ochestra1.trombone.position.6</code></p>
+
+<pre><code>ochestra1
+ochestra1.trombone
+ochestra1.trombone.position
+ochestra1.trombone.position.6
+</code></pre>
+
+<h3>
+<a id="wildcards" class="anchor" href="#wildcards" aria-hidden="true"><span class="octicon octicon-link"></span></a>Wildcards</h3>
+
+<p>Queries can also use wildcards <code>*</code> to match any one state or <code>**</code> to match any pattern of states following or preceding.  </p>
+
+<p>Both of the following will match the state <code>catalog.index.list</code></p>
+
+<pre><code>catalog.*.list
+catalog.**
+</code></pre>
+
+<h2>
+<a id="urls" class="anchor" href="#urls" aria-hidden="true"><span class="octicon octicon-link"></span></a>URLs</h2>
+
+<p>URLs in state definitions take the form:</p>
+
+<pre><code>$stateProvider.state('events.details', {
+  url: '/events/:eventid',
+    params: {
+      eventid: 'init'
+    }
+  })
+</code></pre>
+
+<p>Where parameters are specified in URLs using variable names starting with a colon, e.g. - <code>:id</code>.  And a default value can be specified using a <code>params</code> Object.  </p>
+
+<p>To retrieve the current state and its parameter values use (e.g. - for example finding the value of <code>eventid</code>):</p>
+
+<pre><code>$state.current().params.eventid
+</code></pre>
+
+<h3>
+<a id="query-string" class="anchor" href="#query-string" aria-hidden="true"><span class="octicon octicon-link"></span></a>Query String</h3>
+
+<p>Query string values are also set in the params object.  </p>
+
+<p>Given the URL <code>http://test.com/#/events/birthday_event?color=blue</code></p>
+
+<pre><code>assert(params).equal({
+    eventid: 'birthday_event',
+    color: 'blue'
+});
+</code></pre>
+
+<h2>
+<a id="components" class="anchor" href="#components" aria-hidden="true"><span class="octicon octicon-link"></span></a>Components</h2>
+
+<p>Components register themselves as middleware layers and respond to state changes.  </p>
+
+<ul>
+<li><a href="https://www.npmjs.com/package/angular-state-view">StateView</a></li>
+<li><a href="https://www.npmjs.com/package/angular-state-loadable">StateLoadable</a></li>
+</ul>
+
+<h3>
+<a id="building-a-custom-component" class="anchor" href="#building-a-custom-component" aria-hidden="true"><span class="octicon octicon-link"></span></a>Building a Custom Component</h3>
+
+<p>To build your own components simply register your the middleware with the <code>$state.$use()</code> method.  </p>
+
+<p><code>$use</code> expects a function signature <code>function(request, next)</code> where <code>request</code> is data Object containing data for the current state transition and <code>next</code> is a completion callback.  </p>
+
+<pre><code>angular.module('myComponent', ['angular-state-router'])
+
+  .factory(function($state) {
+
+    // Register middleware layer
+    $state.$use(function(request, next) {
+
+      // ... Perform work
+
+      // Asynchronous completion
+      next();
+
+    });
+
+  });
+</code></pre>
+
+<p>Component operate asynchronously and <code>next</code> must be called.  </p>
+
+<h2>
+<a id="contribute" class="anchor" href="#contribute" aria-hidden="true"><span class="octicon octicon-link"></span></a>Contribute</h2>
+
+<p>If you've got ideas on how to make StateRouter better create an issue and mark an enhancement in Github.  </p>
+
+<p>If there are any unreported errors please let us know.  We'd like StateRouter to give as much feedback as possible to eliminate common problems that may occur during development.  </p>
+
+<p>To get start programming, build</p>
+
+<pre><code>npm install
+gulp
+</code></pre>
+
+<p>To get started watch files for programming</p>
+
+<pre><code>gulp watch
+</code></pre>
+
+<p>To host the example</p>
+
+<pre><code>npm run-script example
+</code></pre>
+
+<p>Then using your browser visit <a href="http://localhost:3000/index.html">http://localhost:3000/index.html</a></p>
+
+<h2>
+<a id="license" class="anchor" href="#license" aria-hidden="true"><span class="octicon octicon-link"></span></a>License</h2>
+
+<p>Copyright (c) 2015 Henry Tseng</p>
+
+<p>Released under the MIT license. See LICENSE for details.</p>
+
+      <footer class="site-footer">
+        <span class="site-footer-owner"><a href="https://github.com/henrytseng/angular-state-router">StateRouter</a> is maintained by <a href="https://github.com/henrytseng">henrytseng</a>.</span>
+
+        <span class="site-footer-credits">This page was generated by <a href="https://pages.github.com">GitHub Pages</a> using the <a href="https://github.com/jasonlong/cayman-theme">Cayman theme</a> by <a href="https://twitter.com/jasonlong">Jason Long</a>.</span>
+      </footer>
+
+    </section>
+
+  
+  </body>
+</html>
