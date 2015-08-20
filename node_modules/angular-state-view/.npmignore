@@ -1,0 +1,10 @@
+# Bower
+bower_components/*
+
+# Node
+node_modules/*
+example/node_modules/*
+
+# OSX
+.DS_Store
+

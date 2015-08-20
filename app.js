@@ -3,8 +3,7 @@
 // Instantiate app
 var myApp = angular.module('myApp', [
   'angular-state-router',
-  'angular-state-view',
-  'angular-state-loadable'
+  'angular-state-view'
 ]);
 
 myApp
