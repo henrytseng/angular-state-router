@@ -8,7 +8,7 @@ An AngularJS state-based router designed for flexibility and ease of use.
 [StateRouter](https://www.npmjs.com/package/angular-state-router) is designed to be used in a modular integration with components:
 
 * [StateView](https://www.npmjs.com/package/angular-state-view)
-	* A view rendering engine
+	* Provides nested view management with template support
 * [StateLoadable](https://www.npmjs.com/package/angular-state-loadable)
 	* A lazy loading scheme
 
@@ -117,7 +117,7 @@ States must be first defined.  This is usually done in the angular **configurati
 Once a state is defined a transition to the state can be made.
 
 	angular.module('myApp')
-	  .controller(function($scope, $state) {
+	  .controller('MyController', function($scope, $state) {
 
 	    $scope.buttonClick = function() {
 	    
@@ -136,16 +136,20 @@ Once a state is defined a transition to the state can be made.
 
 ### Initialization
 
-Initialization occurs when the application is kicked-started.  This is why it is *often* important to define all possible deep linked states during the **configuration phase**.  
+Initialization occurs when the application is kicked-started.  `$location.url()` will be checked for an initial location during initialization, if $location.url() has not been set then an alternative default initial location is used if it exists.  
 
-An initialization `'init'` event is emitted from the StateRouter.  
+An initialization `$stateInit` event is broadcasted on `$rootScope`.  
 
 To listen to the init event:
 
 	angular.module('myApp')
-	  .run(function($state) {
+	  .controller('MyController', function($rootScope) {
 	  
-	    $state.on('init', function() {  });
+	    $rootScope.$on('$stateInit', function() {
+	    
+	    	// Initialized
+	    
+	    });
 	  
 	  });
 

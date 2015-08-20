@@ -310,89 +310,91 @@ module.exports = [function StateRouterProvider() {
     var _changeState = function(name, params) {
       var deferred = $q.defer();
 
-      params = params || {};
+      $rootScope.$evalAsync(function() {
+        params = params || {};
 
-      // Parse state-notation expression
-      var nameExpr = _parseName(name);
-      name = nameExpr.name;
-      params = angular.extend(nameExpr.params || {}, params);
+        // Parse state-notation expression
+        var nameExpr = _parseName(name);
+        name = nameExpr.name;
+        params = angular.extend(nameExpr.params || {}, params);
 
-      var error = null;
-      var request = {
-        name: name,
-        params: params,
-        locals: {}
-      };
+        var error = null;
+        var request = {
+          name: name,
+          params: params,
+          locals: {}
+        };
 
-      // Compile execution phases
-      var queue = QueueHandler().data(request);
+        // Compile execution phases
+        var queue = QueueHandler().data(request);
 
-      var nextState = angular.copy(_getState(name));
-      var prevState = _current;
+        var nextState = angular.copy(_getState(name));
+        var prevState = _current;
 
-      if(nextState) {
-        // Set locals
-        nextState.locals = request.locals;
-        
-        // Set parameters
-        nextState.params = angular.extend(nextState.params || {}, params);
-      }
-
-      // Does not exist
-      if(nextState === null) {
-        queue.add(function(data, next) {
-          error = new Error('Requested state was not defined.');
-          error.code = 'notfound';
-
-          $rootScope.$broadcast('$stateChangeErrorNotFound', error, request);
-          next(error);
-        });
-
-      // State not changed
-      } else if(_compareStates(prevState, nextState)) {
-        queue.add(function(data, next) {
-          _current = nextState;
-          next();
-        });
-        
-      // Valid state exists
-      } else {
-
-        // Make state change
-        queue.add(function(data, next) {
-          if(prevState) _pushHistory(prevState);
-          _current = nextState;
+        if(nextState) {
+          // Set locals
+          nextState.locals = request.locals;
           
-          next();
-        });
-
-        // Process started
-        queue.add(function(data, next) {
-          $rootScope.$broadcast('$stateChangeBegin', request);
-          next();
-        });
-
-        // Add middleware
-        queue.add(_layerList);
-
-        // Process ended
-        queue.add(function(data, next) {
-          $rootScope.$broadcast('$stateChangeEnd', request);
-          next();
-        });
-      }
-
-      // Run
-      queue.execute(function(err) {
-        if(err) {
-          $rootScope.$broadcast('$stateChangeError', err, request);
-          deferred.reject(err);
-
-        } else {
-          deferred.resolve(request);
+          // Set parameters
+          nextState.params = angular.extend(nextState.params || {}, params);
         }
 
-        $rootScope.$broadcast('$stateChangeComplete', request);
+        // Does not exist
+        if(nextState === null) {
+          queue.add(function(data, next) {
+            error = new Error('Requested state was not defined.');
+            error.code = 'notfound';
+
+            $rootScope.$broadcast('$stateChangeErrorNotFound', error, request);
+            next(error);
+          });
+
+        // State not changed
+        } else if(_compareStates(prevState, nextState)) {
+          queue.add(function(data, next) {
+            _current = nextState;
+            next();
+          });
+          
+        // Valid state exists
+        } else {
+
+          // Process started
+          queue.add(function(data, next) {
+            $rootScope.$broadcast('$stateChangeBegin', request);
+            next();
+          });
+
+          // Make state change
+          queue.add(function(data, next) {
+            if(prevState) _pushHistory(prevState);
+            _current = nextState;
+            
+            next();
+          });
+
+          // Add middleware
+          queue.add(_layerList);
+
+          // Process ended
+          queue.add(function(data, next) {
+            $rootScope.$broadcast('$stateChangeEnd', request);
+            next();
+          });
+        }
+
+        // Run
+        queue.execute(function(err) {
+          if(err) {
+            $rootScope.$broadcast('$stateChangeError', err, request);
+            deferred.reject(err);
+
+          } else {
+            deferred.resolve(request);
+          }
+
+          $rootScope.$broadcast('$stateChangeComplete', request);
+        });
       });
 
       return deferred.promise;
@@ -448,34 +450,36 @@ module.exports = [function StateRouterProvider() {
        * @return {$state} Itself; chainable
        */
       $ready: function() {
-        if(!_isInit) {
-          _isInit = true;
+        $rootScope.$evalAsync(function() {
+          if(!_isInit) {
+            _isInit = true;
 
-          // Configuration
-          if(!_options) {
-            _options = angular.copy(_configuration);
+            // Configuration
+            if(!_options) {
+              _options = angular.copy(_configuration);
+            }
+
+            // Initial location
+            if(_options.hasOwnProperty('initialLocation')) {
+              _initalLocation = angular.copy(_options.initialLocation);
+            }
+
+            var readyDeferred = null;
+
+            // Initial location
+            if($location.url() !== '') {
+              readyDeferred = _inst.$location($location.url());
+
+            // Initialize with state
+            } else if(_initalLocation) {
+              readyDeferred = _changeState(_initalLocation.name, _initalLocation.params);
+            }
+
+            $q.when(readyDeferred).then(function() {
+              $rootScope.$broadcast('$stateInit');
+            });
           }
-
-          // Initial location
-          if(_options.hasOwnProperty('initialLocation')) {
-            _initalLocation = angular.copy(_options.initialLocation);
-          }
-
-          var readyDeferred = null;
-
-          // Initial location
-          if($location.url() !== '') {
-            readyDeferred = _inst.$location($location.url());
-
-          // Initialize with state
-          } else if(_initalLocation) {
-            readyDeferred = _changeState(_initalLocation.name, _initalLocation.params);
-          }
-
-          $q.when(readyDeferred).then(function() {
-            $rootScope.$broadcast('$stateInit');
-          });
-        }
+        });
 
         return _inst;
       },

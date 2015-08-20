@@ -34,12 +34,13 @@
           <div class="media" ng-repeat="item in messages">
             <div class="media-body">
               <h4 class="media-heading">{{item.title}}</h4>
-              {{item.body}}
+              {{item.body}}<br>
+              
             </div>
           </div>
         </div>
         <div class="panel-body">
-          <a class="btn btn-default" ng-click="clearMessages()">Clear</a>
+          <a class="btn btn-default" ng-click="clearDebug()">Clear</a>
         </div>
       </div>
     </div>

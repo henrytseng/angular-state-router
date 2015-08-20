@@ -80,6 +80,7 @@ describe('$stateProvider', function() {
 
       // Kickstart the injectors previously registered 
       angular.mock.inject(function ($rootScope, $state) {
+        $rootScope.$digest();
         expect($state.options().historyLength).toBe(2);
         expect($state.current().name).toBe('animals.listing');
 

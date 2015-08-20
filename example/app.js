@@ -16,10 +16,17 @@ myApp
       // Define states
       .state('landing', {
         url: '/',
+
+        // Defined templates
         templates: {
+
+          // Parent
           layout: '/layouts/one-col.html',
+
+          // Nested Children
           contentBody: '/screens/landing.html',
           contentFooter: '/common/footer.html'
+
         }
       })
 
@@ -46,11 +53,14 @@ myApp
           contentFooter: '/common/footer.html'
         },
         controllers: {
+
+          // Inline controller
           contentBody: function($scope, Product) {
             Product.list().then(function(list) {
               $scope.products = list;
             });
           }
+
         }
       })
 
@@ -63,7 +73,10 @@ myApp
         },
 
         controllers: {
+
+          // Referenced controller
           layout: 'ProductItemController'
+
         },
 
         resolve: {
@@ -112,6 +125,7 @@ myApp
         }
       })
 
+      // Set default initial location
       .init('landing');
   })
 
@@ -121,7 +135,7 @@ myApp
   })
 
   // Main
-  .controller('FrameController', function($scope, $state, $urlManager, $viewManager, $log, $location, Product) {
+  .controller('FrameController', function($rootScope, $scope, $state, $urlManager, $viewManager, $log, $location, Product) {
 
     // Products catalog
     $scope.products = Product.list();
@@ -149,31 +163,36 @@ myApp
     $scope.messages = [];
 
     // Clear debugging messages
-    $scope.clearMessages = function() {
+    $scope.clearDebug = function() {
       $scope.messages = [];
     };
 
-    // Listen to initialization
-    $state.on('init', function() {
-      $log.log('init');
-      $scope.messages.unshift({
-        title: 'init',
-        body: 'State has initialized.'
-      });
-      $scope.$apply();
-    });
+    var _addDebug = function(message) {
+      return function(e) {
+        var now = new Date();
+        $log.log(e.name);
+        $scope.messages.unshift({
+          title: e.name,
+          body: message
+        });
+      };
+    };
 
-    // Listen to state changes
-    $state.on('change:complete', function() {
-      $log.log('change:complete ('+ $state.current().name +')');
-      $scope.messages.unshift({
-        title: 'change:complete ('+ $state.current().name +')',
-        body: 'State change request has been completed.'
-      });
-      $scope.$apply();
-    });
+    // Initialization
+    $rootScope.$on('$stateInit', _addDebug('State has initialized.'));
+
+    // State transition
+    $rootScope.$on('$stateChangeBegin', _addDebug('State transition process started.'));
+    $rootScope.$on('$stateChangeEnd', _addDebug('State transition process ended.'));
+    $rootScope.$on('$stateChangeComplete', _addDebug('State change request has been completed.'));
+
+    // Error
+    $rootScope.$on('$stateChangeError', _addDebug('Error occurred.'));
+    $rootScope.$on('$stateChangeErrorNotFound', _addDebug('Error state could not be found.'));
+    
   })
 
+  // Product Service
   .factory('Product', function($q) {
     var _listing = [
       {item: 'k43131', catalog: '1-aeff', name: 'Phasellus', description: 'Purus sodales ultricies.'},
@@ -222,7 +241,7 @@ myApp
     };
   })
 
-  // Product details
+  // Product Item Controller
   .controller('ProductItemController', function($scope, $state, productItem, itemRecommendations) {
     // Get product
     $scope.product = productItem;

@@ -260,6 +260,8 @@ describe('$state', function() {
       });
 
       angular.mock.inject(function($state, $rootScope) {
+        $rootScope.$digest();
+
         // Spies
         var onBegin = jasmine.createSpy('onBegin');
         var onEnd = jasmine.createSpy('onEnd');
@@ -308,6 +310,8 @@ describe('$state', function() {
       });
 
       angular.mock.inject(function($state, $rootScope) {
+        $rootScope.$digest();
+
         var onBegin = jasmine.createSpy('onBegin');
         var onEnd = jasmine.createSpy('onEnd');
         var onComplete = jasmine.createSpy('onComplete');
@@ -498,7 +502,8 @@ describe('$state', function() {
       });
 
       angular.mock.inject(function($state, $rootScope) {
-
+        $rootScope.$digest();
+        
         $state.change('company.lobby');
 
         $rootScope.$digest();
