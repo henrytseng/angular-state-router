@@ -1,6 +1,6 @@
 'use strict';
 
-module.exports = ['$q', '$injector', '$state', function($q, $injector, $state) {
+module.exports = ['$q', '$injector', '$state', '$rootScope', function($q, $injector, $state, $rootScope) {
 
   // Instance
   var _self = {};
@@ -41,6 +41,7 @@ module.exports = ['$q', '$injector', '$state', function($q, $injector, $state) {
       next();
 
     }, function(err) {
+      $rootScope.$broadcast('$stateChangeErrorResolve', err);
       next(new Error('Error resolving state'));
     });
   };

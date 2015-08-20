@@ -437,7 +437,7 @@ describe('$state', function() {
 
         $rootScope.$on('$stateChangeBegin', onBegin);
         $rootScope.$on('$stateChangeEnd', onEnd);
-        $rootScope.$on('$stateChangeErrorNotFound', onError);
+        $rootScope.$on('$stateChangeError', onError);
         $rootScope.$on('$stateChangeComplete', onComplete);
 
         // Initialize
@@ -462,6 +462,89 @@ describe('$state', function() {
         expect($state.current().locals).toEqual({
           slowService: 'someSpecificValue'
         });
+
+        done();
+      });
+    });
+
+    it('Should broadcast "$stateChangeErrorResolve" if promise is rejected in resolve property', function(done) {
+      angular.mock.module(function($stateProvider) {
+        $stateProvider
+
+          // Define states
+          .state('companies', {
+            url: '/companies/:company', 
+            params: {
+              company: 'XYZ Co'
+            }
+          })
+
+          .state('employees', {
+            url: '/employees/:employee', 
+            params: {
+              employee: '01321471448-3145-1'
+            },
+            resolve: {
+              'errorService': function($timeout, $q) {
+                return $q(function(resolve, reject) {
+                  $timeout(function() {
+                    reject(new Error('Looks like we have a problem resolving.'));
+                  }, 1000);
+                });
+              }
+            }
+          })
+
+          .state('rooms', {
+            url: '/buildings/:building/rooms/:room',
+            params: {
+              building: 'f2',
+              room: 'j203'
+            }
+          });
+      });
+
+      angular.mock.inject(function($state, $rootScope, $timeout) {
+        var onBegin = jasmine.createSpy('onBegin');
+        var onEnd = jasmine.createSpy('onEnd');
+        var onError = jasmine.createSpy('onError');
+        var onErrorResolve = jasmine.createSpy('onErrorResolve');
+        var onComplete = jasmine.createSpy('onComplete');
+
+        $rootScope.$on('$stateChangeBegin', onBegin);
+        $rootScope.$on('$stateChangeEnd', onEnd);
+        $rootScope.$on('$stateChangeError', onError);
+        $rootScope.$on('$stateChangeErrorResolve', onErrorResolve);
+        $rootScope.$on('$stateChangeComplete', onComplete);
+
+        // Initialize
+        $rootScope.$digest();
+
+        expect($state.current()).toBe(null);
+
+        // Transition
+        $state.change('employees');
+        $rootScope.$digest();
+
+        // Resolve everything immediately
+        $timeout.flush();
+        
+        expect($state.current().name).toBe('employees');
+
+        // State transition begins
+        expect(onBegin).toHaveBeenCalled();
+
+        // But does not finish
+        expect(onEnd).not.toHaveBeenCalled();
+
+        // Error response
+        expect(onError).toHaveBeenCalled();
+        expect(onErrorResolve).toHaveBeenCalled();
+
+        // Always called
+        expect(onComplete).toHaveBeenCalled();
+
+        expect($state.current().locals).toEqual({ });
 
         done();
       });
