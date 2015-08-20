@@ -125,6 +125,14 @@ myApp
         }
       })
 
+      .state('notfound', {
+
+        // Defined templates
+        templates: {
+          layout: '/layouts/error.html'
+        }
+      })
+
       // Set default initial location
       .init('landing');
   })
@@ -190,6 +198,10 @@ myApp
     $rootScope.$on('$stateChangeError', _addDebug('Error occurred.'));
     $rootScope.$on('$stateChangeErrorNotFound', _addDebug('Error state could not be found.'));
     
+    // Show error page
+    $rootScope.$on('$stateChangeErrorNotFound', function() {
+      $state.change('notfound');
+    });
   })
 
   // Product Service

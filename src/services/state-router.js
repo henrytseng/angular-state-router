@@ -531,6 +531,12 @@ module.exports = [function StateRouterProvider() {
             // Parse params from url
             return _changeState(state.name, data.params);
           }
+        } else {
+          var error = new Error('Requested state was not defined.');
+          error.code = 'notfound';
+          $rootScope.$broadcast('$stateChangeErrorNotFound', error, {
+            url: url
+          });
         }
 
         return $q.reject(new Error('Unable to find location in library'));
