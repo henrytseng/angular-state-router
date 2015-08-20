@@ -531,7 +531,7 @@ module.exports = [function StateRouterProvider() {
             // Parse params from url
             return _changeState(state.name, data.params);
           }
-        } else {
+        } else if(!!url && url !== '') {
           var error = new Error('Requested state was not defined.');
           error.code = 'notfound';
           $rootScope.$broadcast('$stateChangeErrorNotFound', error, {
