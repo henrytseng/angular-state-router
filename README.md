@@ -136,7 +136,19 @@ Once a state is defined a transition to the state can be made.
 
 ### Initialization
 
-Initialization occurs when the application is kicked-started.  `$location.url()` will be checked for an initial location during initialization, if $location.url() has not been set then an alternative default initial location is used if it exists.  
+Initialization occurs automatically when the application is kicked-started.  
+
+`$location.url()` will be checked for an initial location during initialization, if $location.url() has not been set then an alternative default initial location is used if it exists.  
+
+The initialization process is as follows:
+
+1. Configuration Phase
+	- Define states
+	- Optionally define "initial location"
+2. Run Phase
+	- Initialization, during application kick-started
+	- Initial state set as `$location.url()`, if not empty
+	- Initial state falls back to "initial location"
 
 An initialization `$stateInit` event is broadcasted on `$rootScope`.  
 
@@ -147,7 +159,7 @@ To listen to the init event:
 	  
 	    $rootScope.$on('$stateInit', function() {
 	    
-	    	// Initialized
+	    	// Responding code
 	    
 	    });
 	  
@@ -157,12 +169,12 @@ To listen to the init event:
 
 ### Usage
 
-After states are defined they can be retrieved
+After states are defined a transition can be made
 
 	// Change state
 	$state.change('account.profile', { employee: 'e92792-2389' });
 
-State changes are asynchronous operations.  
+State changes are *asynchronous* operations.  
 
 Current states can be checked using the `active` method which accepts a state notation query
 
@@ -182,7 +194,7 @@ Parameters can be sent similarly
 
 States inherit from each other through a parent-child relationship by default; where `campus` is the parent of `campus.classrooms` state.  
 
-A child state will inherit from it's each of its parents until a `inherit` value of `false` value is encountered.  
+A child state will inherit from it's each of its parents until a `inherit` value of `false` value is encountered (with exception to `resolve` and `templates` properties).  
 
 For example, given this definition
 
@@ -212,28 +224,52 @@ We see that `campus.classrooms` will have a `params` value
 Where `availability` is inherited from `campus`, its parent
 
 
+
+Resolve
+-------
+
+States that include a resolve property will resolve all promises and store results in the `locals` Object, where they can be accessed `$state.current().locals`.  
+
+	angular.module('myApp')
+	  .config(function($stateProvider) {
+	  
+	    $stateProvider
+	      .state('stories', {
+	        url: '/storyteller/stories',
+	        
+	        resolve: {
+	          story: function(StoryService) {
+	            return StoryService.get();
+	          }
+	
+	        }
+	      });
+	  })
+	  .controller('StoryController', function($state) {
+	    console.log($state.current().locals);
+	  });
+	
+`locals` is has with the following value at the completion of the state transition:
+	
+	{
+	  story: 'Lorem ipsum'
+	}
+
+
+
 Events
 ------
 
-Events are emit from `$state` both `$stateProvider`; where both inherit from [events.EventEmitter](https://nodejs.org/api/events.html).  
-
-To listen to events 
-
-	$state.on('change:complete', function() {
-		// ...
-	});
+Events are broadcast on the `$rootScope`.  
 
 
+### $stateInit
 
-Event: 'init'
--------------
-
-This event is emitted when $state is initialized.  If an initial state is specified `'init'` occurs current state is set.  
+This event is emitted when $state is initialized.  If an initial state is specified `$stateInit` occurs after the current state is set.  
 
 
 
-Event: 'change:begin'
----------------------
+### $stateChangeBegin
 
 * `request` *Object* Requested data `{ name: 'nextState', params: {} }`
 
@@ -241,22 +277,7 @@ This event is emitted when a requested change to a valid state exists.
 
 
 
-Event: 'resolve:start'
-----------------------
-
-This event is emitted when a states starts resolve.  
-
-
-
-Event: 'resolve:end'
---------------------
-
-This event is emitted when a states ends resolve.  
-
-
-
-Event: 'error'
---------------
+### $stateChangeError
 
 * `request` *Object* Requested data `{ name: 'nextState', params: {} }`
 
@@ -264,8 +285,7 @@ This event is emitted whenever an error occurs.
 
 
 
-Event: 'error:notfound'
------------------------
+### $stateChangeErrorNotFound
 
 * `request` *Object* Requested data `{ name: 'nextState', params: {} }`
 
@@ -273,22 +293,13 @@ This event is emitted when a state cannot be found and no parent state(s) exist.
 
 
 
-Event: 'error:resolve'
-----------------------
+### $stateChangeErrorResolve
 
 This event is emitted when an error occurred during resolve.  
 
 
 
-Event: 'error:load'
--------------------
-
-This event is emitted when an error occurred during loading of a loadable.  
-
-
-
-Event: 'change:end'
--------------------
+### $stateChangeEnd
 
 * `request` *Object* Requested data `{ name: 'nextState', params: {} }`
 
@@ -296,13 +307,12 @@ This event occurs when a valid state change successfully finishes.  This event d
 
 
 
-Event: 'change:complete'
-------------------------
+### $stateChangeComplete
 
 * `error`   *Object* Null if successful, `Error` object if error occurs
 * `request` *Object* Requested data `{ name: 'nextState', params: {} }`
 
-This event occurs when a state change is finished.  This event is always triggered on any change request.  Also occurs *after* `'error'` is emitted.  
+This event occurs when a state change is finished.  This event is always triggered on any change request.  Also occurs *after* 'error' is emitted.  
 
 
 
