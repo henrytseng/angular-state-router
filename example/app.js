@@ -20,11 +20,11 @@ myApp
         templates: {
 
           // Parent
-          layout: '/layouts/one-col.html',
+          layout: 'layouts/one-col.html',
 
           // Nested Children
-          contentBody: '/screens/landing.html',
-          contentFooter: '/common/footer.html'
+          contentBody: 'screens/landing.html',
+          contentFooter: 'common/footer.html'
 
         }
       })
@@ -32,9 +32,9 @@ myApp
       .state('about', {
         url: '/screens/about',
         templates: {
-          layout: '/layouts/one-col.html',
-          contentBody: '/screens/about.html',
-          contentFooter: '/common/footer.html'
+          layout: 'layouts/one-col.html',
+          contentBody: 'screens/about.html',
+          contentFooter: 'common/footer.html'
         }
       })
 
@@ -47,9 +47,9 @@ myApp
 
         },
         templates: {
-          layout: '/layouts/one-col.html',
-          contentBody: '/screens/products.html',
-          contentFooter: '/common/footer.html'
+          layout: 'layouts/one-col.html',
+          contentBody: 'screens/products.html',
+          contentFooter: 'common/footer.html'
         },
         controllers: {
 
@@ -66,9 +66,8 @@ myApp
       .state('products.items', {
         url: '/products/:catalog/:item',
         templates: {
-          layout: '/layouts/one-col.html',
-          contentBody: '/screens/products-item.html',
-          contentFooter: '/common/footer.html'
+          layout: 'layouts/one-col.html',
+          contentBody: 'screens/products-item.html',          contentFooter: '/common/footer.html'
         },
 
         controllers: {
@@ -92,35 +91,35 @@ myApp
       .state('contact', {
         url: '/contact',
         templates: {
-          layout: '/layouts/one-col.html',
-          contentBody: '/screens/contact.html',
-          contentFooter: '/common/footer.html'
+          layout: 'layouts/one-col.html',
+          contentBody: 'screens/contact.html',
+          contentFooter: 'common/footer.html'
         }
       })
 
       .state('account.profile', {
         url: '/account',
         templates: {
-          layout: '/layouts/two-col.html',
-          sideBar: '/screens/account/side.html',
-          mainBody: '/screens/account/profile.html'
+          layout: 'layouts/two-col.html',
+          sideBar: 'screens/account/side.html',
+          mainBody: 'screens/account/profile.html'
         }
       })
 
       .state('account.preferences', {
         url: '/account/preferences',
         templates: {
-          layout: '/layouts/two-col.html',
-          sideBar: '/screens/account/side.html',
-          mainBody: '/screens/account/preferences.html'
+          layout: 'layouts/two-col.html',
+          sideBar: 'screens/account/side.html',
+          mainBody: 'screens/account/preferences.html'
         }
       })
 
       .state('account.login', {
         url: '/login',
         templates: {
-          layout: '/layouts/one-col.html',
-          contentBody: '/screens/login.html'
+          layout: 'layouts/one-col.html',
+          contentBody: 'screens/login.html'
         }
       })
 
@@ -128,7 +127,7 @@ myApp
 
         // Defined templates
         templates: {
-          layout: '/layouts/error.html'
+          layout: 'layouts/error.html'
         }
       })
 

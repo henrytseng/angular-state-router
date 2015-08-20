@@ -25,6 +25,12 @@ To install in your project, simply install from npm
 
 
 
+Example
+-------
+
+[See an example here](http://henrytseng.github.io/angular-state-router).  
+
+
 Quick Start
 -----------
 

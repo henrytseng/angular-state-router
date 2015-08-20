@@ -12,7 +12,6 @@
     "angular-state-router": "~3.0.2",
     "angular-state-view": "~3.0.2",
     "bootstrap": "^3.3.5",
-    "d3": "^3.5.6",
     "hostr": "^2.2.6",
     "jquery": "^2.1.4"
   }
