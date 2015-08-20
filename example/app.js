@@ -154,10 +154,11 @@ myApp
     // Direct call to state
     $scope.login = function() {
       $scope.isAuthenticated = true;
-      var product = Product.getRandom();
-      $state.change('products.items', {
-        catalog: product.catalog,
-        item: product.item
+      Product.getRandom().then(function(product) {
+        $state.change('products.items', {
+          catalog: product.catalog,
+          item: product.item
+        });
       });
     };
 
