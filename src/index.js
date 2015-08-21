@@ -15,6 +15,8 @@ angular.module('angular-state-router', [])
   .factory('$urlManager', require('./services/url-manager'))
 
   .factory('$resolution', require('./services/resolution'))
+  
+  .factory('$queueHandler', require('./services/queue-handler'))
 
   .run(['$rootScope', '$state', '$urlManager', '$resolution', function($rootScope, $state, $urlManager, $resolution) {
     // Update location changes

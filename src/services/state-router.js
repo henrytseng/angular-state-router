@@ -2,7 +2,6 @@
 
 var UrlDictionary = require('../utils/url-dictionary');
 var Parameters = require('../utils/parameters');
-var QueueHandler = require('../utils/queue-handler');
 
 module.exports = [function StateRouterProvider() {
   // Provider
@@ -271,7 +270,7 @@ module.exports = [function StateRouterProvider() {
   /**
    * Get instance
    */
-  this.$get = ['$rootScope', '$location', '$q', function StateRouterFactory($rootScope, $location, $q) {
+  this.$get = ['$rootScope', '$location', '$q', '$queueHandler', function StateRouterFactory($rootScope, $location, $q, $queueHandler) {
 
     // Current state
     var _current;
@@ -326,7 +325,7 @@ module.exports = [function StateRouterProvider() {
         };
 
         // Compile execution phases
-        var queue = QueueHandler().data(request);
+        var queue = $queueHandler.create().data(request);
 
         var nextState = angular.copy(_getState(name));
         var prevState = _current;
