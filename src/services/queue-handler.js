@@ -17,10 +17,14 @@ module.exports = ['$rootScope', function($rootScope) {
        * @param {Mixed}  handler A Function or an Array of Functions to add to the queue
        * @return {Queue}         Itself; chainable
        */
-      add: function(handler) {
+      add: function(handler, priority) {
         if(handler && handler.constructor === Array) {
+          handler.forEach(function(layer) {
+            layer.priority = typeof layer.priority === 'undefined' ? 1 : layer.priority;
+          });
           _list = _list.concat(handler);
         } else {
+          handler.priority = priority || (typeof handler.priority === 'undefined' ? 1 : handler.priority);
           _list.push(handler);
         }
         return this;
@@ -46,7 +50,7 @@ module.exports = ['$rootScope', function($rootScope) {
       execute: function(callback) {
         var nextHandler;
         var executionList = _list.slice(0).sort(function(a, b) {
-          return (a.priotity || 1) < (b.priotity || 1);
+          return Math.max(-1, Math.min(1, b.priority - a.priority));
         });
 
         nextHandler = function() {

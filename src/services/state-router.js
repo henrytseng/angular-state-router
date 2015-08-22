@@ -346,14 +346,14 @@ module.exports = [function StateRouterProvider() {
 
             $rootScope.$broadcast('$stateChangeErrorNotFound', error, request);
             next(error);
-          });
+          }, 200);
 
         // State not changed
         } else if(_compareStates(prevState, nextState)) {
           queue.add(function(data, next) {
             _current = nextState;
             next();
-          });
+          }, 200);
           
         // Valid state exists
         } else {
@@ -362,7 +362,7 @@ module.exports = [function StateRouterProvider() {
           queue.add(function(data, next) {
             $rootScope.$broadcast('$stateChangeBegin', request);
             next();
-          });
+          }, 201);
 
           // Make state change
           queue.add(function(data, next) {
@@ -370,7 +370,7 @@ module.exports = [function StateRouterProvider() {
             _current = nextState;
             
             next();
-          });
+          }, 200);
 
           // Add middleware
           queue.add(_layerList);
@@ -379,7 +379,7 @@ module.exports = [function StateRouterProvider() {
           queue.add(function(data, next) {
             $rootScope.$broadcast('$stateChangeEnd', request);
             next();
-          });
+          }, -200);
         }
 
         // Run

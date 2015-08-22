@@ -413,6 +413,7 @@ describe('$state', function() {
               'slowService': function($timeout, $q) {
                 return $q(function(resolve, reject) {
                   $timeout(function() {
+                    console.log(1);
                     resolve('someSpecificValue');
                   }, 1000);
                 });
@@ -451,6 +452,7 @@ describe('$state', function() {
 
         // Resolve everything immediately
         $timeout.flush();
+        $rootScope.$digest();
         
         expect($state.current().name).toBe('employees');
 
@@ -505,6 +507,8 @@ describe('$state', function() {
       });
 
       angular.mock.inject(function($state, $rootScope, $timeout) {
+        $rootScope.$digest();
+
         var onBegin = jasmine.createSpy('onBegin');
         var onEnd = jasmine.createSpy('onEnd');
         var onError = jasmine.createSpy('onError');
@@ -605,7 +609,7 @@ describe('$state', function() {
       });
     });
 
-    it('Should call middleware ', function(done) {
+    it('Should call middleware according to priority properties with higher first', function(done) {
       angular.mock.module(function($stateProvider) {
         $stateProvider
 
@@ -626,12 +630,40 @@ describe('$state', function() {
           });
       });
 
-      angular.mock.inject(function($state) {
-        expect(function() {
-          
-          $state.$use(null);
+      angular.mock.inject(function($state, $rootScope) {
+        var order = [];
+        var _createMiddlewareLayer = function(priority) {
+          var _middleware;
+          _middleware = {
+            handle: function(data, next) {
+              order.push(priority);
+              next();
+            }
+          };
 
-        }).toThrow(new Error('Middleware must be a function.'));
+          spyOn(_middleware, 'handle').and.callThrough();
+
+          _middleware.handle.priority = priority;
+
+          return _middleware.handle;
+        };
+
+        var handler1;
+        var handler2;
+        var handler3;
+
+        $state.$use(handler1 = _createMiddlewareLayer(400));
+        $state.$use(handler2 = _createMiddlewareLayer(500));
+        $state.$use(handler3 = _createMiddlewareLayer(10));
+
+        $state.change('rooms');
+
+        $rootScope.$digest();
+
+        expect(handler1).toHaveBeenCalled();
+        expect(handler2).toHaveBeenCalled();
+        expect(handler3).toHaveBeenCalled();
+        expect(order).toEqual([500, 400, 10]);
 
         done();
       });
