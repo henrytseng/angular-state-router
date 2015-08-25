@@ -585,11 +585,9 @@ describe('$state', function() {
         };
         spyOn(_testLayer, 'onMiddle').and.callThrough();
 
-        $state
+        $state.$use(_testLayer.onMiddle);
 
-          .$use(_testLayer.onMiddle)
-
-          .change('companies');
+        $state.change('companies');
 
         $rootScope.$digest();
 

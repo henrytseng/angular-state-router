@@ -18,6 +18,17 @@
         <li ng-class="{'active': $state.active('contact') }"><a href="#/contact" sref="contact">Contact</a></li>
       </ul>
 
+    <form class="navbar-form navbar-left" role="search">
+      <div class="input-group">
+        <div class="form-group">
+          <input type="text" class="form-control" ng-model="search.criteria" placeholder="Criteria">
+          <span class="input-group-btn">
+            <button class="btn btn-default" type="button" ng-click="search()">Search</button>
+          </span>
+        </div>
+      </div>
+    </form>
+
       <ul class="nav navbar-nav navbar-right">
         <li><a href="#/login" ng-if="!isAuthenticated">Login</a></li>
 

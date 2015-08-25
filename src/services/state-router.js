@@ -245,10 +245,14 @@ module.exports = [function StateRouterProvider() {
    * @return {$stateProvider} Itself; chainable
    */
   this.state = function(name, state) {
+    // Get
     if(!state) {
       return _getState(name);
     }
+
+    // Set
     _defineState(name, state);
+
     return _provider;
   };
 
@@ -302,9 +306,9 @@ module.exports = [function StateRouterProvider() {
     /**
      * Internal method to change to state.  Parameters in `params` takes precedence over state-notation `name` expression.  
      * 
-     * @param  {String}  name          A unique identifier for the state; using state-notation including optional parameters
-     * @param  {Object}  params        A data object of params
-     * @return {Promise}               A promise fulfilled when state change occurs
+     * @param  {String}  name   A unique identifier for the state; using state-notation including optional parameters
+     * @param  {Object}  params A data object of params
+     * @return {Promise}        A promise fulfilled when state change occurs
      */
     var _changeState = function(name, params) {
       var deferred = $q.defer();
@@ -391,12 +395,25 @@ module.exports = [function StateRouterProvider() {
           } else {
             deferred.resolve(request);
           }
-
-          $rootScope.$broadcast('$stateChangeComplete', request);
         });
       });
 
       return deferred.promise;
+    };
+
+    /**
+     * Internal method to change to state and broadcast completion
+     * 
+     * @param  {String}  name   A unique identifier for the state; using state-notation including optional parameters
+     * @param  {Object}  params A data object of params
+     * @return {Promise}        A promise fulfilled when state change occurs
+     */
+    var _changeStateAndBroadcastComplete = function(name, params) {
+      return _changeState(name, params).then(function() {
+        $rootScope.$broadcast('$stateChangeComplete', null, _current);
+      }, function(err) {
+        $rootScope.$broadcast('$stateChangeComplete', err, _current);
+      });
     };
 
     // Instance
@@ -421,24 +438,36 @@ module.exports = [function StateRouterProvider() {
        * Set/get state
        */
       state: function(name, state) {
+        // Get
         if(!state) {
           return _getState(name);
         }
+
+        // Set
         _defineState(name, state);
+
+        // Active
+        // TODO check parent chain
+        if(_current && _current.name === name) {
+          _changeState(name, _current.params);
+        }
+
         return _inst;
       },
 
       /**
        * Internal method to add middleware, executing next(err);
        * 
-       * @param  {Function}    handler A callback, function(request, next)
-       * @return {$state}              Itself; chainable
+       * @param  {Function} handler  A callback, function(request, next)
+       * @param  {Number}   priority A number denoting priority
+       * @return {$state}            Itself; chainable
        */
-      $use: function(handler) {
+      $use: function(handler, priority) {
         if(typeof handler !== 'function') {
           throw new Error('Middleware must be a function.');
         }
 
+        if(typeof priority !== 'undefined') handler.priority = priority;
         _layerList.push(handler);
         return _inst;
       },
@@ -471,7 +500,7 @@ module.exports = [function StateRouterProvider() {
 
             // Initialize with state
             } else if(_initalLocation) {
-              readyDeferred = _changeState(_initalLocation.name, _initalLocation.params);
+              readyDeferred = _changeStateAndBroadcastComplete(_initalLocation.name, _initalLocation.params);
             }
 
             $q.when(readyDeferred).then(function() {
@@ -507,10 +536,10 @@ module.exports = [function StateRouterProvider() {
        * 
        * @param  {String}      name     A unique identifier for the state; using dot-notation
        * @param  {Object}      [params] A parameters data object
-       * @return {$state}               Itself; chainable
+       * @return {Promise}              A promise fulfilled when state change complete
        */
       change: function(name, params) {
-        return _changeState(name, params);
+        return _changeStateAndBroadcastComplete(name, params);
       },
 
       /**
@@ -528,7 +557,7 @@ module.exports = [function StateRouterProvider() {
 
           if(state) {
             // Parse params from url
-            return _changeState(state.name, data.params);
+            return _changeStateAndBroadcastComplete(state.name, data.params);
           }
         } else if(!!url && url !== '') {
           var error = new Error('Requested state was not defined.');
