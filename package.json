@@ -1,6 +1,6 @@
 {
   "name": "angular-state-router",
-  "version": "3.0.9",
+  "version": "3.0.10",
   "description": "An AngularJS state-based router designed for flexibility and ease of use.",
   "keywords": [
     "StateRouter",
@@ -16,7 +16,7 @@
     "flexible",
     "lightweight"
   ],
-  "main": "dist/state-router.js",
+  "main": "src/index.js",
   "scripts": {
     "watch": "gulp watch",
     "example": "cd example && ./run",

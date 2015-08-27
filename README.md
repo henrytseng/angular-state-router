@@ -556,7 +556,9 @@ Component operate asynchronously and `next` must be called.
 Browserify
 ----------
 
-To use Browserify you can easily `require` the `src/index.js` file.  
+To use Browserify `require` the module directly.  For example:
+
+
 
 
 
