@@ -176,12 +176,7 @@
       // Direct call to state
       $scope.login = function() {
         $scope.isAuthenticated = true;
-        Product.getRandom().then(function(product) {
-          $state.change('products.items', {
-            catalog: product.catalog,
-            item: product.item
-          });
-        });
+        $state.change('account.profile');
       };
 
       // Direct call to location
