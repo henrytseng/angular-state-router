@@ -29,6 +29,10 @@
       };
 
       $scope.search.criteria = $location.search().q || '';
+
+      if($scope.search.criteria && $scope.search.criteria !== '') {
+        $scope.search();
+      }
     });
 
 })();
