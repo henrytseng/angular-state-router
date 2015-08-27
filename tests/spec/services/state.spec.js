@@ -65,7 +65,7 @@ describe('$state', function() {
     xit('Should return defined state heirarchy and not inherit resolve promises from parent chain', function() {
 
     });
-    
+
     it('Should return defined state heirarchy parameters inherit from parent chain', function() {
       angular.mock.inject(function($state) {
         $state
@@ -190,6 +190,39 @@ describe('$state', function() {
 
         var tree2 = $state.state('organism.plant.tree');
         expect(tree2).not.toBe(tree1);
+      });
+    });
+    
+    it('Should reload current state if defined state is a parent/current state', function(done) {
+      angular.mock.inject(function($state, $rootScope) {
+        $state
+          .state('organism.plant.tree', {
+            url: '/trees',
+            params: {
+              bark: 1
+            }
+          });
+
+        $state.change('organism.plant.tree');
+
+        $rootScope.$digest();
+
+        // Define parent
+        $state
+          .state('organism.plant', {
+            params: {
+              green: 'yes'
+            }
+          });
+
+        $rootScope.$digest();
+
+        expect($state.current().params).toEqual({
+          bark: 1,
+          green: 'yes'
+        });
+
+        done();
       });
     });
   });

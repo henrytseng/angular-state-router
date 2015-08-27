@@ -2,19 +2,34 @@
   'use strict';
 
   // Instantiate app
-  var myApp = angular.module('myApp', [
-    'angular-state-router',
-    'angular-state-view',
-    'angular-state-loadable'
-  ]);
+  var example = {
+    myApp: angular.module('myApp', [
+      'angular-state-router',
+      'angular-state-view',
+      'angular-state-loadable'
+    ])
+  };
 
-  myApp
+  // Publicize in unique namespace
+  window.example = example;
 
-    // Configuration
-    .config(function($stateProvider) {
+  // Configuration
+  example.myApp
+
+    .config(function($stateProvider, $controllerProvider, $compileProvider, $filterProvider, $provide) {
+
+      // Export for late registration
+      example.myApp.deferred = {
+        controller: $controllerProvider.register,
+        directive: $compileProvider.directive,
+        filter: $filterProvider.register,
+        factory: $provide.factory,
+        service: $provide.service
+      };
+
+      // Define states
       $stateProvider
 
-        // Define states
         .state('landing', {
           url: '/',
 
@@ -145,6 +160,7 @@
 
     // Run
     .run(function($rootScope, $state) {
+      example.myApp.deferred.state = $state.state;
       $rootScope.$state = $state;
     })
 
@@ -172,11 +188,6 @@
       $scope.logout = function() {
         $scope.isAuthenticated = false;
         $location.url('/');
-      };
-
-      // Search
-      $scope.search = function() {
-        $state.change('search');
       };
 
       // Debug messages
@@ -248,6 +259,24 @@
         getRandom: function() {
           var i = Math.floor(_listing.length-1 * Math.random());
           return $q.when(_listing[i]);
+        },
+
+        // Search for a product
+        search: function(criteria) {
+          var results = [];
+
+          // Search through each
+          if(criteria && criteria !== '') {
+            _listing.forEach(function(item) {
+              for(var name in item) {
+                if(item[name].toLowerCase().indexOf(criteria.toLowerCase()) !== -1 && results.indexOf(item) === -1) {
+                  results.push(item);
+                }
+              }
+            });
+          }
+
+          return $q.when(results);
         },
 
         // Get recommendations

@@ -1,19 +1,34 @@
 (function() {
   'use strict';
 
-  // Access current injector
-  var $injector = angular.element(document).injector();
+  // Define states
+  example.myApp.deferred
 
-  var $state = $injector.get('$state');
-  var myApp = angular.module('myApp');
+    .state('search', {
+      url: '/search',
+      templates: {
+        layout: 'layouts/one-col.html',
+        contentBody: 'screens/search.html',
+        contentFooter: 'common/footer.html'
+      },
+      controllers: {
+        contentBody: 'SearchController'
+      }
+    });
 
-  // Redefine state
-  $state.state('search', {
-    templates: {
-      layout: 'layouts/one-col.html',
-      contentBody: 'screens/search.html',
-      contentFooter: 'common/footer.html'
-    }
-  });
+  // Define controllers
+  example.myApp.deferred
+
+    .controller('SearchController', function($scope, Product, $location) {
+      $scope.products = [];
+
+      $scope.search = function() {
+        Product.search($scope.search.criteria).then(function(products) {
+          $scope.products = products;
+        });
+      };
+
+      $scope.search.criteria = $location.search().q || '';
+    });
 
 })();

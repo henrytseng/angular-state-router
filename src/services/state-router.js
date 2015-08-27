@@ -435,7 +435,12 @@ module.exports = [function StateRouterProvider() {
       },
 
       /**
-       * Set/get state
+       * Set/get state. Reloads state if current state is affected by defined 
+       * state (when redefining parent or current state)
+       *
+       * @param  {String} name A unique identifier for the state; using state-notation
+       * @param  {Object} data A state definition data Object
+       * @return {Object}      A state data Object
        */
       state: function(name, state) {
         // Get
@@ -446,10 +451,12 @@ module.exports = [function StateRouterProvider() {
         // Set
         _defineState(name, state);
 
-        // Active
-        // TODO check parent chain
-        if(_current && _current.name === name) {
-          _changeState(name, _current.params);
+        // Reload
+        if(_current) {
+          var nameChain = _getNameChain(_current.name);
+          if(nameChain.indexOf(name) !== -1) {
+            _changeState(_current.name);
+          }
         }
 
         return _inst;
