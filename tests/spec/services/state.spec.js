@@ -57,14 +57,6 @@ describe('$state', function() {
         expect($state.state('dashboard')).not.toBe(myState);
       });
     });
-    
-    xit('Should return defined state heirarchy and not inherit templates from parent chain', function() {
-
-    });
-    
-    xit('Should return defined state heirarchy and not inherit resolve promises from parent chain', function() {
-
-    });
 
     it('Should return defined state heirarchy parameters inherit from parent chain', function() {
       angular.mock.inject(function($state) {

@@ -200,7 +200,7 @@ Parameters can be sent similarly
 
 States inherit from each other through a parent-child relationship by default; where `campus` is the parent of `campus.classrooms` state.  
 
-A child state will inherit from it's each of its parents until a `inherit` value of `false` value is encountered (with exception to `resolve` and `templates` properties).  
+A child state will inherit from it's each of its parents until a `inherit` value of `false` value is encountered.  
 
 For example, given this definition
 

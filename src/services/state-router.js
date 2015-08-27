@@ -156,12 +156,6 @@ module.exports = [function StateRouterProvider() {
     var stateChain = nameChain
       .map(function(name, i) {
         var item = angular.copy(_stateLibrary[name]);
-
-        if(item && i !== nameChain.length-1) {
-          delete(item.resolve);
-          delete(item.templates);
-        }
-
         return item;
       })
       .filter(function(parent) {
