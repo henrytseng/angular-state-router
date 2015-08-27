@@ -322,6 +322,129 @@ This event occurs when a state change is finished.  This event is always trigger
 
 
 
+API Services
+------------
+
+### $stateProvider
+
+`Configuration` phase setup of StateRouter.  
+
+
+### $stateProvider#options(options)
+
+* @param  {Object}         options A data Object
+* @return {$stateProvider}         Itself; chainable
+
+Set configuration data parameters for StateRouter
+
+Available options include
+
+   * historyLength   {Number} Defaults to 5
+   * initialLocation {Object} An Object{name:String, params:Object} for initial state transition
+
+Chainable.  
+
+
+### $stateProvider#state
+
+* @param  {String} name A unique identifier for the state; using state-notation
+* @param  {Object} data A state definition data Object
+* @return {$stateProvider} Itself; chainable
+
+Define or get a state.  Chainable.  
+
+
+### $stateProvider#init
+
+* @param  {String}         name   A iniital state
+* @param  {Object}         params A data object of params
+* @return {$stateProvider}        Itself; chainable
+
+Set initialization parameters; deferred to $ready()
+
+
+### $state
+
+`Run` phase access to StateRouter.  
+
+
+### $state#options
+
+* @return {Object} A configured options
+
+Get options
+
+
+### $state#state
+
+* @param  {String} name A unique identifier for the state; using state-notation
+* @param  {Object} data A state definition data Object
+* @return {$state}      Itself; chainable
+
+Set/get state. Reloads state if current state is affected by defined state (when redefining parent or current state)
+
+
+### $state#$use
+
+* @param  {Function} handler  A callback, function(request, next)
+* @param  {Number}   priority A number denoting priority
+* @return {$state}            Itself; chainable
+
+Internal method to add middleware; called during state transition
+
+
+### $state#change
+
+* @param  {String}      name     A unique identifier for the state; using dot-notation
+* @param  {Object}      [params] A parameters data object
+* @return {Promise}              A promise fulfilled when state change complete
+
+Request state transition, asynchronous operation
+
+
+### $state#$location
+
+* @param  {String}      url        A url matching defind states
+* @param  {Function}    [callback] A callback, function(err)
+* @return {$state}                 Itself; chainable
+
+Internal method to change state based on $location.url(), asynchronous operation using internal methods, quiet fallback.  
+
+
+### $state#current
+
+* @return {Object} A copy of current state
+
+Retrieve copy of current state
+
+
+### $state#active
+
+* @param  {Mixed}   query  A string using state notation or a RegExp
+* @param  {Object}  params A parameters data object
+* @return {Boolean}        A true if state is parent to current state
+
+Check query against current state
+
+
+
+API Directives
+--------------
+
+### sref
+
+* sref {String} A defined state to transition to, using state name notation
+
+Request a state transition when clicked.
+
+##### Example
+	
+A state transition to `products.items` with parameters `{catalog:'1-aeff', item:'e32537'}`
+	
+	<a sref="products.items({catalog:'1-aeff', item:'e32537'})">Product</a>
+
+
+
 State Notation
 --------------
 

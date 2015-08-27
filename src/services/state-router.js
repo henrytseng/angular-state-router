@@ -242,6 +242,8 @@ module.exports = [function StateRouterProvider() {
   /**
    * Set/get state
    * 
+   * @param  {String} name A unique identifier for the state; using state-notation
+   * @param  {Object} data A state definition data Object
    * @return {$stateProvider} Itself; chainable
    */
   this.state = function(name, state) {
@@ -440,7 +442,7 @@ module.exports = [function StateRouterProvider() {
        *
        * @param  {String} name A unique identifier for the state; using state-notation
        * @param  {Object} data A state definition data Object
-       * @return {Object}      A state data Object
+       * @return {$state}      Itself; chainable
        */
       state: function(name, state) {
         // Get
@@ -463,7 +465,7 @@ module.exports = [function StateRouterProvider() {
       },
 
       /**
-       * Internal method to add middleware, executing next(err);
+       * Internal method to add middleware; called during state transition
        * 
        * @param  {Function} handler  A callback, function(request, next)
        * @param  {Number}   priority A number denoting priority
@@ -522,7 +524,11 @@ module.exports = [function StateRouterProvider() {
       // Parse state notation name-params.  
       parse: _parseName,
 
-      // Retrieve definition of states
+      /**
+       * Retrieve definition of states
+       * 
+       * @return {Object} A hash of all defined states
+       */
       library: function() {
         return _stateLibrary;
       },
@@ -533,13 +539,17 @@ module.exports = [function StateRouterProvider() {
         query: _validateStateQuery
       },
 
-      // Retrieve history
+      /**
+       * Retrieve history
+       * 
+       * @return {[type]} [description]
+       */
       history: function() {
         return _history;
       },
 
       /**
-       * Change state, asynchronous operation
+       * Request state transition, asynchronous operation
        * 
        * @param  {String}      name     A unique identifier for the state; using dot-notation
        * @param  {Object}      [params] A parameters data object

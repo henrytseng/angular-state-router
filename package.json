@@ -1,6 +1,6 @@
 {
   "name": "angular-state-router",
-  "version": "3.0.8",
+  "version": "3.0.9",
   "description": "An AngularJS state-based router designed for flexibility and ease of use.",
   "keywords": [
     "StateRouter",
@@ -12,7 +12,9 @@
     "finite state machine",
     "asynchronous",
     "lazy",
-    "loading"
+    "loading",
+    "flexible",
+    "lightweight"
   ],
   "main": "dist/state-router.js",
   "scripts": {
