@@ -553,6 +553,12 @@ To build your own components simply register your the middleware with the `$stat
 Component operate asynchronously and `next` must be called.  
 
 
+Browserify
+----------
+
+To use Browserify you can easily `require` the `src/index.js` file.  
+
+
 
 Contribute
 ----------
