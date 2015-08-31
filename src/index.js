@@ -15,10 +15,12 @@ angular.module('angular-state-router', [])
   .factory('$urlManager', require('./services/url-manager'))
 
   .factory('$resolution', require('./services/resolution'))
+
+  .factory('$enact', require('./services/enact'))
   
   .factory('$queueHandler', require('./services/queue-handler'))
 
-  .run(['$rootScope', '$state', '$urlManager', '$resolution', function($rootScope, $state, $urlManager, $resolution) {
+  .run(['$rootScope', '$state', '$urlManager', '$resolution', '$enact', function($rootScope, $state, $urlManager, $resolution, $enact) {
     // Update location changes
     $rootScope.$on('$locationChangeSuccess', function() {
       $urlManager.location(arguments);

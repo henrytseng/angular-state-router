@@ -270,10 +270,12 @@ module.exports = [function StateRouterProvider() {
   /**
    * Get instance
    */
-  this.$get = ['$rootScope', '$location', '$q', '$queueHandler', function StateRouterFactory($rootScope, $location, $q, $queueHandler) {
+  this.$get = ['$rootScope', '$location', '$q', '$queueHandler', '$log', function StateRouterFactory($rootScope, $location, $q, $queueHandler, $log) {
 
-    // Current state
+    // State
     var _current;
+    var _transitionQueue = [];
+    var _isReady = true;
 
     var _options;
     var _initalLocation;
@@ -300,15 +302,14 @@ module.exports = [function StateRouterProvider() {
     };
 
     /**
-     * Internal method to change to state.  Parameters in `params` takes precedence over state-notation `name` expression.  
+     * Internal method to fulfill change state request.  Parameters in `params` takes precedence over state-notation `name` expression.  
      * 
-     * @param  {String}  name   A unique identifier for the state; using state-notation including optional parameters
-     * @param  {Object}  params A data object of params
-     * @return {Promise}        A promise fulfilled when state change occurs
+     * @param  {String}   name     A unique identifier for the state; using state-notation including optional parameters
+     * @param  {Object}   params   A data object of params
+     * @param  {Function} callback A callback, function(err)
+     * @return {Promise}           A promise fulfilled when state change occurs
      */
-    var _changeState = function(name, params) {
-      var deferred = $q.defer();
-
+    var _changeState = function(name, params, callback) {
       $rootScope.$evalAsync(function() {
         params = params || {};
 
@@ -383,16 +384,58 @@ module.exports = [function StateRouterProvider() {
         }
 
         // Run
-        queue.execute(function(err) {
-          if(err) {
-            $rootScope.$broadcast('$stateChangeError', err, request);
-            deferred.reject(err);
-
-          } else {
-            deferred.resolve(request);
-          }
-        });
+        queue.execute(callback);
       });
+    };
+
+    /**
+     * Internal method to request change to state.  
+     * 
+     * @param  {String}  name   A unique identifier for the state; using state-notation including optional parameters
+     * @param  {Object}  params A data object of params
+     * @return {Promise}        A promise fulfilled when state change occurs
+     */
+    var _queueChange = function(name, params) {
+      var deferred = $q.defer();
+      var error;
+
+      _transitionQueue.push({
+        name: name,
+        params: params
+      });
+
+      var nextRequest;
+      nextRequest = function() {
+        if(!_isReady) return;
+        var request = _transitionQueue.shift();
+
+        // Continue
+        if(request) {
+          _isReady = false;
+
+          _changeState(request.name, request.params, function(err) {
+            _isReady = true;
+
+            if(err) {
+              $rootScope.$broadcast('$stateChangeError', err, request);
+              error = err;
+            }
+
+            nextRequest();
+          });
+
+        // End
+        } else {
+          if(error) {
+            deferred.reject(error);
+          } else {
+            deferred.resolve();
+          }
+        }
+
+      };
+
+      nextRequest();
 
       return deferred.promise;
     };
@@ -404,8 +447,8 @@ module.exports = [function StateRouterProvider() {
      * @param  {Object}  params A data object of params
      * @return {Promise}        A promise fulfilled when state change occurs
      */
-    var _changeStateAndBroadcastComplete = function(name, params) {
-      return _changeState(name, params).then(function() {
+    var _queueStateAndBroadcastComplete = function(name, params) {
+      return _queueChange(name, params).then(function() {
         $rootScope.$broadcast('$stateChangeComplete', null, _current);
       }, function(err) {
         $rootScope.$broadcast('$stateChangeComplete', err, _current);
@@ -451,7 +494,7 @@ module.exports = [function StateRouterProvider() {
         if(_current) {
           var nameChain = _getNameChain(_current.name);
           if(nameChain.indexOf(name) !== -1) {
-            _changeState(_current.name);
+            _queueChange(_current.name);
           }
         }
 
@@ -503,7 +546,7 @@ module.exports = [function StateRouterProvider() {
 
             // Initialize with state
             } else if(_initalLocation) {
-              readyDeferred = _changeStateAndBroadcastComplete(_initalLocation.name, _initalLocation.params);
+              readyDeferred = _queueStateAndBroadcastComplete(_initalLocation.name, _initalLocation.params);
             }
 
             $q.when(readyDeferred).then(function() {
@@ -550,7 +593,7 @@ module.exports = [function StateRouterProvider() {
        * @return {Promise}              A promise fulfilled when state change complete
        */
       change: function(name, params) {
-        return _changeStateAndBroadcastComplete(name, params);
+        return _queueStateAndBroadcastComplete(name, params);
       },
 
       /**
@@ -568,7 +611,7 @@ module.exports = [function StateRouterProvider() {
 
           if(state) {
             // Parse params from url
-            return _changeStateAndBroadcastComplete(state.name, data.params);
+            return _queueStateAndBroadcastComplete(state.name, data.params);
           }
         } else if(!!url && url !== '') {
           var error = new Error('Requested state was not defined.');

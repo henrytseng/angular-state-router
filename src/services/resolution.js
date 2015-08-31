@@ -29,7 +29,7 @@ module.exports = ['$q', '$injector', '$state', '$rootScope', function($q, $injec
    * @param  {Object}   request A data Object
    * @param  {Function} next    A callback, function(err)
    */
-  var _register = function(request, next) {
+  var _handle = function(request, next) {
     var current = $state.current();
 
     if(!current) {
@@ -45,10 +45,9 @@ module.exports = ['$q', '$injector', '$state', '$rootScope', function($q, $injec
       next(new Error('Error resolving state'));
     });
   };
-  _register.priority = 100;
 
   // Register middleware layer
-  $state.$use(_register);
+  $state.$use(_handle, 101);
 
   return _self;
 }];

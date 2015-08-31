@@ -23,7 +23,7 @@
       $scope.products = [];
 
       $scope.search = function() {
-        Product.search($scope.search.criteria).then(function(products) {
+        Product.search(($scope.search.criteria || '').split(' ')).then(function(products) {
           $scope.products = products;
         });
       };

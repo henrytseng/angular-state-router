@@ -263,6 +263,31 @@ States that include a resolve property will resolve all promises and store resul
 
 
 
+Actions
+-------
+
+States that include an action property will execute additional actions before a .  
+
+	angular.module('myApp')
+	  .config(function($stateProvider) {
+	  
+	    $stateProvider
+	      .state('auth.logout', {
+	        url: '/logout',
+           actions: [
+             function(Auth, $state) {
+               Auth.logout().then(function() {
+                 $state.change('landing');
+               });
+             }
+           ]
+	      });
+	  });
+	
+States may often require additional actions to be performed during transition.  These actions typically do not expose data like `resolve` property but may execute other services.  
+
+
+
 Events
 ------
 

@@ -141,6 +141,17 @@
           }
         })
 
+        .state('account.logout', {
+          url: '/logout',
+          actions: [
+            function(Auth, $state) {
+              Auth.logout().then(function() {
+                $state.change('landing');
+              });
+            }
+          ]
+        })
+
         .state('search', {
           url: '/search',
           load: ['components/search.js']
@@ -165,24 +176,23 @@
     })
 
     // Main
-    .controller('FrameController', function($rootScope, $scope, $state, $urlManager, $viewManager, $log, $location, Product) {
+    .controller('FrameController', function($rootScope, $scope, $state, $urlManager, $viewManager, $log, $location, Product, Auth) {
 
       // Products catalog
       $scope.products = Product.list();
 
-      // Login state
-      $scope.isAuthenticated = false;
+      // Initial login state
+      $scope.isAuthenticated = Auth.isAuthenticated();
 
-      // Direct call to state
+      // Login with credentials
       $scope.login = function() {
-        $scope.isAuthenticated = true;
-        $state.change('account.profile');
-      };
+        Auth.login().then(function() {
+          $scope.isAuthenticated = Auth.isAuthenticated();
 
-      // Direct call to location
-      $scope.logout = function() {
-        $scope.isAuthenticated = false;
-        $location.url('/');
+          // Direct call to state
+          $state.change('account.profile');
+
+        });
       };
 
       // Debug messages
@@ -220,6 +230,29 @@
       $rootScope.$on('$stateChangeErrorNotFound', function() {
         $state.change('notfound');
       });
+    })
+
+    // Auth Service
+    .factory('Auth', function($q) {
+      var _isAuthenticated = false;
+
+      return {
+
+        isAuthenticated: function() {
+          return _isAuthenticated;
+        },
+
+        login: function() {
+          _isAuthenticated = true;
+          return $q.when(_isAuthenticated);
+        },
+
+        logout: function() {
+          _isAuthenticated = false;
+          return $q.when(_isAuthenticated);
+        }
+
+      };
     })
 
     // Product Service
@@ -260,16 +293,21 @@
         search: function(criteria) {
           var results = [];
 
+          criteria = angular.isArray(criteria) ? criteria : [criteria];
+
           // Search through each
-          if(criteria && criteria !== '') {
-            _listing.forEach(function(item) {
-              for(var name in item) {
-                if(item[name].toLowerCase().indexOf(criteria.toLowerCase()) !== -1 && results.indexOf(item) === -1) {
-                  results.push(item);
+          criteria.forEach(function(q) {
+            if(q && q !== '') {
+
+              _listing.forEach(function(item) {
+                for(var name in item) {
+                  if(item[name].toLowerCase().indexOf(q.toLowerCase()) !== -1 && results.indexOf(item) === -1) {
+                    results.push(item);
+                  }
                 }
-              }
-            });
-          }
+              });
+            }
+          });
 
           return $q.when(results);
         },
