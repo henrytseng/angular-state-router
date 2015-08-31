@@ -54,7 +54,7 @@ describe('Parameters', function() {
     });
 
     // Future feature to add escaped characters in strings \" and \'
-    xit('Should parse string name-value in Object literal', function() {
+    xit('Should parse string name-value in Object literal with escape characters', function() {
       expect(Parameters.listify('{ "lorem":  "i\"psum"}')).toEqual(["lorem", "ipsum"]);
       expect(Parameters.listify("{ 'lorem':  'i\'psum'}")).toEqual(["lorem", "ipsum"]);
     });

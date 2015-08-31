@@ -270,7 +270,7 @@ module.exports = [function StateRouterProvider() {
   /**
    * Get instance
    */
-  this.$get = ['$rootScope', '$location', '$q', '$queueHandler', '$log', function StateRouterFactory($rootScope, $location, $q, $queueHandler, $log) {
+  this.$get = ['$rootScope', '$location', '$q', '$queueHandler', function StateRouterFactory($rootScope, $location, $q, $queueHandler) {
 
     // State
     var _current;

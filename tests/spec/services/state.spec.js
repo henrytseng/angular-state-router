@@ -438,7 +438,6 @@ describe('$state', function() {
               'slowService': function($timeout, $q) {
                 return $q(function(resolve, reject) {
                   $timeout(function() {
-                    console.log(1);
                     resolve('someSpecificValue');
                   }, 1000);
                 });

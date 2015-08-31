@@ -34,7 +34,7 @@ function _build(file, entries, isMin) {
       .pipe(gulpif(isMin, buffer()))
       .pipe(gulpif(isMin, sourcemaps.init()))
       .pipe(gulpif(isMin, streamify(uglify({
-        compress: { drop_console: true }
+        compress: { drop_console: false }
       }))))
       .pipe(gulpif(isMin, sourcemaps.write('./')))
       .pipe(gulp.dest('dist'));
