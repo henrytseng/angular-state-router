@@ -338,6 +338,12 @@ This event occurs when a valid state change successfully finishes.  This event d
 
 
 
+### $stateReload
+
+This event is broadcasted when the current state is reloaded.  
+
+
+
 ### $stateChangeComplete
 
 * `error`   *Object* Null if successful, `Error` object if error occurs
@@ -425,6 +431,14 @@ Internal method to add middleware; called during state transition
 * @return {Promise}              A promise fulfilled when state change complete
 
 Request state transition, asynchronous operation
+
+
+### $state#reload
+
+* @return {Promise} A promise fulfilled when state change occurs
+
+Reload the current state.  
+
 
 
 ### $state#$location

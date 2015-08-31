@@ -399,11 +399,13 @@ module.exports = [function StateRouterProvider() {
       var deferred = $q.defer();
       var error;
 
+      // Queue request
       _transitionQueue.push({
         name: name,
         params: params
       });
 
+      // Handle next request
       var nextRequest;
       nextRequest = function() {
         if(!_isReady) return;
@@ -455,6 +457,25 @@ module.exports = [function StateRouterProvider() {
       });
     };
 
+    /**
+     * Reloads the current state
+     * 
+     * @return {Promise} A promise fulfilled when state change occurs
+     */
+    var _reloadState = function() {
+      var n = _current.name;
+      var p = angular.copy(_current.params);
+      if(!_current.params) {
+        _current.params = {};
+      }
+      _current.params.deprecated = true;
+
+      // Notify
+      $rootScope.$broadcast('$stateReload', null, _current);
+
+      return _queueStateAndBroadcastComplete(n, p);
+    };
+
     // Instance
     var _inst;
     _inst = {
@@ -490,11 +511,11 @@ module.exports = [function StateRouterProvider() {
         // Set
         _defineState(name, state);
 
-        // Reload
-        if(_current) {
+        // Reload when current affected
+        if(!!_current) {
           var nameChain = _getNameChain(_current.name);
           if(nameChain.indexOf(name) !== -1) {
-            _queueChange(_current.name);
+            _reloadState();
           }
         }
 
@@ -595,6 +616,13 @@ module.exports = [function StateRouterProvider() {
       change: function(name, params) {
         return _queueStateAndBroadcastComplete(name, params);
       },
+
+      /**
+       * Reloads the current state
+       * 
+       * @return {Promise} A promise fulfilled when state change occurs
+       */
+      reload: _reloadState,
 
       /**
        * Internal method to change state based on $location.url(), asynchronous operation using internal methods, quiet fallback.  
