@@ -595,9 +595,27 @@ Component operate asynchronously and `next` must be called.
 Browserify
 ----------
 
-To use Browserify `require` the module directly.  For example:
+To use Browserify `require` the module directly.  
 
+For convenience use:
 
+	var app = angular.module('myApp', [
+		require("angular-state-router")
+	]);
+
+You can also separate the dependencies of your application for quicker packaging.  We suggest the following, in a separate `lib.js` file which does not have to be rebuilt frequently add:
+
+	// AngularJS
+	require('angular');
+	
+	// Dependencies
+	require("angular-state-router");
+
+Then you can use the module in your application, `app.js`
+
+	var app = angular.module('adminApp', [
+	  "angular-state-router"
+	]);
 
 
 
