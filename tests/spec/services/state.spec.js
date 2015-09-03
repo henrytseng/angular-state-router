@@ -542,7 +542,7 @@ describe('$state', function() {
         $rootScope.$on('$stateChangeBegin', onBegin);
         $rootScope.$on('$stateChangeEnd', onEnd);
         $rootScope.$on('$stateChangeError', onError);
-        $rootScope.$on('$stateChangeErrorResolve', onErrorResolve);
+        $rootScope.$on('$stateResolveError', onErrorResolve);
         $rootScope.$on('$stateChangeComplete', onComplete);
 
         // Initialize

@@ -36,12 +36,15 @@ module.exports = ['$q', '$injector', '$state', '$rootScope', function($q, $injec
       return next();
     }
 
+    $rootScope.$broadcast('$stateResolveBegin');
+
     _resolve(current.resolve || {}).then(function(locals) {
       angular.extend(request.locals, locals);
+      $rootScope.$broadcast('$stateResolveEnd');
       next();
 
     }, function(err) {
-      $rootScope.$broadcast('$stateChangeErrorResolve', err);
+      $rootScope.$broadcast('$stateResolveError', err);
       next(new Error('Error resolving state'));
     });
   };
