@@ -231,6 +231,11 @@
       $rootScope.$on('$stateResolveEnd', _addDebug('Resolution ended.'));
       $rootScope.$on('$stateResolveError', _addDebug('Error encountered in resolve.'));
       
+      // Action
+      $rootScope.$on('$stateActionBegin', _addDebug('Actions started.'));
+      $rootScope.$on('$stateActionEnd', _addDebug('Actions ended.'));
+      $rootScope.$on('$stateActionError', _addDebug('Error encountered in action.'));
+      
       // Show error page
       $rootScope.$on('$stateChangeErrorNotFound', function() {
         $state.change('notfound');
