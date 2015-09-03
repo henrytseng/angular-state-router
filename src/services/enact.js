@@ -36,11 +36,14 @@ module.exports = ['$q', '$injector', '$state', '$rootScope', function($q, $injec
       return next();
     }
 
+    $rootScope.$broadcast('$stateActionBegin');
+
     _act(current.actions || []).then(function() {
+      $rootScope.$broadcast('$stateActionEnd');
       next();
 
     }, function(err) {
-      $rootScope.$broadcast('$stateChangeErrorAction', err);
+      $rootScope.$broadcast('$stateActionError', err);
       next(new Error('Error processing state actions'));
     });
   };

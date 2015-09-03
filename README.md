@@ -316,17 +316,47 @@ This event is emitted whenever an error occurs.
 
 
 
+### $stateResolveBegin
+
+This event is broadcasted when the processing of the `resolve` property starts.  
+
+
+
+### $stateResolveEnd
+
+This event is broadcasted when the processing of the `resolve` property ends.  
+
+
+
+### $stateResolveError
+
+This event is broadcasted when an error occurs while resolve properties are processed.  
+
+
+
+### $stateActionBegin
+
+This event is broadcasted when the processing of actions start.  
+
+
+
+### $stateActionEnd
+
+This event is broadcasted when the processing of actions end.  
+
+
+
+### $stateActionError
+
+This event is broadcasted when an error occurs while actions are processed.  
+
+
+
 ### $stateChangeErrorNotFound
 
 * `request` *Object* Requested data `{ name: 'nextState', params: {} }`
 
 This event is emitted when a state cannot be found and no parent state(s) exist.  
-
-
-
-### $stateChangeErrorResolve
-
-This event is emitted when an error occurred during resolve.  
 
 
 
