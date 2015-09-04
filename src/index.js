@@ -26,8 +26,13 @@ angular.module('angular-state-router', [])
       $urlManager.location(arguments);
     });
 
+    $urlManager.$ready();
+    $resolution.$ready();
+    $enact.$ready();
+
     // Initialize
     $state.$ready();
+
   }])
 
   .directive('sref', require('./directives/sref'));

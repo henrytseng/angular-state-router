@@ -59,11 +59,18 @@ module.exports = ['$state', '$location', '$rootScope', function($state, $locatio
     }
   };
 
-  // Register middleware layer
-  $state.$use(function(request, next) {
-    _update();
-    next();
-  });
+  /**
+   * Register middleware layer
+   */
+  _self.$ready = function() {
+
+    $state.$use(function(request, next) {
+      _update();
+      next();
+    });
+    
+  };
+
 
   return _self;
 }];

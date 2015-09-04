@@ -24,32 +24,30 @@ module.exports = ['$q', '$injector', '$state', '$rootScope', function($q, $injec
   _self.process = _act;
 
   /**
-   * Middleware
-   * 
-   * @param  {Object}   request A data Object
-   * @param  {Function} next    A callback, function(err)
+   * Register middleware layer
    */
-  var _handle = function(request, next) {
-    var current = $state.current();
+  _self.$ready = function() {
 
-    if(!current) {
-      return next();
-    }
+    $state.$use(function(request, next) {
+      var current = $state.current();
 
-    $rootScope.$broadcast('$stateActionBegin');
+      if(!current) {
+        return next();
+      }
 
-    _act(current.actions || []).then(function() {
-      $rootScope.$broadcast('$stateActionEnd');
-      next();
+      $rootScope.$broadcast('$stateActionBegin');
 
-    }, function(err) {
-      $rootScope.$broadcast('$stateActionError', err);
-      next(new Error('Error processing state actions'));
-    });
+      _act(current.actions || []).then(function() {
+        $rootScope.$broadcast('$stateActionEnd');
+        next();
+
+      }, function(err) {
+        $rootScope.$broadcast('$stateActionError', err);
+        next(new Error('Error processing state actions'));
+      });
+    }, 100);
+
   };
-
-  // Register middleware layer
-  $state.$use(_handle, 100);
 
   return _self;
 }];

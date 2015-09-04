@@ -185,38 +185,6 @@ describe('$state', function() {
       });
     });
     
-    it('Should reload current state if defined state is a parent/current state', function(done) {
-      angular.mock.inject(function($state, $rootScope) {
-        $state
-          .state('organism.plant.tree', {
-            url: '/trees',
-            params: {
-              bark: 1
-            }
-          });
-
-        $state.change('organism.plant.tree');
-
-        $rootScope.$digest();
-
-        // Define parent
-        $state
-          .state('organism.plant', {
-            params: {
-              green: 'yes'
-            }
-          });
-
-        $rootScope.$digest();
-
-        expect($state.current().params).toEqual({
-          bark: 1,
-          green: 'yes'
-        });
-
-        done();
-      });
-    });
   });
 
   describe('#change', function() {
@@ -493,7 +461,7 @@ describe('$state', function() {
       });
     });
 
-    it('Should broadcast "$stateChangeErrorResolve" if promise is rejected in resolve property', function(done) {
+    it('Should broadcast "$stateResolveError" if promise is rejected in resolve property', function(done) {
       angular.mock.module(function($stateProvider) {
         $stateProvider
 

@@ -306,10 +306,11 @@ module.exports = [function StateRouterProvider() {
      * 
      * @param  {String}   name     A unique identifier for the state; using state-notation including optional parameters
      * @param  {Object}   params   A data object of params
-     * @param  {Function} callback A callback, function(err)
      * @return {Promise}           A promise fulfilled when state change occurs
      */
-    var _changeState = function(name, params, callback) {
+    var _changeState = function(name, params) {
+      var deferred = $q.defer();
+
       $rootScope.$evalAsync(function() {
         params = params || {};
 
@@ -322,7 +323,8 @@ module.exports = [function StateRouterProvider() {
         var request = {
           name: name,
           params: params,
-          locals: {}
+          locals: {},
+          promise: deferred.promise
         };
 
         // Compile execution phases
@@ -384,60 +386,15 @@ module.exports = [function StateRouterProvider() {
         }
 
         // Run
-        queue.execute(callback);
-      });
-    };
-
-    /**
-     * Internal method to request change to state.  
-     * 
-     * @param  {String}  name   A unique identifier for the state; using state-notation including optional parameters
-     * @param  {Object}  params A data object of params
-     * @return {Promise}        A promise fulfilled when state change occurs
-     */
-    var _queueChange = function(name, params) {
-      var deferred = $q.defer();
-      var error;
-
-      // Queue request
-      _transitionQueue.push({
-        name: name,
-        params: params
-      });
-
-      // Handle next request
-      var nextRequest;
-      nextRequest = function() {
-        if(!_isReady) return;
-        var request = _transitionQueue.shift();
-
-        // Continue
-        if(request) {
-          _isReady = false;
-
-          _changeState(request.name, request.params, function(err) {
-            _isReady = true;
-
-            if(err) {
-              $rootScope.$broadcast('$stateChangeError', err, request);
-              error = err;
-            }
-
-            nextRequest();
-          });
-
-        // End
-        } else {
-          if(error) {
-            deferred.reject(error);
+        queue.execute(function(err) {
+          if(err) {
+            $rootScope.$broadcast('$stateChangeError', err, request);
+            deferred.reject(err);
           } else {
             deferred.resolve();
           }
-        }
-
-      };
-
-      nextRequest();
+        });
+      });
 
       return deferred.promise;
     };
@@ -449,8 +406,8 @@ module.exports = [function StateRouterProvider() {
      * @param  {Object}  params A data object of params
      * @return {Promise}        A promise fulfilled when state change occurs
      */
-    var _queueStateAndBroadcastComplete = function(name, params) {
-      return _queueChange(name, params).then(function() {
+    var _changeStateAndBroadcastComplete = function(name, params) {
+      return _changeState(name, params).then(function() {
         $rootScope.$broadcast('$stateChangeComplete', null, _current);
       }, function(err) {
         $rootScope.$broadcast('$stateChangeComplete', err, _current);
@@ -463,17 +420,27 @@ module.exports = [function StateRouterProvider() {
      * @return {Promise} A promise fulfilled when state change occurs
      */
     var _reloadState = function() {
-      var n = _current.name;
-      var p = angular.copy(_current.params);
-      if(!_current.params) {
-        _current.params = {};
-      }
-      _current.params.deprecated = true;
+      var deferred = $q.defer();
 
-      // Notify
-      $rootScope.$broadcast('$stateReload', null, _current);
+      $rootScope.$evalAsync(function() {
+        var n = _current.name;
+        var p = angular.copy(_current.params);
+        if(!_current.params) {
+          _current.params = {};
+        }
+        _current.params.deprecated = true;
 
-      return _queueStateAndBroadcastComplete(n, p);
+        // Notify
+        $rootScope.$broadcast('$stateReload', null, _current);
+
+        _changeStateAndBroadcastComplete(n, p).then(function() {
+          deferred.resolve();
+        }, function(err) {
+          deferred.reject(err);
+        });
+      });
+
+      return deferred.promise;
     };
 
     // Instance
@@ -510,14 +477,6 @@ module.exports = [function StateRouterProvider() {
 
         // Set
         _defineState(name, state);
-
-        // Reload when current affected
-        if(!!_current) {
-          var nameChain = _getNameChain(_current.name);
-          if(nameChain.indexOf(name) !== -1) {
-            _reloadState();
-          }
-        }
 
         return _inst;
       },
@@ -567,7 +526,7 @@ module.exports = [function StateRouterProvider() {
 
             // Initialize with state
             } else if(_initalLocation) {
-              readyDeferred = _queueStateAndBroadcastComplete(_initalLocation.name, _initalLocation.params);
+              readyDeferred = _changeStateAndBroadcastComplete(_initalLocation.name, _initalLocation.params);
             }
 
             $q.when(readyDeferred).then(function() {
@@ -614,7 +573,7 @@ module.exports = [function StateRouterProvider() {
        * @return {Promise}              A promise fulfilled when state change complete
        */
       change: function(name, params) {
-        return _queueStateAndBroadcastComplete(name, params);
+        return _changeStateAndBroadcastComplete(name, params);
       },
 
       /**
@@ -639,7 +598,7 @@ module.exports = [function StateRouterProvider() {
 
           if(state) {
             // Parse params from url
-            return _queueStateAndBroadcastComplete(state.name, data.params);
+            return _changeStateAndBroadcastComplete(state.name, data.params);
           }
         } else if(!!url && url !== '') {
           var error = new Error('Requested state was not defined.');

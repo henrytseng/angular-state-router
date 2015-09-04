@@ -24,33 +24,31 @@ module.exports = ['$q', '$injector', '$state', '$rootScope', function($q, $injec
   _self.resolve = _resolve;
 
   /**
-   * Middleware
-   * 
-   * @param  {Object}   request A data Object
-   * @param  {Function} next    A callback, function(err)
+   * Register middleware layer
    */
-  var _handle = function(request, next) {
-    var current = $state.current();
+  _self.$ready = function() {
 
-    if(!current) {
-      return next();
-    }
+    $state.$use(function(request, next) {
+      var current = $state.current();
 
-    $rootScope.$broadcast('$stateResolveBegin');
+      if(!current) {
+        return next();
+      }
 
-    _resolve(current.resolve || {}).then(function(locals) {
-      angular.extend(request.locals, locals);
-      $rootScope.$broadcast('$stateResolveEnd');
-      next();
+      $rootScope.$broadcast('$stateResolveBegin');
 
-    }, function(err) {
-      $rootScope.$broadcast('$stateResolveError', err);
-      next(new Error('Error resolving state'));
-    });
+      _resolve(current.resolve || {}).then(function(locals) {
+        angular.extend(request.locals, locals);
+        $rootScope.$broadcast('$stateResolveEnd');
+        next();
+
+      }, function(err) {
+        $rootScope.$broadcast('$stateResolveError', err);
+        next(new Error('Error resolving state'));
+      });
+    }, 101);
+    
   };
-
-  // Register middleware layer
-  $state.$use(_handle, 101);
 
   return _self;
 }];
