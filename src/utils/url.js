@@ -36,7 +36,7 @@ function Url(url) {
       for(var i=0; i<pairs.length; i++) {
         if(pairs[i] === '') continue;
         var nameValue = pairs[i].split('=');
-        params[nameValue[0]] = (typeof nameValue[1] === 'undefined' || nameValue[1] === '') ? true : nameValue[1];
+        params[nameValue[0]] = (typeof nameValue[1] === 'undefined' || nameValue[1] === '') ? true : decodeURIComponent(nameValue[1]);
       }
 
       return params;
