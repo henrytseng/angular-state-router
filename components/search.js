@@ -7,9 +7,9 @@
     .state('search', {
       url: '/search',
       templates: {
-        layout: 'layouts/one-col.html',
-        contentBody: 'screens/search.html',
-        contentFooter: 'common/footer.html'
+        layout: 'angular-state-router/layouts/one-col.html',
+        contentBody: 'angular-state-router/screens/search.html',
+        contentFooter: 'angular-state-router/common/footer.html'
       },
       controllers: {
         contentBody: 'SearchController'
