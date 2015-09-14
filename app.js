@@ -144,9 +144,11 @@
         .state('account.logout', {
           url: '/logout',
           actions: [
-            function(Auth, $state) {
-              Auth.logout().then(function() {
-                $state.change('landing');
+            function(Auth, $state, $q) {
+              return $q(function(resolve, reject) {
+                Auth.logout().then(function() {
+                  $state.change('landing');
+                });
               });
             }
           ]
