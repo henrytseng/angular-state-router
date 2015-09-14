@@ -1,27 +1,68 @@
 <section class="screen">
   <div class="jumbotron">
     <div class="container">
-      <h1>Demo</h1>
-      <p>Lorem ipsum dolor sit amet.</p>
+      <h1>StateRouter Demo</h1>
+      <p>The following is a demo for StateRouter, an AngularJS state-based router designed for flexibility and ease of use.</p>
+      <p><a href="https://travis-ci.org/henrytseng/angular-state-router"><img src="https://camo.githubusercontent.com/3c7b53dbcf517fca3fd1c34139996c2afed61f75/68747470733a2f2f7472617669732d63692e6f72672f68656e72797473656e672f616e67756c61722d73746174652d726f757465722e7376673f6272616e63683d6d6173746572" alt="Build Status" data-canonical-src="https://travis-ci.org/henrytseng/angular-state-router.svg?branch=master" style="max-width:100%;"></a> <a href="https://gitter.im/henrytseng/angular-state-router?utm_source=badge&amp;utm_medium=badge&amp;utm_campaign=pr-badge&amp;utm_content=badge"><img src="https://camo.githubusercontent.com/da2edb525cde1455a622c58c0effc3a90b9a181c/68747470733a2f2f6261646765732e6769747465722e696d2f4a6f696e253230436861742e737667" alt="Join the chat at https://gitter.im/henrytseng/angular-state-router" data-canonical-src="https://badges.gitter.im/Join%20Chat.svg" style="max-width:100%;"></a> </p>
+
+      <p><a href="https://www.npmjs.com/package/angular-state-router">StateRouter</a> is designed to be used in a modular integration with components:</p>
       <ul>
-        <li>Eiusmod tempor incididunt</li>
-        <li>Ut labore et</li>
-        <li>Dolore magna aliqua</li>
-        <li>Ut enim ad minim veniam</li>
+      <li><a href="https://www.npmjs.com/package/angular-state-view">StateView</a>
+
+      <ul>
+      <li>Provides nested view management with template support</li>
+      </ul></li>
+      <li><a href="https://www.npmjs.com/package/angular-state-loadable">StateLoadable</a>
+
+      <ul>
+      <li>A lazy loading scheme</li>
+      </ul></li>
       </ul>
-      <p>Accusantium doloremque laudantium, totam</p>
-      <a class="btn btn-primary btn-lg" href="#/products/1-aeff/e32537" sref="products.items({catalog:'1-aeff', item:'e32537'})">See Product Item: e32537</a>
-      <a class="btn btn-danger btn-lg" href="#/missing" sref="missing" title="Make a state transition to a page that does not exist.">See Missing Error</a>
+      <p>While not required, StateRouter was originally developed with Browserify.  </p>
+
+      <a class="btn btn-default btn-lg" href="https://github.com/henrytseng/angular-state-router" class="btn">View on GitHub</a>
+      <a class="btn btn-default btn-lg" href="https://github.com/henrytseng/angular-state-router/zipball/master" class="btn">Download .zip</a>
+      <a class="btn btn-default btn-lg" href="https://github.com/henrytseng/angular-state-router/tarball/master" class="btn">Download .tar.gz</a>
+
     </div>
+  </div>
+
+  <div class="container">
+    <h1>Lorem ipsum</h1>
+    <p class="lead">Duis aute irure dolor in reprehenderit in voluptate velit</p>
+
+    <a class="btn btn-primary btn-lg" href="#/products/1-aeff/e32537" sref="products.items({catalog:'1-aeff', item:'e32537'})">See Product Item: e32537</a>
+    <a class="btn btn-danger btn-lg" href="#/missing" sref="missing" title="Make a state transition to a page that does not exist.">See Missing Error</a>
   </div>
 
   <div class="container">
     <h1>Dolor sit</h1>
     <p>Omnis iste natus error sit voluptatem accusantium doloremque laudantium, totam rem aperiam, eaque</p>
+    <p>Sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat. Duis aute irure dolor in reprehenderit in voluptate velit esse cillum dolore </p>
     <blockquote>
       "Nemo enim ipsam voluptatem quia voluptas sit aspernatur aut odit aut fugit, sed quia consequuntur magni dolores eos qui ratione voluptatem sequi nesciunt."
       <br>
       <em>--Dolorem Ipsum</em>
     </blockquote>
+  </div>
+  
+  <div class="container">
+    <div class="row">
+      <div class="col-md-4">
+        <h2>Adipiscing</h2>
+        <p>Dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua.</p>
+        <a class="btn btn-primary btn-md" href="#/products" sref="products">Products</a>
+      </div>
+      <div class="col-md-4">
+        <h2>Quis nostrud</h2>
+        <p> Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat. Duis aute irure dolor in reprehenderit in voluptate velit esse cillum dolore eu fugiat nulla pariatur. Excepteur sint occaecat cupidatat non proident, sunt in culpa qui officia deserunt mollit anim id est laborum.</p>
+        <a class="btn btn-primary btn-md" href="#/landing" sref="landing">Landing</a>
+      </div>
+      <div class="col-md-4">
+        <h2>Deserunt</h2>
+        <p>Sunt in culpa qui officia deserunt mollit anim id est laborum.</p>
+        <a class="btn btn-primary btn-md" href="#/contact" sref="contact">Contact</a>
+      </div>
+    </div>
   </div>
 </section>

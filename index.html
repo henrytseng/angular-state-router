@@ -1,45 +1,49 @@
 <html ng-app="myApp">
   <head>
-    <title>StateRouter</title>
+    <title>StateRouter Demo</title>
     <link rel="stylesheet" href="node_modules/bootstrap/dist/css/bootstrap.min.css"/>
-    <link rel="stylesheet" href="cite.css"/>
+    <link rel="stylesheet" href="main.css"/>
+    <script>document.write('<script src="http://' + (location.host || 'localhost').split(':')[0] + ':35729/livereload.js?snipver=1"></' + 'script>')</script>
+    <script src="node_modules/jquery/dist/jquery.min.js"></script>
     <script src="node_modules/bootstrap/dist/js/bootstrap.min.js"></script>
+    <script src="node_modules/angular/angular.min.js"></script>
+    <script src="node_modules/angular-state-router/dist/state-router.min.js"></script>
+    <script src="node_modules/angular-state-view/dist/state-view.min.js"></script>
+    <script src="node_modules/angular-state-loadable/dist/state-loadable.min.js"></script>
+    <script src="app.js"></script>
+    <base href="http://localhost:3000/">
   </head>
-  <body>
+  <body ng-controller="FrameController">
 
-    <div class="jumbotron">
-      <div class="container">
-        <h1>StateRouter</h1>
+    <!-- Navigation -->
+    <ng-include src="'common/navigation.html'"></ng-include>
+    <!-- Navigation -->
 
-        <p><a href="https://travis-ci.org/henrytseng/angular-state-router"><img src="https://camo.githubusercontent.com/3c7b53dbcf517fca3fd1c34139996c2afed61f75/68747470733a2f2f7472617669732d63692e6f72672f68656e72797473656e672f616e67756c61722d73746174652d726f757465722e7376673f6272616e63683d6d6173746572" alt="Build Status" data-canonical-src="https://travis-ci.org/henrytseng/angular-state-router.svg?branch=master" style="max-width:100%;"></a> <a href="https://gitter.im/henrytseng/angular-state-router?utm_source=badge&amp;utm_medium=badge&amp;utm_campaign=pr-badge&amp;utm_content=badge"><img src="https://camo.githubusercontent.com/da2edb525cde1455a622c58c0effc3a90b9a181c/68747470733a2f2f6261646765732e6769747465722e696d2f4a6f696e253230436861742e737667" alt="Join the chat at https://gitter.im/henrytseng/angular-state-router" data-canonical-src="https://badges.gitter.im/Join%20Chat.svg" style="max-width:100%;"></a> </p>
-        <p>An AngularJS state-based router designed for flexibility and ease of use.  </p>
-        <p><a href="https://www.npmjs.com/package/angular-state-router">StateRouter</a> is designed to be used in a modular integration with components:<p>An AngularJS state-based router designed for flexibility and ease of use.  </p>
-        <ul>
-        <li><a href="https://www.npmjs.com/package/angular-state-view">StateView</a>
-
-        <ul>
-        <li>Provides nested view management with template support</li>
-        </ul></li>
-        <li><a href="https://www.npmjs.com/package/angular-state-loadable">StateLoadable</a>
-
-        <ul>
-        <li>A lazy loading scheme</li>
-        </ul></li>
-        </ul>
-        <p>While not required, StateRouter was originally developed with Browserify.  </p>
-
-        <a class="btn btn-default btn-lg" href="https://github.com/henrytseng/angular-state-router" class="btn">View on GitHub</a>
-        <a class="btn btn-default btn-lg" href="https://github.com/henrytseng/angular-state-router/zipball/master" class="btn">Download .zip</a>
-        <a class="btn btn-default btn-lg" href="https://github.com/henrytseng/angular-state-router/tarball/master" class="btn">Download .tar.gz</a>
-
+    <!-- Layout -->
+    <sview id="layout"></sview>
+    <!-- Layout -->
+    
+    <!-- Debugging Log -->
+    <div class="container messages">
+      <div class="panel panel-info">
+        <div class="panel-heading">
+          <h3 class="panel-title">Debug</h3>
+        </div>
+        <div class="panel-body">
+          <div class="media" ng-repeat="item in messages">
+            <div class="media-body">
+              <h4 class="media-heading">{{item.title}}</h4>
+              {{item.body}}<br>
+              
+            </div>
+          </div>
+        </div>
+        <div class="panel-body">
+          <a class="btn btn-default" ng-click="clearDebug()">Clear</a>
+        </div>
       </div>
     </div>
-
-    <div class="container">
-      <h1>Example</h1>
-      <p class="lead">Want to see it in action?</p>
-      <a class="btn btn-default btn-lg" href="example.html">Click Here</a>
-    </div>
+    <!-- Debugging Log -->
 
   </body>
 </html>

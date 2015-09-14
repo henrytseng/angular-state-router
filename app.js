@@ -1,262 +1,349 @@
-'use strict';
+(function() {
+  'use strict';
 
-// Instantiate app
-var myApp = angular.module('myApp', [
-  'angular-state-router',
-  'angular-state-view'
-]);
+  // Instantiate app
+  var example = {
+    myApp: angular.module('myApp', [
+      'angular-state-router',
+      'angular-state-view',
+      'angular-state-loadable'
+    ])
+  };
 
-myApp
+  // Publicize in unique namespace
+  window.example = example;
 
   // Configuration
-  .config(function($stateProvider) {
-    $stateProvider
+  example.myApp
+
+    .config(function($stateProvider, $controllerProvider, $compileProvider, $filterProvider, $provide) {
+
+      // Export for late registration
+      example.myApp.deferred = {
+        controller: $controllerProvider.register,
+        directive: $compileProvider.directive,
+        filter: $filterProvider.register,
+        factory: $provide.factory,
+        service: $provide.service
+      };
 
       // Define states
-      .state('landing', {
-        url: '/',
+      $stateProvider
 
-        // Defined templates
-        templates: {
+        .state('landing', {
+          url: '/',
 
-          // Parent
-          layout: 'layouts/one-col.html',
+          // Defined templates
+          templates: {
 
-          // Nested Children
-          contentBody: 'screens/landing.html',
-          contentFooter: 'common/footer.html'
+            // Parent
+            layout: 'layouts/one-col.html',
 
-        }
-      })
+            // Nested Children
+            contentBody: 'screens/landing.html',
+            contentFooter: 'common/footer.html'
 
-      .state('about', {
-        url: '/screens/about',
-        templates: {
-          layout: 'layouts/one-col.html',
-          contentBody: 'screens/about.html',
-          contentFooter: 'common/footer.html'
-        }
-      })
-
-      .state('products', {
-        url: '/products',
-        params: {
-
-          // Inherit by default
-          catalog: '1-aeff'
-
-        },
-        templates: {
-          layout: 'layouts/one-col.html',
-          contentBody: 'screens/products.html',
-          contentFooter: 'common/footer.html'
-        },
-        controllers: {
-
-          // Inline controller
-          contentBody: function($scope, Product) {
-            Product.list().then(function(list) {
-              $scope.products = list;
-            });
           }
+        })
 
-        }
-      })
-
-      .state('products.items', {
-        url: '/products/:catalog/:item',
-        templates: {
-          layout: 'layouts/one-col.html',
-          contentBody: 'screens/products-item.html',          contentFooter: '/common/footer.html'
-        },
-
-        controllers: {
-
-          // Referenced controller
-          layout: 'ProductItemController'
-
-        },
-
-        resolve: {
-          productItem: function(Product, $state) {
-            return Product.get($state.current().params.item);
-          }, 
-
-          itemRecommendations: function(Product, $state) {
-            return Product.recommend($state.current().params.item);
+        .state('about', {
+          url: '/about',
+          templates: {
+            layout: 'layouts/one-col.html',
+            contentBody: 'screens/about.html',
+            contentFooter: 'common/footer.html'
           }
-        }
-      })
+        })
 
-      .state('contact', {
-        url: '/contact',
-        templates: {
-          layout: 'layouts/one-col.html',
-          contentBody: 'screens/contact.html',
-          contentFooter: 'common/footer.html'
-        }
-      })
+        .state('products', {
+          url: '/products',
+          params: {
 
-      .state('account.profile', {
-        url: '/account',
-        templates: {
-          layout: 'layouts/two-col.html',
-          sideBar: 'screens/account/side.html',
-          mainBody: 'screens/account/profile.html'
-        }
-      })
+            // Inherit by default
+            catalog: '1-aeff'
 
-      .state('account.preferences', {
-        url: '/account/preferences',
-        templates: {
-          layout: 'layouts/two-col.html',
-          sideBar: 'screens/account/side.html',
-          mainBody: 'screens/account/preferences.html'
-        }
-      })
+          },
+          templates: {
+            layout: 'layouts/one-col.html',
+            contentBody: 'screens/products.html',
+            contentFooter: 'common/footer.html'
+          },
+          controllers: {
 
-      .state('account.login', {
-        url: '/login',
-        templates: {
-          layout: 'layouts/one-col.html',
-          contentBody: 'screens/login.html'
-        }
-      })
+            // Inline controller
+            contentBody: function($scope, Product) {
+              Product.list().then(function(list) {
+                $scope.products = list;
+              });
+            }
 
-      .state('notfound', {
+          }
+        })
 
-        // Defined templates
-        templates: {
-          layout: 'layouts/error.html'
-        }
-      })
+        .state('products.items', {
+          url: '/products/:catalog/:item',
+          templates: {
+            layout: 'layouts/one-col.html',
+            contentBody: 'screens/products-item.html',
+            contentFooter: '/common/footer.html'
+          },
 
-      // Set default initial location
-      .init('landing');
-  })
+          controllers: {
 
-  // Run
-  .run(function($rootScope, $state) {
-    $rootScope.$state = $state;
-  })
+            // Referenced controller
+            layout: 'ProductItemController'
 
-  // Main
-  .controller('FrameController', function($rootScope, $scope, $state, $urlManager, $viewManager, $log, $location, Product) {
+          },
 
-    // Products catalog
-    $scope.products = Product.list();
+          resolve: {
+            productItem: function(Product, $state) {
+              return Product.get($state.current().params.item);
+            }, 
 
-    // Login state
-    $scope.isAuthenticated = false;
+            itemRecommendations: function(Product, $state) {
+              return Product.recommend($state.current().params.item);
+            }
+          }
+        })
 
-    // Direct call to state
-    $scope.login = function() {
-      $scope.isAuthenticated = true;
-      Product.getRandom().then(function(product) {
-        $state.change('products.items', {
-          catalog: product.catalog,
-          item: product.item
-        });
-      });
-    };
+        .state('contact', {
+          url: '/contact',
+          templates: {
+            layout: 'layouts/one-col.html',
+            contentBody: 'screens/contact.html',
+            contentFooter: 'common/footer.html'
+          }
+        })
 
-    // Direct call to location
-    $scope.logout = function() {
-      $scope.isAuthenticated = false;
-      $location.url('/');
-    };
+        .state('account.profile', {
+          url: '/account',
+          templates: {
+            layout: 'layouts/two-col.html',
+            sideBar: 'screens/account/side.html',
+            mainBody: 'screens/account/profile.html'
+          }
+        })
 
-    // Debug messages
-    $scope.messages = [];
+        .state('account.preferences', {
+          url: '/account/preferences',
+          templates: {
+            layout: 'layouts/two-col.html',
+            sideBar: 'screens/account/side.html',
+            mainBody: 'screens/account/preferences.html'
+          }
+        })
 
-    // Clear debugging messages
-    $scope.clearDebug = function() {
-      $scope.messages = [];
-    };
+        .state('account.login', {
+          url: '/login',
+          templates: {
+            layout: 'layouts/one-col.html',
+            contentBody: 'screens/login.html'
+          }
+        })
 
-    var _addDebug = function(message) {
-      return function(e) {
-        var now = new Date();
-        $log.log(e.name);
-        $scope.messages.unshift({
-          title: e.name,
-          body: message
+        .state('account.logout', {
+          url: '/logout',
+          actions: [
+            function(Auth, $state) {
+              Auth.logout().then(function() {
+                $state.change('landing');
+              });
+            }
+          ]
+        })
+
+        .state('search', {
+          url: '/search',
+          load: ['components/search.js']
+        })
+
+        .state('notfound', {
+
+          // Defined templates
+          templates: {
+            layout: 'layouts/error.html'
+          }
+        })
+
+        // Set default initial location
+        .init('landing');
+    })
+
+    // Run
+    .run(function($rootScope, $state) {
+      example.myApp.deferred.state = $state.state;
+      $rootScope.$state = $state;
+    })
+
+    // Main
+    .controller('FrameController', function($rootScope, $scope, $state, $urlManager, $viewManager, $log, $location, Product, Auth) {
+
+      // Products catalog
+      $scope.products = Product.list();
+
+      // Initial login state
+      $scope.isAuthenticated = Auth.isAuthenticated();
+
+      // Login with credentials
+      $scope.login = function() {
+        Auth.login().then(function() {
+          $scope.isAuthenticated = Auth.isAuthenticated();
+
+          // Direct call to state
+          $state.change('account.profile');
+
         });
       };
-    };
 
-    // Initialization
-    $rootScope.$on('$stateInit', _addDebug('State has initialized.'));
+      // Debug messages
+      $scope.messages = [];
 
-    // State transition
-    $rootScope.$on('$stateChangeBegin', _addDebug('State transition process started.'));
-    $rootScope.$on('$stateChangeEnd', _addDebug('State transition process ended.'));
-    $rootScope.$on('$stateChangeComplete', _addDebug('State change request has been completed.'));
+      // Clear debugging messages
+      $scope.clearDebug = function() {
+        $scope.messages = [];
+      };
 
-    // Error
-    $rootScope.$on('$stateChangeError', _addDebug('Error occurred.'));
-    $rootScope.$on('$stateChangeErrorNotFound', _addDebug('Error state could not be found.'));
-    
-    // Show error page
-    $rootScope.$on('$stateChangeErrorNotFound', function() {
-      $state.change('notfound');
-    });
-  })
+      var _addDebug = function(message) {
+        return function(e) {
+          var now = new Date();
+          $log.log(e.name);
+          $scope.messages.unshift({
+            title: e.name,
+            body: message
+          });
+        };
+      };
 
-  // Product Service
-  .factory('Product', function($q) {
-    var _listing = [
-      {item: 'k43131', catalog: '1-aeff', name: 'Phasellus', description: 'Purus sodales ultricies.'},
-      {item: 'u43131', catalog: '1-aeff', name: 'Adipiscing', description: 'Facilisis in pretium.'},
-      {item: 'e32537', catalog: '1-aeff', name: 'Cras', description: 'Dapibus ac facilisis in.'},
-      {item: 'a231', catalog: '1-aeff', name: 'Egestas', description: 'Elit non mi porta.'}, 
-      {item: 'r20', catalog: '1-aeff', name: 'Ut', description: 'Sed ut'},
-      {item: 's4312', catalog: '1-aeff', name: 'Donec id', description: 'Gravida at eget metus'},
-      {item: 'h975', catalog: '1-aeff', name: 'Nullam', description: 'Id dolor id nibh ultricies'},
-      {item: 'j239032-1', catalog: '1-aeff', name: 'Dolor', description: 'Nibh ultricies'},
-      {item: 'j239032-2', catalog: '1-aeff', name: 'Ipsum', description: 'Eget metus'}
-    ];
+      // Initialization
+      $rootScope.$on('$stateInit', _addDebug('State has initialized.'));
 
-    return {
-      // List all
-      list: function() {
-        return $q.when(_listing.slice(0));
-      },
+      // State transition
+      $rootScope.$on('$stateChangeBegin', _addDebug('State transition process started.'));
+      $rootScope.$on('$stateChangeEnd', _addDebug('State transition process ended.'));
+      $rootScope.$on('$stateChangeComplete', _addDebug('State change request has been completed.'));
 
-      // Get item      
-      get: function(item) {
-        for(var i=0; i<_listing.length; i++) {
-          if(_listing[i].item === item) return $q.when(_listing[i]);
+      // Error
+      $rootScope.$on('$stateChangeError', _addDebug('Error occurred.'));
+      $rootScope.$on('$stateChangeErrorNotFound', _addDebug('Error state could not be found.'));
+      
+      // Resolve
+      $rootScope.$on('$stateResolveBegin', _addDebug('Resolution started.'));
+      $rootScope.$on('$stateResolveEnd', _addDebug('Resolution ended.'));
+      $rootScope.$on('$stateResolveError', _addDebug('Error encountered in resolve.'));
+      
+      // Action
+      $rootScope.$on('$stateActionBegin', _addDebug('Actions started.'));
+      $rootScope.$on('$stateActionEnd', _addDebug('Actions ended.'));
+      $rootScope.$on('$stateActionError', _addDebug('Error encountered in action.'));
+      
+      // Show error page
+      $rootScope.$on('$stateChangeErrorNotFound', function() {
+        $state.change('notfound');
+      });
+    })
+
+    // Auth Service
+    .factory('Auth', function($q) {
+      var _isAuthenticated = false;
+
+      return {
+
+        isAuthenticated: function() {
+          return _isAuthenticated;
+        },
+
+        login: function() {
+          _isAuthenticated = true;
+          return $q.when(_isAuthenticated);
+        },
+
+        logout: function() {
+          _isAuthenticated = false;
+          return $q.when(_isAuthenticated);
         }
-        return null;
-      },
 
-      // Get random item
-      getRandom: function() {
-        var i = Math.floor(_listing.length-1 * Math.random());
-        return $q.when(_listing[i]);
-      },
+      };
+    })
 
-      // Get recommendations
-      recommend: function(item) {
-        var list = _listing.slice(0);
-        return $q.when(list
-          .filter(function(entity) {
-            return entity.item !== item;
-          })
-          .sort(function() {
-            return Math.random() > 0.5;
-          })
-          .splice(0,6));
-      }
-    };
-  })
+    // Product Service
+    .factory('Product', function($q) {
+      var _listing = [
+        {item: 'k43131', catalog: '1-aeff', name: 'Phasellus', description: 'Purus sodales ultricies.'},
+        {item: 'u43131', catalog: '1-aeff', name: 'Adipiscing', description: 'Facilisis in pretium.'},
+        {item: 'e32537', catalog: '1-aeff', name: 'Cras', description: 'Dapibus ac facilisis in.'},
+        {item: 'a231', catalog: '1-aeff', name: 'Egestas', description: 'Elit non mi porta.'}, 
+        {item: 'r20', catalog: '1-aeff', name: 'Ut', description: 'Sed ut'},
+        {item: 's4312', catalog: '1-aeff', name: 'Donec id', description: 'Gravida at eget metus'},
+        {item: 'h975', catalog: '1-aeff', name: 'Nullam', description: 'Id dolor id nibh ultricies'},
+        {item: 'j239032-1', catalog: '1-aeff', name: 'Dolor', description: 'Nibh ultricies'},
+        {item: 'j239032-2', catalog: '1-aeff', name: 'Ipsum', description: 'Eget metus'}
+      ];
 
-  // Product Item Controller
-  .controller('ProductItemController', function($scope, $state, productItem, itemRecommendations) {
-    // Get product
-    $scope.product = productItem;
+      return {
+        // List all
+        list: function() {
+          return $q.when(_listing.slice(0));
+        },
 
-    // Get recommendations based on product
-    $scope.recommendations = itemRecommendations;
-  });
+        // Get item      
+        get: function(item) {
+          for(var i=0; i<_listing.length; i++) {
+            if(_listing[i].item === item) return $q.when(_listing[i]);
+          }
+          return null;
+        },
+
+        // Get random item
+        getRandom: function() {
+          var i = Math.floor(_listing.length-1 * Math.random());
+          return $q.when(_listing[i]);
+        },
+
+        // Search for a product
+        search: function(criteria) {
+          var results = [];
+
+          criteria = angular.isArray(criteria) ? criteria : [criteria];
+
+          // Search through each
+          criteria.forEach(function(q) {
+            if(q && q !== '') {
+
+              _listing.forEach(function(item) {
+                for(var name in item) {
+                  if(item[name].toLowerCase().indexOf(q.toLowerCase()) !== -1 && results.indexOf(item) === -1) {
+                    results.push(item);
+                  }
+                }
+              });
+            }
+          });
+
+          return $q.when(results);
+        },
+
+        // Get recommendations
+        recommend: function(item) {
+          var list = _listing.slice(0);
+          return $q.when(list
+            .filter(function(entity) {
+              return entity.item !== item;
+            })
+            .sort(function() {
+              return Math.random() > 0.5;
+            })
+            .splice(0,6));
+        }
+      };
+    })
+
+    // Product Item Controller
+    .controller('ProductItemController', function($scope, $state, productItem, itemRecommendations) {
+      // Get product
+      $scope.product = productItem;
+
+      // Get recommendations based on product
+      $scope.recommendations = itemRecommendations;
+    });
+
+})();
