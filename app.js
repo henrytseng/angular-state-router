@@ -85,7 +85,7 @@
           templates: {
             layout: 'layouts/one-col.html',
             contentBody: 'screens/products-item.html',
-            contentFooter: '/common/footer.html'
+            contentFooter: 'common/footer.html'
           },
 
           controllers: {
