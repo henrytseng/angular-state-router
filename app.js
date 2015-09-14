@@ -37,11 +37,11 @@
           templates: {
 
             // Parent
-            layout: 'angular-state-router/layouts/one-col.html',
+            layout: 'layouts/one-col.html',
 
             // Nested Children
-            contentBody: 'angular-state-router/screens/landing.html',
-            contentFooter: 'angular-state-router/common/footer.html'
+            contentBody: 'screens/landing.html',
+            contentFooter: 'common/footer.html'
 
           }
         })
@@ -49,9 +49,9 @@
         .state('about', {
           url: '/about',
           templates: {
-            layout: 'angular-state-router/layouts/one-col.html',
-            contentBody: 'angular-state-router/screens/about.html',
-            contentFooter: 'angular-state-router/common/footer.html'
+            layout: 'layouts/one-col.html',
+            contentBody: 'screens/about.html',
+            contentFooter: 'common/footer.html'
           }
         })
 
@@ -64,9 +64,9 @@
 
           },
           templates: {
-            layout: 'angular-state-router/layouts/one-col.html',
-            contentBody: 'angular-state-router/screens/products.html',
-            contentFooter: 'angular-state-router/common/footer.html'
+            layout: 'layouts/one-col.html',
+            contentBody: 'screens/products.html',
+            contentFooter: 'common/footer.html'
           },
           controllers: {
 
@@ -83,9 +83,9 @@
         .state('products.items', {
           url: '/products/:catalog/:item',
           templates: {
-            layout: 'angular-state-router/layouts/one-col.html',
-            contentBody: 'angular-state-router/screens/products-item.html',
-            contentFooter: 'angular-state-router/common/footer.html'
+            layout: 'layouts/one-col.html',
+            contentBody: 'screens/products-item.html',
+            contentFooter: '/common/footer.html'
           },
 
           controllers: {
@@ -109,35 +109,35 @@
         .state('contact', {
           url: '/contact',
           templates: {
-            layout: 'angular-state-router/layouts/one-col.html',
-            contentBody: 'angular-state-router/screens/contact.html',
-            contentFooter: 'angular-state-router/common/footer.html'
+            layout: 'layouts/one-col.html',
+            contentBody: 'screens/contact.html',
+            contentFooter: 'common/footer.html'
           }
         })
 
         .state('account.profile', {
           url: '/account',
           templates: {
-            layout: 'angular-state-router/layouts/two-col.html',
-            sideBar: 'angular-state-router/screens/account/side.html',
-            mainBody: 'angular-state-router/screens/account/profile.html'
+            layout: 'layouts/two-col.html',
+            sideBar: 'screens/account/side.html',
+            mainBody: 'screens/account/profile.html'
           }
         })
 
         .state('account.preferences', {
           url: '/account/preferences',
           templates: {
-            layout: 'langular-state-router/ayouts/two-col.html',
-            sideBar: 'angular-state-router/screens/account/side.html',
-            mainBody: 'angular-state-router/screens/account/preferences.html'
+            layout: 'layouts/two-col.html',
+            sideBar: 'screens/account/side.html',
+            mainBody: 'screens/account/preferences.html'
           }
         })
 
         .state('account.login', {
           url: '/login',
           templates: {
-            layout: 'angular-state-router/layouts/one-col.html',
-            contentBody: 'angular-state-router/screens/login.html'
+            layout: 'layouts/one-col.html',
+            contentBody: 'screens/login.html'
           }
         })
 
@@ -154,14 +154,14 @@
 
         .state('search', {
           url: '/search',
-          load: ['angular-state-router/components/search.js']
+          load: ['components/search.js']
         })
 
         .state('notfound', {
 
           // Defined templates
           templates: {
-            layout: 'angular-state-router/layouts/error.html'
+            layout: 'layouts/error.html'
           }
         })
 
