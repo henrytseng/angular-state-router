@@ -319,6 +319,11 @@ module.exports = [function StateRouterProvider() {
         name = nameExpr.name;
         params = angular.extend(nameExpr.params || {}, params);
 
+        // Special name notation
+        if(name === '.' && _current) {
+          name = _current.name;
+        }
+
         var error = null;
         var request = {
           name: name,

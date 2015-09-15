@@ -556,6 +556,11 @@ Both of the following will match the state `catalog.index.list`
 	catalog.**
 
 
+### Current State
+
+Use a single `.` to represent the current state.  
+
+
 
 URLs
 ----

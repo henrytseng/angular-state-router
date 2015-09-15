@@ -230,6 +230,48 @@ describe('$state', function() {
       });
     });
 
+    it('Should interpret single dot as current state when state does not exist', function(done) {
+      angular.mock.module(function($stateProvider) {
+        $stateProvider
+
+          // Define states
+          .state('companies', {
+            url: '/companies/:company', 
+            params: {
+              company: 'XYZ Co'
+            }
+          })
+
+          .state('rooms', {
+            url: '/buildings/:building/rooms/:room',
+            params: {
+              building: 'f2',
+              room: 'j203'
+            }
+          })
+
+          .init('companies');
+      });
+
+      angular.mock.inject(function($state, $rootScope) {
+        $rootScope.$digest();
+
+        $state.change('.', {
+          lorem: 'sed'
+        });
+
+        $rootScope.$digest();
+
+        expect($state.current().name).toBe('companies');
+        expect($state.current().params).toEqual({
+          company: 'XYZ Co',
+          lorem: 'sed'
+        });
+
+        done();
+      });
+    });
+
     it('Should dispatch events during state change', function(done) {
       angular.mock.module(function($stateProvider) {
         $stateProvider
