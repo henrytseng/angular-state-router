@@ -28,7 +28,7 @@
         });
       };
 
-      $scope.search.criteria = $location.search().q || '';
+      $scope.search.criteria = $location.search().q || 'ad ipsum';
 
       if($scope.search.criteria && $scope.search.criteria !== '') {
         $scope.search();
