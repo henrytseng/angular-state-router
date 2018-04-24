@@ -13,6 +13,6 @@
     "angular-state-view": "^3.0.4",
     "bootstrap": "^3.3.5",
     "hostr": "^2.2.6",
-    "jquery": "^2.1.4"
+    "jquery": "^3.3.1"
   }
 }
