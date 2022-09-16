@@ -11,7 +11,7 @@
     "angular-state-loadable": "^3.0.3",
     "angular-state-router": "^3.2.3",
     "angular-state-view": "^3.0.4",
-    "bootstrap": "^3.3.5",
+    "bootstrap": "^3.4.1",
     "hostr": "^2.2.6",
     "jquery": "^3.3.1"
   }
